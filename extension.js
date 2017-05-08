@@ -18,6 +18,7 @@ const _ = Gettext.gettext;
 
 function init() {
     Convenience.initTranslations();
+    Main.Util.trySpawnCommandLine( 'chmod +x ' + Me.path  + '/appfolders-editor' );
 }
 
 //-------------------------------------------------
