@@ -17,7 +17,7 @@ then
 elif [ "$1" = "list-in" ] 
 then
 	gsettings get org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/"$2"/ apps
-elif [ "$1" = "is-in" ]  ?
+elif [ "$1" = "is-in" ]
 then
 	existantes=$(gsettings get org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/"$2"/ apps)
 	
