@@ -1,0 +1,157 @@
+#!/bin/bash
+
+reg="^[A-Za-z0-9\-\_]*$"
+existantes=""
+
+if [ "$1" = "new-folder" ] 
+then
+	if [[ -n "$2" && "$2" =~ $reg ]]
+	then
+		existantes=$(gsettings get org.gnome.desktop.app-folders folder-children)
+		existantes=${existantes%]}", '$2']"
+		gsettings set org.gnome.desktop.app-folders folder-children "$existantes"
+	else
+		echo "incorrect argument"
+	fi
+	
+elif [ "$1" = "list-in" ] 
+then
+	gsettings get org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/"$2"/ apps
+elif [ "$1" = "is-in" ]  ?
+then
+	existantes=$(gsettings get org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/"$2"/ apps)
+	
+	if [[ $existantes = "['$3']" ]]
+	then
+		echo 'true'
+	else
+		existantes2=${existantes/, \'$3\'/}
+		if [[ "$existantes2" = "$existantes" ]]
+		then 
+			echo 'false' 
+			echo $existantes
+			echo $existantes2
+		else
+			echo 'true' 
+			echo $existantes
+			echo $existantes2
+			existantes2=${existantes/\'$3\', /}
+		
+			if [[ "$existantes2" = "$existantes" ]]
+			then 
+				echo 'false' 
+				echo $existantes
+				echo $existantes2
+			else
+				echo 'true' 
+				echo $existantes
+				echo $existantes2
+			fi
+		fi
+	fi
+	
+elif [ "$1" = "add-to" ] 
+then
+	existantes=$(gsettings get org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/"$2"/ apps)
+	if [[ $existantes = "@as []" ]]
+	then
+		gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/"$2"/ apps "['$3']"
+	else
+		existantes=${existantes%]}", '$3']"
+		gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/"$2"/ apps "$existantes"
+	fi
+
+elif [ "$1" = "remove" ] 
+then	
+	existantes=$(gsettings get org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/"$2"/ apps)
+	existantes=${existantes/, \'$3\'/}
+	existantes=${existantes/\'$3\', /}
+	existantes=${existantes/\'$3\'/}
+	gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/"$2"/ apps "$existantes"
+	
+elif [ "$1" = "list-folders" ] 
+then
+	gsettings get org.gnome.desktop.app-folders folder-children
+
+elif [ "$1" = "rename-folder" ] 
+then
+	if [ -n "$2" ]
+	then
+		if [ -n "$3" ]
+		then
+			gsettings set org.gnome.desktop.app-folders.folder:/org/gnome/desktop/app-folders/folders/"$2"/ name "$3"
+		else
+			echo "incorrect argument"
+		fi
+	else
+		echo "incorrect argument"
+	fi
+	
+elif [ "$1" = "list-apps" ] 
+then
+	ls /home/$USER/.local/share/applications | grep "$2"
+	ls /usr/share/applications | grep "$2"	
+	
+elif [ "$1" = "del-folder" ] 
+then
+	existantes=$(gsettings get org.gnome.desktop.app-folders folder-children)
+	existantes=${existantes/, \'$2\'/}
+	gsettings set org.gnome.desktop.app-folders folder-children "$existantes"
+	
+#############################################################
+elif [ "$1" = "help" ] 
+then
+	echo "*************************************"
+	echo ""
+	echo -e "\033[1mnew-folder [nickname]\033[0m"
+	echo "Create a new appfolder, which will be identified by its nickname."
+	echo "The nickname is NOT displayed in the applications view, you don't have to car about how it looks."
+	echo "-- WARNING : DON'T use spaces or exotic characters in nicknames --"
+	echo "-- DON'T use very short nicknames --"
+	echo "-- DON'T use a nickname which is a substring (prefix/root/suffix) of an other appfolder nickname --"
+	echo "The script is quite basic, and having some similar nicknames may create big troubles when you will try to delete appfolders."
+	echo ""
+	echo -e "\033[1mrename-folder [nickname] [name]\033[0m"
+	echo "Set the name of an appfolder, the one which will be displayed. The new name have to be between double quotes (\"name\")."
+	echo ""
+	echo -e "\033[1mlist-folders\033[0m"
+	echo "List existing appfolders (by their nicknames)."
+	echo ""
+	echo -e "\033[1mlist-apps [string]\033[0m"
+	echo "List available applications whose names contain the given string."
+	echo "Applications' names here are actually the names of applications' .desktop files."
+	echo "Using this option with an empty string will list ALL applications."
+	echo "Applications displayed by this option are NOT all displayed in the Gnome applications view."
+	echo ""
+	echo -e "\033[1mlist-in [appfolder] [application]\033[0m"
+	echo "True if an applications is in the specified appfolder"
+	echo ""
+	echo -e "\033[1mis-in [appfolder]\033[0m"
+	echo "List applications which are in the specified appfolder"
+	echo ""
+	echo -e "\033[1madd-to [appfolder] [application]\033[0m"
+	echo "Add an application launcher to an appfolder (given by its nickname)."
+	echo "An application launcher is identified by the name of the .desktop file."
+	echo ""
+	echo -e "\033[1mremove [launcher] [appfolder]\033[0m"
+	echo "Remove an application from an appfolder."
+	echo "An application is identified by the name of the .desktop file."
+	echo ""
+	echo -e "\033[1mdel-folder [appfolder]\033[0m"
+	echo "Delete an appfolder."
+	echo ""
+	echo "*************************************"
+else
+	echo "Available options :"
+	echo -e "-\t\033[1mhelp\033[0m"
+	echo -e "-\tnew-folder [nickname]"
+	echo -e "-\trename-folder [nickname] [name]"
+	echo -e "-\tlist-folders"
+	echo -e "-\tlist-apps [string]"
+	echo -e "-\tlist-in [appfolder]"
+	echo -e "-\is-in [appfolder] [application]"
+	echo -e "-\tadd-to [appfolder] [application]"
+	echo -e "-\tremove [launcher] [appfolder]"
+	echo -e "-\tdel-folder [appfolder]"
+fi
+
