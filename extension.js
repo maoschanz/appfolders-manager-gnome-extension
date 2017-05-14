@@ -51,6 +51,7 @@ function enable() {
 	
 	injections['_redisplay'] = injectToFunction(AppDisplay.AppIconMenu.prototype, '_redisplay',  function(){
 		this._appendSeparator();
+//------------------------------------------
 		let addto = new PopupMenu.PopupSubMenuMenuItem(_("Add to"));
 		for (var i = 0 ; i < _folderList.length ; i++) {
 			let _folder = _folderList[i];
@@ -62,14 +63,13 @@ function enable() {
 				let tmp2 = new Gio.Settings({ schema_id: 'org.gnome.desktop.app-folders.folder', path: path });
 				
 				let content = tmp2.get_strv('apps');
-				
 				content.push(id);
 				tmp2.set_strv('apps', content);
 			}));
-        	addto.menu.addMenuItem(item);
+			addto.menu.addMenuItem(item);
 		}
 		this.addMenuItem(addto);
-		
+//------------------------------------------
 		let removeFrom = new PopupMenu.PopupSubMenuMenuItem(_("Delete from"));
 		for (var i = 0 ; i < _folderList.length ; i++) {
 			let _folder = _folderList[i];
@@ -84,29 +84,27 @@ function enable() {
 				let pastContent = tmp.get_strv('apps');
 				let presentContent = [];
 				for(i=0;i<pastContent.length;i++){
-					if(truc[i] != id) {
+					if(pastContent[i] != id) {
 						presentContent.push(pastContent[i]);
 					}
 				}
 				tmp.set_strv('apps', presentContent);
 			}));
-        	removeFrom.menu.addMenuItem(item);
+ 			removeFrom.menu.addMenuItem(item);
 		}
-		
 		this.addMenuItem(removeFrom);
-		
+//------------------------------------------
 		let newAppFolder = new PopupMenu.PopupSubMenuMenuItem(_("New AppFolder"));
-		
 		let item1 = new PopupMenu.PopupMenuItem('');
 		let newEntry = new St.Entry({
-	        name: 'newEntry',
-	        can_focus: true,
-	        hint_text: _("Enter a name"),
-	        track_hover: true
-	    });
+			name: 'newEntry',
+			can_focus: true,
+			hint_text: _("Enter a name"),
+			track_hover: true
+		});
     	
-    	item1.actor.add(newEntry, { expand: true });
-    	newAppFolder.menu.addMenuItem(item1);
+		item1.actor.add(newEntry, { expand: true });
+		newAppFolder.menu.addMenuItem(item1);
     	
 		let item2 = new PopupMenu.PopupMenuItem(_("Create"));
 		item2.connect('activate', Lang.bind(this, function() {
@@ -133,11 +131,9 @@ function enable() {
 			}));
 		}));
 		newAppFolder.menu.addMenuItem(item2);
-		
 		this.addMenuItem(newAppFolder);
-		
+		//for some reason the focus needs a fcking timeout to work
 		newAppFolder.menu.connect('open-state-changed', Lang.bind(this, function(self, open){
-			
 			let timeoutId = Mainloop.timeout_add(20, Lang.bind(this, function() {
 				if (open) {
 					newEntry.set_text('');
@@ -146,7 +142,7 @@ function enable() {
 				Mainloop.source_remove(timeoutId);
 			}));
 		}));
-		
+//------------------------------------------
 		let delAppfolder = new PopupMenu.PopupSubMenuMenuItem(_("Delete AppFolder"));
 		for (var i = 0 ; i < _folderList.length ; i++) {
 			let _folder = _folderList[i];
@@ -168,9 +164,8 @@ function enable() {
 			}));
         	delAppfolder.menu.addMenuItem(item);
 		}
-		
 		this.addMenuItem(delAppfolder);
-		
+//------------------------------------------
 	//end of injections beyond the following line
 	});
 //end of enable()
