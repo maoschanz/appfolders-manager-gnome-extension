@@ -18,14 +18,9 @@ const _ = Gettext.gettext;
 
 function init() {
     Convenience.initTranslations();
-    Main.Util.trySpawnCommandLine( 'chmod +x ' + Me.path  + '/appfolders-editor' );
 }
 
 //-------------------------------------------------
-/*
-
-*/
-//------------------------------------------------
 
 function injectToFunction(parent, name, func) {
 	let origin = parent[name];
@@ -47,7 +42,6 @@ function removeInjection(object, injection, name) {
 }
 
 let injections=[];
-let nameEntry = null;
 
 //------------------------------------------
 
@@ -60,24 +54,41 @@ function enable() {
 		let addto = new PopupMenu.PopupSubMenuMenuItem(_("Add to"));
 		for (var i = 0 ; i < _folderList.length ; i++) {
 			let _folder = _folderList[i];
-			let item = new PopupMenu.PopupMenuItem(_folderList[i]);
+			let item = new PopupMenu.PopupMenuItem(_folder);
 			item.connect('activate', Lang.bind(this, function() {
 				let id = this._source.app.get_id();
-				Main.Util.trySpawnCommandLine( Me.path  + '/appfolders-editor add-to ' + _folder + ' ' + id );
+				
+				let path = '/org/gnome/desktop/app-folders/folders/' + _folder + '/';
+				let tmp2 = new Gio.Settings({ schema_id: 'org.gnome.desktop.app-folders.folder', path: path });
+				
+				let content = tmp2.get_strv('apps');
+				
+				content.push(id);
+				tmp2.set_strv('apps', content);
 			}));
         	addto.menu.addMenuItem(item);
 		}
-		
 		this.addMenuItem(addto);
 		
-//à faire au lieu de removeFromAppFolders
 		let removeFrom = new PopupMenu.PopupSubMenuMenuItem(_("Delete from"));
 		for (var i = 0 ; i < _folderList.length ; i++) {
 			let _folder = _folderList[i];
-			let item = new PopupMenu.PopupMenuItem(_folderList[i]);
+			let item = new PopupMenu.PopupMenuItem(_folder);
 			item.connect('activate', Lang.bind(this, function() {
+
 				let id = this._source.app.get_id();
-				Main.Util.trySpawnCommandLine( Me.path  + '/appfolders-editor remove ' + _folder + ' ' + id );
+				
+				let path = '/org/gnome/desktop/app-folders/folders/' + _folder + '/';
+				let tmp = new Gio.Settings({ schema_id: 'org.gnome.desktop.app-folders.folder', path: path });
+				
+				let pastContent = tmp.get_strv('apps');
+				let presentContent = [];
+				for(i=0;i<pastContent.length;i++){
+					if(truc[i] != id) {
+						presentContent.push(pastContent[i]);
+					}
+				}
+				tmp.set_strv('apps', presentContent);
 			}));
         	removeFrom.menu.addMenuItem(item);
 		}
@@ -107,39 +118,51 @@ function enable() {
 			for(var i = 0; i < tmp0.length; i++) {
 				newNickname += tmp0[i];
 			}
+
+			_folderList.push(newNickname);
+			_foldersSchema.set_strv('folder-children', _folderList);
 			
-			Main.Util.trySpawnCommandLine( Me.path  + '/appfolders-editor new-folder ' + newNickname );
-			Main.Util.trySpawnCommandLine( Me.path  + '/appfolders-editor rename-folder ' + newNickname + ' \"' + newName + '\"');
+			let path = '/org/gnome/desktop/app-folders/folders/' + newNickname + '/';
+			let tmp1 = new Gio.Settings({ schema_id: 'org.gnome.desktop.app-folders.folder', path: path });
+			tmp1.set_string('name', newName);
 			
-			Mainloop.timeout_add(200, Lang.bind(this, function() {
+			let timeoutId = Mainloop.timeout_add(200, Lang.bind(this, function() {
 				disable();
+				Mainloop.source_remove(timeoutId);
 				enable();
 			}));
 		}));
 		newAppFolder.menu.addMenuItem(item2);
 		
-		
 		this.addMenuItem(newAppFolder);
 		
 		newAppFolder.menu.connect('open-state-changed', Lang.bind(this, function(self, open){
 			
-			Mainloop.timeout_add(20, Lang.bind(this, function() {
+			let timeoutId = Mainloop.timeout_add(20, Lang.bind(this, function() {
 				if (open) {
 					newEntry.set_text('');
 					global.stage.set_key_focus(newEntry);
 				}
+				Mainloop.source_remove(timeoutId);
 			}));
 		}));
 		
 		let delAppfolder = new PopupMenu.PopupSubMenuMenuItem(_("Delete AppFolder"));
 		for (var i = 0 ; i < _folderList.length ; i++) {
 			let _folder = _folderList[i];
-			let item = new PopupMenu.PopupMenuItem(_folderList[i]);
+			let item = new PopupMenu.PopupMenuItem(_folder);
 			item.connect('activate', Lang.bind(this, function() {
-				let id = this._source.app.get_id();
-				Main.Util.trySpawnCommandLine( Me.path  + '/appfolders-editor del-folder ' + _folder);
-				Mainloop.timeout_add(200, Lang.bind(this, function() {
+				let tmp = [];
+				for(i=0;i<_folderList.length;i++){
+					if(_folderList[i] == _folder) {}
+					else {
+						tmp.push(_folderList[i]);
+					}
+				}
+				_foldersSchema.set_strv('folder-children', tmp);
+				let timeoutId = Mainloop.timeout_add(200, Lang.bind(this, function() {
 					disable();
+					Mainloop.source_remove(timeoutId);
 					enable();
 				}));
 			}));
@@ -148,21 +171,13 @@ function enable() {
 		
 		this.addMenuItem(delAppfolder);
 		
-//		let removeFromAppFolders = this._appendMenuItem(_("Remove from AppFolders"));
-//		removeFromAppFolders.connect('activate', Lang.bind(this, function() {
-//			let id = this._source.app.get_id();
-//			for (var i = 0 ; i < _folderList.length ; i++) {
-//				let id = this._source.app.get_id();
-//				let _folder = _folderList[i];
-//				Main.Util.trySpawnCommandLine( Me.path  + '/appfolders-editor remove ' + _folder + ' ' + id );
-//			}
-//		//end of the signal beyond the following line
-//		}));
 	//end of injections beyond the following line
 	});
+//end of enable()
 }
+
+//-------------------------------------------------
 
 function disable() {
 	removeInjection(AppDisplay.AppIconMenu.prototype, injections,  '_redisplay');
 }
-
