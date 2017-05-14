@@ -1,7 +1,5 @@
-# Appfolders-Manager (GNOME extension)
+# Appfolders Management (GNOME extension)
 A GNOME extension allowing easy management of "appfolders" directly from the application view.
-
-Please notice that for now, javascript files are just here for the user interface : everything is done by the "appfolders-editor" bash script, which can be used as a standalone script for (more complete) appfolders management.
 
 ![Screenshot](http://i.imgur.com/Xe5Cgvl.png)
 
