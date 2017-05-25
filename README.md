@@ -7,8 +7,10 @@ A GNOME extension allowing easy management of "appfolders" directly from the app
 
 ## Installation
 
-Download the .zip archive and extract files in `~/.local/share/gnome-shell/extensions/appfolders-manager@maestroschan.fr`
+Install it from https://extensions.gnome.org/extension/1217/appfolders-manager/
 
-Restart Gnome Shell.
+or :
 
-Activate the extension.
+* Download the .zip archive and extract files in `~/.local/share/gnome-shell/extensions/appfolders-manager@maestroschan.fr`
+* Restart Gnome Shell.
+* Activate the extension.
