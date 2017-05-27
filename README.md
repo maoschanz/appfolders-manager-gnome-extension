@@ -1,3 +1,5 @@
+# PLEASE DON'T TRANSLATE IT FOR NOW (27 may), I'M CHANGING A LOT OF THINGS IN THE CODE
+
 # Appfolders Management (GNOME extension)
 A GNOME extension allowing easy management of "appfolders" directly from the application view.
 
