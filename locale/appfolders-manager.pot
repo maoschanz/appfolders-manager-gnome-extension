@@ -38,7 +38,7 @@ msgstr ""
 msgid "Modifications will be effective after reloading the extension."
 msgstr ""
 
-msgid "Maximum number of rows :"
+msgid "Maximum number of columns :"
 msgstr ""
 
 msgid "Delete all related settings when an appfolder is deleted"
