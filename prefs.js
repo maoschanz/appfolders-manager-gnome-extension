@@ -35,7 +35,7 @@ const osefSettingsWidget = new GObject.Class({
 		
 		this._settings = Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager');
 		
-		let label = _("Maximum number of rows :");
+		let label = _("Maximum number of columns :");
 		
 		let nbColumns = new Gtk.SpinButton();
         nbColumns.set_sensitive(true);
