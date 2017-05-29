@@ -21,7 +21,7 @@ Features :
 * Add applications to folders (cool submenu)
 * Remove applications from folders (cool submenu)
 * Delete appfolders (optionnally, a total deletion)
-* Set the maximum number of colums
+* Set the maximum number of columns (GNOME Shell's default is 6)
 
 Manual installation :
 * Download the .zip archive and extract files in `~/.local/share/gnome-shell/extensions/appfolders-manager@maestroschan.fr`
