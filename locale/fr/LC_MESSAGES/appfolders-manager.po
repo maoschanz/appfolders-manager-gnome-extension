@@ -34,7 +34,7 @@ msgstr "Supprimer un AppFolder"
 msgid "Modifications will be effective after reloading the extension."
 msgstr "Les modifications prendront effet après avoir rechargé l'extension"
 
-msgid "Maximum number of rows :"
+msgid "Maximum number of columns :"
 msgstr "Nombre maximal de colonnes :"
 
 msgid "Delete all related settings when an appfolder is deleted"
