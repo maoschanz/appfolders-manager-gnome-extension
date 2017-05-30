@@ -1,5 +1,5 @@
 # Appfolders Management (GNOME extension)
-A GNOME extension allowing easy management of "appfolders" directly from the applications view.
+A GNOME extension allowing easy management of "appfolders" directly from the applications view. As a bonus feature, it is possible to change the number of columns.
 
 ![Screenshot](http://i.imgur.com/eOFSP0x.png)
 (version 2)
@@ -15,7 +15,7 @@ Features :
 
 Install it from https://extensions.gnome.org/extension/1217/appfolders-manager/
 
-### Version 2
+### Version 2 (beta)
 Features :
 * Create new appfolders (cool dialog entry)
 * Add applications to folders (cool submenu)
