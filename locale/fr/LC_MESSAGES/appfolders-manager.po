@@ -13,20 +13,35 @@ msgstr ""
 "Last-Translator: \n"
 "Language: fr\n"
 
+msgid "Enter a name"
+msgstr "Entrez un nom"
+
+msgid "Cancel"
+msgstr "Annuler"
+
 msgid "Add to"
 msgstr "Ajouter à"
-
-msgid "Delete from"
-msgstr "Supprimer de"
 
 msgid "New AppFolder"
 msgstr "Nouvel AppFolder"
 
-msgid "Enter a name"
-msgstr "Entrez un nom"
-
-msgid "Create"
-msgstr "Créer"
+msgid "Remove from"
+msgstr "Retirez de"
 
 msgid "Delete AppFolder"
-msgstr "Supprimer un Appfolder"
+msgstr "Supprimer un AppFolder"
+
+msgid "Modifications will be effective after reloading the extension."
+msgstr "Les modifications prendront effet après avoir rechargé l'extension"
+
+msgid "Maximum number of columns :"
+msgstr "Nombre maximal de colonnes :"
+
+msgid "Delete all related settings when an appfolder is deleted"
+msgstr "Supprimer tous les réglages relatifs à un appfolder lors de sa suppression"
+
+msgid "Delete"
+msgstr "Supprimer"
+
+msgid "Rename"
+msgstr "Renommer"

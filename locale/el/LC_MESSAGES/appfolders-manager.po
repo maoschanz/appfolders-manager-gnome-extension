@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-23 11:45+0300\n"
-"PO-Revision-Date: 2017-05-23 11:47+0300\n"
+"POT-Creation-Date: 2017-05-29 23:18+0300\n"
+"PO-Revision-Date: 2017-05-29 23:26+0300\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,20 +19,35 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Language: el\n"
 
+msgid "Enter a name"
+msgstr "Εισαγωγή ονόματος"
+
+msgid "Cancel"
+msgstr "Αναίρεση"
+
 msgid "Add to"
 msgstr "Προσθήκη σε"
-
-msgid "Delete from"
-msgstr "Διαγραφή από"
 
 msgid "New AppFolder"
 msgstr "Νέος φάκελος"
 
-msgid "Enter a name"
-msgstr "Εισάγετε όνομα"
-
-msgid "Create"
-msgstr "Δημιουργία"
+msgid "Remove from"
+msgstr "Αφαίρεση από"
 
 msgid "Delete AppFolder"
 msgstr "Διαγραφή φακέλου"
+
+msgid "Modifications will be effective after reloading the extension."
+msgstr "Οι τροποποιήσεις απαιτούν την επανεκκίνηση της επέκτασης για να λειτουργήσουν."
+
+msgid "Maximum number of columns :"
+msgstr "Μέγιστος αριθμός στηλών :"
+
+msgid "Delete all related settings when an appfolder is deleted"
+msgstr "Διαγραφή όλων των σχετικών ρυθμίσεων κατά την διαγραφή ενός φακέλου"
+
+msgid "Delete"
+msgstr "Διαγραφή"
+
+msgid "Rename"
+msgstr "Μετονομασία"

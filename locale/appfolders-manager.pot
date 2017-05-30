@@ -17,20 +17,35 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-msgid "Add to"
+msgid "Enter a name"
 msgstr ""
 
-msgid "Delete from"
+msgid "Cancel"
+msgstr ""
+
+msgid "Add to"
 msgstr ""
 
 msgid "New AppFolder"
 msgstr ""
 
-msgid "Enter a name"
-msgstr ""
-
-msgid "Create"
+msgid "Remove from"
 msgstr ""
 
 msgid "Delete AppFolder"
+msgstr ""
+
+msgid "Modifications will be effective after reloading the extension."
+msgstr ""
+
+msgid "Maximum number of columns :"
+msgstr ""
+
+msgid "Delete all related settings when an appfolder is deleted"
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
+msgid "Rename"
 msgstr ""
