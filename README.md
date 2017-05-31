@@ -4,7 +4,7 @@ A GNOME extension allowing easy management of "appfolders" directly from the app
 ![Screenshot](http://i.imgur.com/eOFSP0x.png)
 (version 2)
 
-(english/french/greek/italian/polish)
+english / french / greek / italian / polish / hungarian
 
 ### Version 1
 Features :
