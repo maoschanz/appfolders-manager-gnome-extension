@@ -1,0 +1,54 @@
+# Hungarian translation for appfolders-manager.
+# Copyright (C) 2017 Free Software Foundation, Inc.
+# This file is distributed under the same license as the PACKAGE package.
+#
+# Balázs Úr <urbalazs@gmail.com>, 2017.
+msgid ""
+msgstr ""
+"Project-Id-Version: appfolders-manager master\n"
+"Report-Msgid-Bugs-To: https://github.com/Maestroschan/appfolders-manager-gnome-extension/issues\n"
+"POT-Creation-Date: 2017-04-13 12:23+0200\n"
+"PO-Revision-Date: 2017-05-31 20:41+0100\n"
+"Last-Translator: Balázs Úr <urbalazs@gmail.com>\n"
+"Language-Team: Hungarian <openscope@googlegroups.com>\n"
+"Language: hu\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Lokalize 2.0\n"
+
+msgid "Enter a name"
+msgstr "Írjon be egy nevet"
+
+msgid "Cancel"
+msgstr "Mégse"
+
+msgid "Add to"
+msgstr "Hozzáadás ehhez"
+
+msgid "New AppFolder"
+msgstr "Új alkalmazásmappa"
+
+msgid "Remove from"
+msgstr "Eltávolítás innen"
+
+msgid "Delete AppFolder"
+msgstr "Alkalmazásmappa törlése"
+
+msgid "Modifications will be effective after reloading the extension."
+msgstr "A módosítások a kiterjesztés újratöltése után lépnek hatályba."
+
+msgid "Maximum number of columns :"
+msgstr "Oszlopok legnagyobb száma:"
+
+msgid "Delete all related settings when an appfolder is deleted"
+msgstr ""
+"Az összes kapcsolódó beállítás törlése, ha egy alkalmazásmappa törölve lesz"
+
+msgid "Delete"
+msgstr "Törlés"
+
+msgid "Rename"
+msgstr "Átnevezés"
+
