@@ -62,7 +62,6 @@ const NewFolderDialog = new Lang.Class({
     _init : function(id) {
         this.parent();
 
-
         let label = new St.Label({ text: _("Enter a name") });
 
         this.contentLayout.add(label, { x_fill: false,
@@ -365,6 +364,11 @@ function enable() {
 
 	doTheInjection();
 	
+/*
+	This thing is a weird way to fix a minor initialisation issue, however it doesn't 
+	work 100% of the time : it depends on if the user will open the overview during this 
+	quintuple restart process. I just didn't understand the actual origin of the problem.
+*/
 	if(counter < 5) {
 		counter++;
 		let timeoutId = Mainloop.timeout_add(3000, Lang.bind(this, function() {
