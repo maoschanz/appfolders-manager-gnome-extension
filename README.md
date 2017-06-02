@@ -17,7 +17,7 @@ Install it from https://extensions.gnome.org/extension/1217/appfolders-manager/
 
 There is a few bugs, it works but don't try foolish things with it.
 
-### Version 2 (beta)
+### Version 2
 Features :
 * Create new appfolders (cool dialog entry)
 * Add applications to folders (cool submenu with only pertinent items)
@@ -31,6 +31,10 @@ Manual installation :
 * Download the .zip archive and extract files in `~/.local/share/gnome-shell/extensions/appfolders-manager@maestroschan.fr`
 * Restart Gnome Shell.
 * Activate the extension.
+
+### Future version 3
+* Right-click on an appfolder to delete or rename it
+* Drag and drop (i hope)
 
 ### See also
 https://github.com/muflone/gnome-appfolders-manager a GTK+ application which manages appfolders
