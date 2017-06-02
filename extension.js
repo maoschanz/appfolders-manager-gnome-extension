@@ -9,6 +9,9 @@ const Mainloop = imports.mainloop;
 
 const ModalDialog = imports.ui.modalDialog;
 const ShellEntry = imports.ui.shellEntry;
+const BoxPointer = imports.ui.boxpointer;
+const IconGrid = imports.ui.iconGrid;
+const Overview = imports.ui.overview;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
@@ -21,9 +24,13 @@ const _ = Gettext.gettext;
 
 let _foldersSchema;
 let _folderList;
+let _settings;
+
+let counter = 0;
 
 function init() {
     Convenience.initTranslations();
+    counter = 0;
 }
 
 //-------------------------------------------------
@@ -104,7 +111,7 @@ const NewFolderDialog = new Lang.Class({
 			
 			for(var i = 0; i < _folderList.length; i++) {
 				if (_folderList[i] == folderId) {
-					log('this appfolder already exists');
+					log('[Appfolder Management] - this appfolder already exists');
 					return;
 				}
 			}
@@ -123,7 +130,9 @@ const NewFolderDialog = new Lang.Class({
         this._entryText.set_text('');
         this.parent();
     },
+    
 });
+//need to copy things from rundialog ?
 
 //-------------------------------------------------
 
@@ -152,15 +161,37 @@ function addToFolder(id, folder) {
 //-------------------------------------------------
 
 function reload() {
-//	Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
+	
+//////	Main.overview.viewSelector.appDisplay._views[1].view._redisplay(); // ayaaaaaaaaaa
+
+	Main.overview.viewSelector.appDisplay._views[1].view.emit('apps-changed');
+
+		//log('[Appfolder Management] - reload 0/4');
+//////	Main.overview.viewSelector.appDisplay._views[1].view._grid.destroyAll(); // non non non
+	Main.overview.viewSelector.appDisplay._views[1].view._grid.removeAll();
+		//log('[Appfolder Management] - reload 1/4');
+	Main.overview.viewSelector.appDisplay._views[1].view._items = {};
+		//log('[Appfolder Management] - reload 2/4');
+	Main.overview.viewSelector.appDisplay._views[1].view._allItems = [];
+		//log('[Appfolder Management] - reload 3/4');
+	Main.overview.viewSelector.appDisplay._views[1].view._loadApps();
+		//log('[Appfolder Management] - reload 4/4');
+	
+	extReload();
+}
+
+function extReload() {
+	disable();
+	enable();
 }
 
 //-------------------------------------------------
 
 function setNbColumns(setting) {
-	let test = Main.overview.viewSelector.appDisplay._views;
-	for (let i = 0; i < test.length; i++) {
-		test[i].view._grid._colLimit = setting;
+		//log('[Appfolder Management] - set columns');	
+	let _views = Main.overview.viewSelector.appDisplay._views;
+	for (let i = 0; i < _views.length; i++) {
+		_views[i].view._grid._colLimit = setting;
 	}
 
 	let _folderIcons = Main.overview.viewSelector.appDisplay._views[1].view.folderIcons;
@@ -169,18 +200,22 @@ function setNbColumns(setting) {
 	});
 }
 
+function popdownAll() {
+		//log('[Appfolder Management] - closing open popups');
+	let _folderIcons = Main.overview.viewSelector.appDisplay._views[1].view.folderIcons;
+	_folderIcons.forEach(function(i){
+		if(i._popup){
+			if (i._popup._isOpen){
+				i._popup._boxPointer.hide();
+				i._popup._isOpen = false;
+				i._popup.emit('open-state-changed', false);
+			}
+		}
+	});
+}
 //-------------------------------------------------
 
-function enable() {
-
-	let _settings = Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager');
-//****************************************************************
-	setNbColumns( _settings.get_int('columns-max') );
-//****************************************************************
-	_foldersSchema = new Gio.Settings({ schema_id: 'org.gnome.desktop.app-folders' });
-	_folderList = _foldersSchema.get_strv('folder-children');
-//****************************************************************
-	
+function doTheInjection() {
 	injections['_redisplay'] = injectToFunction(AppDisplay.AppIconMenu.prototype, '_redisplay',  function(){
 		this._appendSeparator();
 //------------------------------------------
@@ -190,6 +225,9 @@ function enable() {
 		let newAppFolder = new PopupMenu.PopupMenuItem('+ ' + _("New AppFolder"));
 		newAppFolder.connect('activate', Lang.bind(this, function() {
 			let id = this._source.app.get_id();
+			
+			popdownAll();
+			
 			let dialog = new NewFolderDialog(id);
 			dialog.open();
 		}));
@@ -208,9 +246,11 @@ function enable() {
 			let item = new PopupMenu.PopupMenuItem( AppDisplay._getFolderName( _tmp ) );
 			
 			if(shouldShow) {
+				
 				item.connect('activate', Lang.bind(this, function() {
 					let id = this._source.app.get_id();
 				
+					popdownAll();
 					addToFolder(id, _folder);
 				}));
 				addto.menu.addMenuItem(item);
@@ -237,10 +277,12 @@ function enable() {
 			if(shouldShow) {
 				item.connect('activate', Lang.bind(this, function() {
 				
+					popdownAll();
+				
 					let tmp = new Gio.Settings({	schema_id: 'org.gnome.desktop.app-folders.folder',
 													path:  '/org/gnome/desktop/app-folders/folders/' + _folder + '/'
 												});
-				
+					
 					let pastContent = tmp.get_strv('apps');
 					let presentContent = [];
 					for(i=0;i<pastContent.length;i++){
@@ -249,6 +291,7 @@ function enable() {
 						}
 					}
 					tmp.set_strv('apps', presentContent);
+					
 					reload();
 				}));
 	 			removeFrom.menu.addMenuItem(item);
@@ -270,6 +313,9 @@ function enable() {
 			let item = new PopupMenu.PopupMenuItem( AppDisplay._getFolderName( _tmp ) );
 			
 			item.connect('activate', Lang.bind(this, function() {
+				
+			//	popdownAll(); // bad idea
+				
 				let tmp = [];
 				for(i=0;i<_folderList.length;i++){
 					if(_folderList[i] == _folder) {}
@@ -284,9 +330,12 @@ function enable() {
 					let tmp3 = new Gio.Settings({ schema_id: 'org.gnome.desktop.app-folders.folder', path: path });
 					tmp3.reset('apps');
 					tmp3.reset('name');
-				}				
+				}
 				
-				let timeoutId = Mainloop.timeout_add(200, Lang.bind(this, function() {
+				log('[Appfolder Management] - appfolder deleted');
+					
+				let timeoutId = Mainloop.timeout_add(500, Lang.bind(this, function() {
+				//	counter = 5
 					disable();
 					Mainloop.source_remove(timeoutId);
 					enable();
@@ -298,14 +347,35 @@ function enable() {
 		
 	//end of injections beyond the following line
 	});
+}
 
-//end of enable()
+//-------------------------------------------------
+
+function enable() {
+
+	_settings = Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager');
+	
+	setNbColumns( _settings.get_int('columns-max') );
+
+	_foldersSchema = new Gio.Settings({ schema_id: 'org.gnome.desktop.app-folders' });
+	_folderList = _foldersSchema.get_strv('folder-children');
+
+	doTheInjection();
+	
+	if(counter < 5) {
+		counter++;
+		let timeoutId = Mainloop.timeout_add(3000, Lang.bind(this, function() {
+			disable();
+			log('[Appfolder Management] - Forced extension restart (' + counter + '/5)');
+			Mainloop.source_remove(timeoutId);
+			enable();
+		}));
+	}
 }
 
 //-------------------------------------------------
 
 function disable() {
-	removeInjection(AppDisplay.AppIconMenu.prototype, injections,  '_redisplay');
+	removeInjection(AppDisplay.AppIconMenu.prototype, injections, '_redisplay');
 	setNbColumns( 6 );
 }
-
