@@ -9,9 +9,6 @@ const Mainloop = imports.mainloop;
 
 const ModalDialog = imports.ui.modalDialog;
 const ShellEntry = imports.ui.shellEntry;
-const BoxPointer = imports.ui.boxpointer;
-const IconGrid = imports.ui.iconGrid;
-const Overview = imports.ui.overview;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
@@ -91,12 +88,13 @@ const NewFolderDialog = new Lang.Class({
                 this.popModal();
                 this._create(o.get_text(),
                           e.get_state() & Clutter.ModifierType.CONTROL_MASK, id);
-                if (!this._commandError ||
-                    !this.pushModal())
+                if (!this._commandError || !this.pushModal()) {
                     this.close();
-
+				}
+				this.destroy();
                 return Clutter.EVENT_STOP;
             }
+            this.destroy();
             return Clutter.EVENT_PROPAGATE;
         }));
     },
@@ -119,6 +117,8 @@ const NewFolderDialog = new Lang.Class({
 			_folderList.push(folderId);
 			_foldersSchema.set_strv('folder-children', _folderList);
 			
+			log('[Appfolder Management] - creating appfolder');
+			
 			let path = '/org/gnome/desktop/app-folders/folders/' + folderId + '/';
 			let tmp1 = new Gio.Settings({ schema_id: 'org.gnome.desktop.app-folders.folder', path: path });
 			tmp1.set_string('name', newName);
@@ -129,6 +129,10 @@ const NewFolderDialog = new Lang.Class({
 	open: function() {
         this._entryText.set_text('');
         this.parent();
+    },
+    
+    destroy: function() {
+    	this.parent();
     },
     
 });
@@ -344,7 +348,6 @@ function doTheInjection() {
         	delAppfolder.menu.addMenuItem(item);
 		}
 		this.addMenuItem(delAppfolder);
-		
 	//end of injections beyond the following line
 	});
 }
