@@ -1,32 +1,51 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <dead.666@bk.ru>, YEAR.
+#
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-05 12:24+0100\n"
-"PO-Revision-Date: 2017-06-05 12:24+0100\n"
-"Language-Team: Max Chorny <dead.666@bk.ru>\n"
+"POT-Creation-Date: 2017-06-05 23:48+0300\n"
+"PO-Revision-Date: 2017-06-05 23:48+0300+ZONE\n"
+"Last-Translator: Max Chorny <dead.666@bk.ru>\n"
+"Language-Team: RUSSIAN <dead.666@bk.ru>\n"
+"Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.7.1\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"Last-Translator: Max Chorny <dead.666@bk.ru>\n"
-"Language: it\n"
-
-msgid "Add to"
-msgstr "Добавить в"
-
-msgid "Delete from"
-msgstr "Удалить из"
-
-msgid "New AppFolder"
-msgstr "Новая Папка Приложений"
 
 msgid "Enter a name"
 msgstr "Введите название"
 
-msgid "Create"
-msgstr "Создать"
+msgid "Cancel"
+msgstr "Отмена"
+
+msgid "Add to"
+msgstr "Добавить в"
+
+msgid "New AppFolder"
+msgstr "Новая Папка приложений"
+
+msgid "Remove from"
+msgstr "Удалить из"
 
 msgid "Delete AppFolder"
-msgstr "Удалить из Папки Приложений"
+msgstr "Удалить Папку приложений"
+
+msgid "Modifications will be effective after reloading the extension."
+msgstr "Изменения вступят в силу после перезагрузки расширения."
+
+msgid "Maximum number of columns :"
+msgstr "Максимальное количество столбцов :"
+
+msgid "Delete all related settings when an appfolder is deleted"
+msgstr "Удалять все связанные настройки при удалении Папки приложений."
+
+msgid "Delete"
+msgstr "Удалить"
+
+msgid "Rename"
+msgstr "Переименовать"
