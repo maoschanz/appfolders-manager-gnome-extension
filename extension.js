@@ -94,8 +94,6 @@ const NewFolderDialog = new Lang.Class({
 				this.destroy();
                 return Clutter.EVENT_STOP;
             }
-            this.destroy();
-            return Clutter.EVENT_PROPAGATE;
         }));
     },
 
