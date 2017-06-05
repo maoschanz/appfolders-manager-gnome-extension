@@ -9,6 +9,7 @@ const Mainloop = imports.mainloop;
 
 const ModalDialog = imports.ui.modalDialog;
 const ShellEntry = imports.ui.shellEntry;
+const Overview = imports.ui.overview;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
@@ -165,12 +166,10 @@ function addToFolder(id, folder) {
 
 function reload() {
 	
-//////	Main.overview.viewSelector.appDisplay._views[1].view._redisplay(); // ayaaaaaaaaaa
-
-	Main.overview.viewSelector.appDisplay._views[1].view.emit('apps-changed');
+//////	Main.overview.viewSelector.appDisplay._views[1].view._redisplay(); // segfault
 
 		//log('[Appfolder Management] - reload 0/4');
-//////	Main.overview.viewSelector.appDisplay._views[1].view._grid.destroyAll(); // non non non
+//////	Main.overview.viewSelector.appDisplay._views[1].view._grid.destroyAll(); // segfault
 	Main.overview.viewSelector.appDisplay._views[1].view._grid.removeAll();
 		//log('[Appfolder Management] - reload 1/4');
 	Main.overview.viewSelector.appDisplay._views[1].view._items = {};
@@ -366,23 +365,27 @@ function enable() {
 	
 /*
 	This thing is a weird way to fix a minor initialisation issue, however it doesn't 
-	work 100% of the time : it depends on if the user will open the overview during this 
-	quintuple restart process. I just didn't understand the actual origin of the problem.
+	work at the first time user opens overview.
+	I just don't understand the actual origin of the problem, but it seems solved by this.
 */
-	if(counter < 5) {
+	if(counter < 3) {
 		counter++;
-		let timeoutId = Mainloop.timeout_add(3000, Lang.bind(this, function() {
-			disable();
-			log('[Appfolder Management] - Forced extension restart (' + counter + '/5)');
-			Mainloop.source_remove(timeoutId);
-			enable();
-		}));
+		log('[Appfolder Management] - Starting (' + counter + '/3)');
+	
+		injections['show'] = injectToFunction(Overview.Overview.prototype, 'show',  function(){
+			extReload();		
+		});
+	
+	} else if (counter == 3) {
+		log('[Appfolder Management] - Started');
 	}
 }
+
 
 //-------------------------------------------------
 
 function disable() {
 	removeInjection(AppDisplay.AppIconMenu.prototype, injections, '_redisplay');
+	removeInjection(Overview.Overview.prototype, injections, 'show');
 	setNbColumns( 6 );
 }
