@@ -1,0 +1,32 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-06-05 12:24+0100\n"
+"PO-Revision-Date: 2017-06-05 12:24+0100\n"
+"Language-Team: Max Chorny <dead.666@bk.ru>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.7.1\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Last-Translator: Max Chorny <dead.666@bk.ru>\n"
+"Language: it\n"
+
+msgid "Add to"
+msgstr "Добавить в"
+
+msgid "Delete from"
+msgstr "Удалить из"
+
+msgid "New AppFolder"
+msgstr "Новая Папка Приложений"
+
+msgid "Enter a name"
+msgstr "Введите название"
+
+msgid "Create"
+msgstr "Создать"
+
+msgid "Delete AppFolder"
+msgstr "Удалить из Папки Приложений"
