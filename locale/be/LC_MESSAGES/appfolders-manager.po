@@ -1,0 +1,51 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <dead.666@bk.ru>, YEAR.
+#
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-06-05 23:48+0300\n"
+"PO-Revision-Date: 2017-06-05 23:48+0300+ZONE\n"
+"Last-Translator: Max Chorny <dead.666@bk.ru>\n"
+"Language-Team: BELARUSIAN <dead.666@bk.ru>\n"
+"Language: be\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "Enter a name"
+msgstr "Увядзіце назву"
+
+msgid "Cancel"
+msgstr "Адмена"
+
+msgid "Add to"
+msgstr "Дабавіць у"
+
+msgid "New AppFolder"
+msgstr "Новая пака прыкладанняў"
+
+msgid "Remove from"
+msgstr "Выдалiць з"
+
+msgid "Delete AppFolder"
+msgstr "Выдалiць Папку прыкладанняў"
+
+msgid "Modifications will be effective after reloading the extension."
+msgstr "Змены ўступяць у сілу пасля перазагрузкі пашырэння."
+
+msgid "Maximum number of columns :"
+msgstr "Максiмальная колькасць слупкоў :"
+
+msgid "Delete all related settings when an appfolder is deleted"
+msgstr "Выдаляць усе звязаныя налады пры выдаленні Папки прыкладанняў."
+
+msgid "Delete"
+msgstr "Выдалiць"
+
+msgid "Rename"
+msgstr "Перайменаваць"
