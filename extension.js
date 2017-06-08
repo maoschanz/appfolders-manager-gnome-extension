@@ -61,15 +61,22 @@ const NewFolderDialog = new Lang.Class({
     Extends: ModalDialog.ModalDialog,
 
     _init : function(id) {
-        this.parent();
-
+        this.parent( {
+        	styleClass: 'run-dialog',
+			destroyOnClose: true
+		} );
+		
+		this._id = id;
         let label = new St.Label({ text: _("Enter a name") });
 
         this.contentLayout.add(label, { x_fill: false,
                                         x_align: St.Align.START,
                                         y_align: St.Align.START });
 
-        let entry = new St.Entry({can_focus: true });
+        let entry = new St.Entry({	can_focus: true,
+        							natural_width_set: true,
+        							natural_width: 250
+        						 });
         ShellEntry.addContextMenu(entry);
 
         entry.label_actor = label;
@@ -80,53 +87,103 @@ const NewFolderDialog = new Lang.Class({
 
         this.setButtons([{ action: Lang.bind(this, this.close),
                            label: _("Cancel"),
-                           key: Clutter.Escape }]);
+                           key: Clutter.Escape },
+                           
+                           { action: Lang.bind(this, this._addfolder),
+                           label: _("Create"),
+                           key: Clutter.Return }
+                       ]);
 
+		this._entryText.connect('text-changed', Lang.bind(this, function() {
+			if (this._errorBox.visible) {
+				this._errorBox.hide();
+		    }
+		}));
+		
         this._entryText.connect('key-press-event', Lang.bind(this, function(o, e) {
             let symbol = e.get_key_symbol();
+            
             if (symbol == Clutter.Return || symbol == Clutter.KP_Enter) {
                 this.popModal();
-                this._create(o.get_text(),
-                          e.get_state() & Clutter.ModifierType.CONTROL_MASK, id);
-                if (!this._commandError || !this.pushModal()) {
-                    this.close();
-				}
-				this.destroy();
-                return Clutter.EVENT_STOP;
+                this._addfolder();
             }
         }));
+        
+        this._errorBox = new St.BoxLayout({ style_class: 'run-dialog-error-box' });
+        this.contentLayout.add(this._errorBox, { expand: true });
+
+        let errorIcon = new St.Icon({	icon_name: 'dialog-error-symbolic',
+        								icon_size: 24, style_class: 'run-dialog-error-icon'
+        							});
+        this._errorBox.add(errorIcon, { y_align: St.Align.MIDDLE });
+
+        this._errorMessage = new St.Label({ style_class: 'run-dialog-error-label' });
+        this._errorMessage.clutter_text.line_wrap = true;
+        this._errorBox.add(
+        	this._errorMessage, {
+        		expand: true,
+				x_align: St.Align.START, x_fill: false,
+				y_align: St.Align.MIDDLE, y_fill: false
+			}
+		);
+		
+        this._errorBox.hide();
     },
-
-	_create : function(newName, osefka, id) {
-			let folderId = "";
-			
-			let tmp0 = newName.split(" ");
-			for(var i = 0; i < tmp0.length; i++) {
-				folderId += tmp0[i];
+	
+	_addfolder : function () {
+		this._create(this._entryText.get_text(), this._id);
+		if (!this._errorBox.visible) {
+			this.destroy();
+		    return Clutter.EVENT_STOP;
+		}
+		return null;
+	},
+	
+	_alreadyExists : function(folderId) {
+		for(var i = 0; i < _folderList.length; i++) {
+			if (_folderList[i] == folderId) {
+				this._showError( _("This appfolder already exists.") );
+				return true;
 			}
-			
-			for(var i = 0; i < _folderList.length; i++) {
-				if (_folderList[i] == folderId) {
-					log('[Appfolder Management] - this appfolder already exists');
-					return;
-				}
-			}
+		}
+		return false;
+	},
+	
+	_create : function(newName, id) {
+		let folderId = "";
+		
+		let tmp0 = newName.split(" ");
+		for(var i = 0; i < tmp0.length; i++) {
+			folderId += tmp0[i];
+		}
+		
+		if (this._alreadyExists(folderId)) {
+			return;
+		}
 
-			_folderList.push(folderId);
-			_foldersSchema.set_strv('folder-children', _folderList);
-			
-			log('[Appfolder Management] - creating appfolder');
-			
-			let path = '/org/gnome/desktop/app-folders/folders/' + folderId + '/';
-			let tmp1 = new Gio.Settings({ schema_id: 'org.gnome.desktop.app-folders.folder', path: path });
-			tmp1.set_string('name', newName);
-			
-			addToFolder(id, folderId);
+		_folderList.push(folderId);
+		_foldersSchema.set_strv('folder-children', _folderList);
+		
+		log('[Appfolder Management] - creating appfolder');
+		
+		let path = '/org/gnome/desktop/app-folders/folders/' + folderId + '/';
+		let tmp1 = new Gio.Settings({ schema_id: 'org.gnome.desktop.app-folders.folder', path: path });
+		tmp1.set_string('name', newName);
+		
+		addToFolder(id, folderId);
 	},
 	
 	open: function() {
         this._entryText.set_text('');
         this.parent();
+    },
+
+    _showError : function(message) {
+        this._errorMessage.set_text(message);
+
+        if (!this._errorBox.visible) {
+			this._errorBox.show();
+        }
     },
     
     destroy: function() {
@@ -309,8 +366,10 @@ function doTheInjection() {
 			let _tmp = new Gio.Settings({	schema_id: 'org.gnome.desktop.app-folders.folder',
 											path: '/org/gnome/desktop/app-folders/folders/' + _folder + '/'
 										});
-										
+			
+			let id = this._source.app.get_id();		
 			let item = new PopupMenu.PopupMenuItem( AppDisplay._getFolderName( _tmp ) );
+			item.setSensitive(!isInFolder(id, _tmp));
 			
 			item.connect('activate', Lang.bind(this, function() {
 				
@@ -335,7 +394,6 @@ function doTheInjection() {
 				log('[Appfolder Management] - appfolder deleted');
 					
 				let timeoutId = Mainloop.timeout_add(500, Lang.bind(this, function() {
-				//	counter = 5
 					disable();
 					Mainloop.source_remove(timeoutId);
 					enable();
