@@ -1,5 +1,5 @@
 # Appfolders Management (GNOME extension)
-A GNOME extension allowing easy management of "appfolders" directly from the applications view. As a bonus feature, it is possible to change the number of columns.
+A [GNOME extension](https://extensions.gnome.org/extension/1217/appfolders-manager/) allowing easy management of "appfolders" directly from the applications view. As a bonus feature, it is possible to change the number of columns.
 
 ![Screenshot](http://i.imgur.com/eOFSP0x.png)
 
@@ -15,7 +15,7 @@ A GNOME extension allowing easy management of "appfolders" directly from the app
 * polish - [Piotr Komur](https://github.com/pkomur)
 * russian - [DeadMetaler](https://github.com/DeadMetaler)
 
-_A huge "thank you" to translators_
+A huge _thank you_ to translators
 
 ### Current version
 Features :
@@ -25,6 +25,7 @@ Features :
 * Delete appfolders (submenu) ; optionnally, a total deletion
 * Set the maximum number of columns (GNOME Shell's default is 6)
 
+### Installation
 Install it from https://extensions.gnome.org/extension/1217/appfolders-manager/
 
 This version is not perfect, I'm aware of most bugs (see what i write in [that issue](https://github.com/Maestroschan/appfolders-manager-gnome-extension/issues/2) which i often edit).
@@ -34,7 +35,7 @@ Manual installation :
 * Restart Gnome Shell.
 * Activate the extension.
 
-### Future version
+### Future versions
 * Right-click on an appfolder to delete or rename it
 * Drag and drop (i hope)
 
