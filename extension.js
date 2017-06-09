@@ -60,81 +60,81 @@ const NewFolderDialog = new Lang.Class({
     Name: 'NewFolderDialog',
     Extends: ModalDialog.ModalDialog,
 
-    _init : function(id) {
-        this.parent( {
-        	styleClass: 'run-dialog',
+	_init : function(id) {
+		this.parent( {
+			styleClass: 'run-dialog',
 			destroyOnClose: true
 		} );
 		
 		this._id = id;
-        let label = new St.Label({ text: _("Enter a name") });
+		let label = new St.Label({ text: _("Enter a name") });
 
-        this.contentLayout.add(label, { x_fill: false,
+		this.contentLayout.add(label, { x_fill: false,
                                         x_align: St.Align.START,
                                         y_align: St.Align.START });
 
-        let entry = new St.Entry({	can_focus: true,
+		let entry = new St.Entry({	can_focus: true,
         							natural_width_set: true,
         							natural_width: 250
         						 });
-        ShellEntry.addContextMenu(entry);
+		ShellEntry.addContextMenu(entry);
 
-        entry.label_actor = label;
+		entry.label_actor = label;
 
 		this._entryText = entry.clutter_text;
 		this.contentLayout.add(entry, { y_align: St.Align.START });
 		this.setInitialKeyFocus(this._entryText);
 
-        this.setButtons([{ action: Lang.bind(this, this.close),
-                           label: _("Cancel"),
-                           key: Clutter.Escape },
+		this.setButtons([{ action: Lang.bind(this, this.close),
+			label: _("Cancel"),
+			key: Clutter.Escape },
                            
-                           { action: Lang.bind(this, this._addfolder),
-                           label: _("Create"),
-                           key: Clutter.Return }
-                       ]);
+			{ action: Lang.bind(this, this._addfolder),
+			label: _("Create"),
+			key: Clutter.Return }
+		]);
 
 		this._entryText.connect('text-changed', Lang.bind(this, function() {
 			if (this._errorBox.visible) {
 				this._errorBox.hide();
-		    }
+			}
 		}));
 		
-        this._entryText.connect('key-press-event', Lang.bind(this, function(o, e) {
-            let symbol = e.get_key_symbol();
-            
-            if (symbol == Clutter.Return || symbol == Clutter.KP_Enter) {
-                this.popModal();
-                this._addfolder();
-            }
-        }));
-        
-        this._errorBox = new St.BoxLayout({ style_class: 'run-dialog-error-box' });
-        this.contentLayout.add(this._errorBox, { expand: true });
+		this._entryText.connect('key-press-event', Lang.bind(this, function(o, e) {
+			let symbol = e.get_key_symbol();
 
-        let errorIcon = new St.Icon({	icon_name: 'dialog-error-symbolic',
+			if (symbol == Clutter.Return || symbol == Clutter.KP_Enter) {
+				this.popModal();
+				this._addfolder();
+			}
+		}));
+
+		this._errorBox = new St.BoxLayout({ style_class: 'run-dialog-error-box' });
+		this.contentLayout.add(this._errorBox, { expand: true });
+
+		let errorIcon = new St.Icon({	icon_name: 'dialog-error-symbolic',
         								icon_size: 24, style_class: 'run-dialog-error-icon'
         							});
-        this._errorBox.add(errorIcon, { y_align: St.Align.MIDDLE });
+		this._errorBox.add(errorIcon, { y_align: St.Align.MIDDLE });
 
-        this._errorMessage = new St.Label({ style_class: 'run-dialog-error-label' });
-        this._errorMessage.clutter_text.line_wrap = true;
-        this._errorBox.add(
-        	this._errorMessage, {
-        		expand: true,
+		this._errorMessage = new St.Label({ style_class: 'run-dialog-error-label' });
+		this._errorMessage.clutter_text.line_wrap = true;
+		this._errorBox.add(
+			this._errorMessage, {
+				expand: true,
 				x_align: St.Align.START, x_fill: false,
 				y_align: St.Align.MIDDLE, y_fill: false
 			}
 		);
 		
-        this._errorBox.hide();
-    },
+		this._errorBox.hide();
+	},
 	
 	_addfolder : function () {
 		this._create(this._entryText.get_text(), this._id);
 		if (!this._errorBox.visible) {
 			this.destroy();
-		    return Clutter.EVENT_STOP;
+			return Clutter.EVENT_STOP;
 		}
 		return null;
 	},
@@ -182,7 +182,7 @@ const NewFolderDialog = new Lang.Class({
         this._errorMessage.set_text(message);
 
         if (!this._errorBox.visible) {
-			this._errorBox.show();
+		this._errorBox.show();
         }
     },
     
@@ -220,9 +220,8 @@ function addToFolder(id, folder) {
 //-------------------------------------------------
 
 function reload() {
-	
 //////	Main.overview.viewSelector.appDisplay._views[1].view._redisplay(); // segfault
-
+	
 		//log('[Appfolder Management] - reload 0/4');
 //////	Main.overview.viewSelector.appDisplay._views[1].view._grid.destroyAll(); // segfault
 	Main.overview.viewSelector.appDisplay._views[1].view._grid.removeAll();
@@ -274,134 +273,137 @@ function popdownAll() {
 
 function doTheInjection() {
 	injections['_redisplay'] = injectToFunction(AppDisplay.AppIconMenu.prototype, '_redisplay',  function(){
-		this._appendSeparator();
-//------------------------------------------
-		let addto = new PopupMenu.PopupSubMenuMenuItem(_("Add to"));
 		
-		//------------------------------------------
-		let newAppFolder = new PopupMenu.PopupMenuItem('+ ' + _("New AppFolder"));
-		newAppFolder.connect('activate', Lang.bind(this, function() {
-			let id = this._source.app.get_id();
-			
-			popdownAll();
-			
-			let dialog = new NewFolderDialog(id);
-			dialog.open();
-		}));
-		addto.menu.addMenuItem(newAppFolder);
-		//------------------------------------------
+		if (Main.overview.viewSelector.getActivePage() == 2 || Main.overview.viewSelector.getActivePage() == 3) {
 		
-		for (var i = 0 ; i < _folderList.length ; i++) {
-			let _folder = _folderList[i];
+			this._appendSeparator();
+	//------------------------------------------
+			let addto = new PopupMenu.PopupSubMenuMenuItem(_("Add to"));
+		
+			//------------------------------------------
+			let newAppFolder = new PopupMenu.PopupMenuItem('+ ' + _("New AppFolder"));
+			newAppFolder.connect('activate', Lang.bind(this, function() {
+				let id = this._source.app.get_id();
 			
-			let _tmp = new Gio.Settings({	schema_id: 'org.gnome.desktop.app-folders.folder',
-											path: '/org/gnome/desktop/app-folders/folders/' + _folder + '/'
-										});
+				popdownAll();
+			
+				let dialog = new NewFolderDialog(id);
+				dialog.open();
+			}));
+			addto.menu.addMenuItem(newAppFolder);
+			//------------------------------------------
+		
+			for (var i = 0 ; i < _folderList.length ; i++) {
+				let _folder = _folderList[i];
+			
+				let _tmp = new Gio.Settings({	schema_id: 'org.gnome.desktop.app-folders.folder',
+												path: '/org/gnome/desktop/app-folders/folders/' + _folder + '/'
+											});
 									
-			let shouldShow = !isInFolder( this._source.app.get_id(), _tmp );
+				let shouldShow = !isInFolder( this._source.app.get_id(), _tmp );
 			
-			let item = new PopupMenu.PopupMenuItem( AppDisplay._getFolderName( _tmp ) );
+				let item = new PopupMenu.PopupMenuItem( AppDisplay._getFolderName( _tmp ) );
 			
-			if(shouldShow) {
+				if(shouldShow) {
 				
-				item.connect('activate', Lang.bind(this, function() {
-					let id = this._source.app.get_id();
+					item.connect('activate', Lang.bind(this, function() {
+						let id = this._source.app.get_id();
 				
-					popdownAll();
-					addToFolder(id, _folder);
-				}));
-				addto.menu.addMenuItem(item);
+						popdownAll();
+						addToFolder(id, _folder);
+					}));
+					addto.menu.addMenuItem(item);
+				}
 			}
-		}
 		
-		this.addMenuItem(addto);
-//------------------------------------------
-		let removeFrom = new PopupMenu.PopupSubMenuMenuItem(_("Remove from"));
-		let shouldShow2 = false;
-		for (var i = 0 ; i < _folderList.length ; i++) {
-			let _folder = _folderList[i];
+			this.addMenuItem(addto);
+	//------------------------------------------
+			let removeFrom = new PopupMenu.PopupSubMenuMenuItem(_("Remove from"));
+			let shouldShow2 = false;
+			for (var i = 0 ; i < _folderList.length ; i++) {
+				let _folder = _folderList[i];
 			
-			let id = this._source.app.get_id();
+				let id = this._source.app.get_id();
 			
-			let _tmp = new Gio.Settings({	schema_id: 'org.gnome.desktop.app-folders.folder',
-											path: '/org/gnome/desktop/app-folders/folders/' + _folder + '/'
-										});
+				let _tmp = new Gio.Settings({	schema_id: 'org.gnome.desktop.app-folders.folder',
+												path: '/org/gnome/desktop/app-folders/folders/' + _folder + '/'
+											});
 										
-			let item = new PopupMenu.PopupMenuItem( AppDisplay._getFolderName( _tmp ) );
+				let item = new PopupMenu.PopupMenuItem( AppDisplay._getFolderName( _tmp ) );
 			
-			let shouldShow = isInFolder(id, _tmp);
+				let shouldShow = isInFolder(id, _tmp);
 			
-			if(shouldShow) {
+				if(shouldShow) {
+					item.connect('activate', Lang.bind(this, function() {
+				
+						popdownAll();
+				
+						let tmp = new Gio.Settings({	schema_id: 'org.gnome.desktop.app-folders.folder',
+												path:  '/org/gnome/desktop/app-folders/folders/' + _folder + '/'
+											});
+
+						let pastContent = tmp.get_strv('apps');
+						let presentContent = [];
+						for(i=0;i<pastContent.length;i++){
+							if(pastContent[i] != id) {
+								presentContent.push(pastContent[i]);
+							}
+						}
+						tmp.set_strv('apps', presentContent);
+					
+						reload();
+					}));
+		 			removeFrom.menu.addMenuItem(item);
+		 			shouldShow2 = true;
+		 		}
+			}
+			if (shouldShow2) {
+				this.addMenuItem(removeFrom);
+			}
+	//------------------------------------------
+			let delAppfolder = new PopupMenu.PopupSubMenuMenuItem(_("Delete AppFolder"));
+			for (var i = 0 ; i < _folderList.length ; i++) {
+				let _folder = _folderList[i];
+			
+				let _tmp = new Gio.Settings({	schema_id: 'org.gnome.desktop.app-folders.folder',
+												path: '/org/gnome/desktop/app-folders/folders/' + _folder + '/'
+											});
+			
+				let id = this._source.app.get_id();		
+				let item = new PopupMenu.PopupMenuItem( AppDisplay._getFolderName( _tmp ) );
+				item.setSensitive(!isInFolder(id, _tmp));
+			
 				item.connect('activate', Lang.bind(this, function() {
 				
-					popdownAll();
-				
-					let tmp = new Gio.Settings({	schema_id: 'org.gnome.desktop.app-folders.folder',
-													path:  '/org/gnome/desktop/app-folders/folders/' + _folder + '/'
-												});
-					
-					let pastContent = tmp.get_strv('apps');
-					let presentContent = [];
-					for(i=0;i<pastContent.length;i++){
-						if(pastContent[i] != id) {
-							presentContent.push(pastContent[i]);
+					let tmp = [];
+					for(i=0;i<_folderList.length;i++){
+						if(_folderList[i] == _folder) {}
+						else {
+							tmp.push(_folderList[i]);
 						}
 					}
-					tmp.set_strv('apps', presentContent);
-					
-					reload();
-				}));
-	 			removeFrom.menu.addMenuItem(item);
-	 			shouldShow2 = true;
-	 		}
-		}
-		if (shouldShow2) {
-			this.addMenuItem(removeFrom);
-		}
-//------------------------------------------
-		let delAppfolder = new PopupMenu.PopupSubMenuMenuItem(_("Delete AppFolder"));
-		for (var i = 0 ; i < _folderList.length ; i++) {
-			let _folder = _folderList[i];
-			
-			let _tmp = new Gio.Settings({	schema_id: 'org.gnome.desktop.app-folders.folder',
-											path: '/org/gnome/desktop/app-folders/folders/' + _folder + '/'
-										});
-			
-			let id = this._source.app.get_id();		
-			let item = new PopupMenu.PopupMenuItem( AppDisplay._getFolderName( _tmp ) );
-			item.setSensitive(!isInFolder(id, _tmp));
-			
-			item.connect('activate', Lang.bind(this, function() {
+					_foldersSchema.set_strv('folder-children', tmp);
 				
-			//	popdownAll(); // bad idea
-				
-				let tmp = [];
-				for(i=0;i<_folderList.length;i++){
-					if(_folderList[i] == _folder) {}
-					else {
-						tmp.push(_folderList[i]);
+					if ( _settings.get_boolean('total-deletion') ) {
+						let path = '/org/gnome/desktop/app-folders/folders/' + _folder + '/';
+						let tmp3 = new Gio.Settings({ schema_id: 'org.gnome.desktop.app-folders.folder', path: path });
+						tmp3.reset('apps');
+						tmp3.reset('name');
 					}
-				}
-				_foldersSchema.set_strv('folder-children', tmp);
 				
-				if ( _settings.get_boolean('total-deletion') ) {
-					let path = '/org/gnome/desktop/app-folders/folders/' + _folder + '/';
-					let tmp3 = new Gio.Settings({ schema_id: 'org.gnome.desktop.app-folders.folder', path: path });
-					tmp3.reset('apps');
-					tmp3.reset('name');
-				}
-				
-				log('[Appfolder Management] - appfolder deleted');
+					log('[Appfolder Management] - appfolder deleted');
 					
-				let timeoutId = Mainloop.timeout_add(500, Lang.bind(this, function() {
-					disable();
-					Mainloop.source_remove(timeoutId);
-					enable();
+					let timeoutId = Mainloop.timeout_add(500, Lang.bind(this, function() {
+						disable();
+						Mainloop.source_remove(timeoutId);
+						enable();
+					}));
 				}));
-			}));
-        	delAppfolder.menu.addMenuItem(item);
+		    	delAppfolder.menu.addMenuItem(item);
+			}
+			this.addMenuItem(delAppfolder);
+		
 		}
-		this.addMenuItem(delAppfolder);
 	//end of injections beyond the following line
 	});
 }
