@@ -45,3 +45,9 @@ msgstr "Supprimer"
 
 msgid "Rename"
 msgstr "Renommer"
+
+msgid "This appfolder already exists."
+msgstr "Cet appfolder existe déjà"
+
+msgid "Create"
+msgstr "Créer"
