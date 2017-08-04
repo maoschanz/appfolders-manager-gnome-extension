@@ -53,5 +53,18 @@ msgstr ""
 msgid "This appfolder already exists."
 msgstr ""
 
-msgid "Create"
+msgid "Remove a category"
 msgstr ""
+
+msgid "Additional categories"
+msgstr ""
+
+msgid "Add a category"
+msgstr ""
+
+msgid "Add"
+msgstr ""
+
+msgid "Enter the name of a category"
+msgstr ""
+
