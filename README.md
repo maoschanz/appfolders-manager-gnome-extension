@@ -1,7 +1,12 @@
 # Appfolders Management (GNOME extension)
 A [GNOME extension](https://extensions.gnome.org/extension/1217/appfolders-manager/) allowing easy management of "appfolders" directly from the applications view. As a bonus feature, it is possible to change the number of columns.
 
-![Screenshot](http://i.imgur.com/eOFSP0x.png)
+
+![Screenshot](http://i.imgur.com/JKcVNyR.jpg)
+
+(Sorry the screenshot is in french)
+
+(More at http://imgur.com/a/PCtqe)
 
 ### Available in :
 
@@ -19,16 +24,22 @@ A huge _thank you_ to translators
 
 ### Current version
 Features :
-* Create new appfolders (with a dialog entry)
-* Add applications to folders (submenu)
-* Remove applications from folders (submenu)
-* Delete appfolders (submenu) ; optionnally, a total deletion
+* Create new appfolders
+* Delete appfolders
+* Rename appfolders
+
+* Add applications to appfolders
+* Remove applications from appfolders
+
 * Set the maximum number of columns (GNOME Shell's default is 6)
+
+* Add a category to a folder 
+* Remove a category from a folder
+
+(categories are defined by a [freedesktop standard](https://standards.freedesktop.org/menu-spec/latest/apa.html), see [this section](https://standards.freedesktop.org/menu-spec/latest/apas02.html) to learn more about additional categories available)
 
 ### Installation
 Install it from https://extensions.gnome.org/extension/1217/appfolders-manager/
-
-This version is not perfect, I'm aware of most bugs (see what i write in [that issue](https://github.com/Maestroschan/appfolders-manager-gnome-extension/issues/2) which i often edit).
 
 Manual installation :
 * Download the .zip archive and extract files in `~/.local/share/gnome-shell/extensions/appfolders-manager@maestroschan.fr`
@@ -36,7 +47,7 @@ Manual installation :
 * Activate the extension.
 
 ### Future versions
-* Right-click on an appfolder to delete or rename it
+* Exclude apps from a folder
 * Drag and drop (i hope)
 
 ### See also
