@@ -26,7 +26,7 @@ msgid "New AppFolder"
 msgstr "Nouvel AppFolder"
 
 msgid "Remove from"
-msgstr "Retirez de"
+msgstr "Retirer de"
 
 msgid "Delete AppFolder"
 msgstr "Supprimer un AppFolder"
@@ -45,3 +45,25 @@ msgstr "Supprimer"
 
 msgid "Rename"
 msgstr "Renommer"
+
+msgid "This appfolder already exists."
+msgstr "Cet appfolder existe déjà"
+
+msgid "Create"
+msgstr "Créer"
+
+msgid "Remove a category"
+msgstr "Retirer une catégorie"
+
+msgid "Additional categories"
+msgstr "Catégories supplémentaires"
+
+msgid "Add a category"
+msgstr "Ajouter une catégorie"
+
+msgid "Add"
+msgstr "Ajouter"
+
+msgid "Enter the name of a category"
+msgstr "Entrez le nom d'une catégorie"
+

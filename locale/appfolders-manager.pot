@@ -6,7 +6,7 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2017-04-13 12:23+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
@@ -49,3 +49,22 @@ msgstr ""
 
 msgid "Rename"
 msgstr ""
+
+msgid "This appfolder already exists."
+msgstr ""
+
+msgid "Remove a category"
+msgstr ""
+
+msgid "Additional categories"
+msgstr ""
+
+msgid "Add a category"
+msgstr ""
+
+msgid "Add"
+msgstr ""
+
+msgid "Enter the name of a category"
+msgstr ""
+
