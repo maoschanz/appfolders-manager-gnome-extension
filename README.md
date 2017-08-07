@@ -10,7 +10,7 @@ A [GNOME extension](https://extensions.gnome.org/extension/1217/appfolders-manag
 
 ### Available in :
 
-* belarussian - [DeadMetaler](https://github.com/DeadMetaler)
+* belarusian - [DeadMetaler](https://github.com/DeadMetaler)
 * english - [Maestroschan](https://github.com/Maestroschan/)
 * french - [Maestroschan](https://github.com/Maestroschan/)
 * german - [Marcel Hoppe](https://github.com/hobbypunk90)
