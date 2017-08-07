@@ -50,6 +50,9 @@ msgstr ""
 msgid "Rename"
 msgstr ""
 
+msgid "Create"
+msgstr ""
+
 msgid "This appfolder already exists."
 msgstr ""
 
