@@ -8,21 +8,22 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-13 12:23+0200\n"
-"PO-Revision-Date: 2017-06-05 11:10+0200\n"
-"Language: it\n"
+"POT-Creation-Date: 2017-09-06 09:56+0200\n"
+"PO-Revision-Date: 2017-09-06 09:57+0200\n"
+"Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Last-Translator: Jimmy Scionti <jimmy.scionti@gmail.com>\n"
-"Language-Team: Jimmy Scionti <jimmy.scionti@gmail.com>\n"
 "X-Generator: Poedit 1.8.7.1\n"
+"Last-Translator: Jimmy Scionti <jimmy.scionti@gmail.com>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: it\n"
 
 msgid "Enter a name"
-msgstr "Inserisci il nome"
+msgstr "Inserisci il nome\t"
 
 msgid "Cancel"
-msgstr "Annulla"
+msgstr "Annulla\t"
 
 msgid "Add to"
 msgstr "Aggiungi a"
@@ -37,10 +38,10 @@ msgid "Delete AppFolder"
 msgstr "Elimina AppFolder"
 
 msgid "Modifications will be effective after reloading the extension."
-msgstr "Le modifiche avranno effetto dopo aver ricaricato l'estensione"
+msgstr "Le modifiche avranno effetto dopo aver ricaricato l'estensione."
 
 msgid "Maximum number of columns :"
-msgstr "Numero massimo di colonne;"
+msgstr "Numero massimo di colonne:"
 
 msgid "Delete all related settings when an appfolder is deleted"
 msgstr "Elimina tutte le impostazioni dell'AppFolder quando viene rimossa"
@@ -50,3 +51,24 @@ msgstr "Elimina"
 
 msgid "Rename"
 msgstr "Rinomina"
+
+msgid "Create"
+msgstr "Crea"
+
+msgid "This appfolder already exists."
+msgstr "Questa AppFolder esiste già."
+
+msgid "Remove a category"
+msgstr "Rimuovi una categoria"
+
+msgid "Additional categories"
+msgstr "Categorie aggiuntive"
+
+msgid "Add a category"
+msgstr "Aggiungi una categoria"
+
+msgid "Add"
+msgstr "Aggiungi"
+
+msgid "Enter the name of a category"
+msgstr "Inserisci il nome di una categoria"
