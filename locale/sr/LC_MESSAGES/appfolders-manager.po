@@ -1,0 +1,74 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-04-13 12:23+0200\n"
+"PO-Revision-Date: 2017-09-15 16:40+0200\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.0.3\n"
+"Last-Translator: \n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Language: sr\n"
+
+msgid "Enter a name"
+msgstr "Унесите име"
+
+msgid "Cancel"
+msgstr "Откажи"
+
+msgid "Add to"
+msgstr "Додај у"
+
+msgid "New AppFolder"
+msgstr "Нова фаскила програма"
+
+msgid "Remove from"
+msgstr "Уклони ставку"
+
+msgid "Delete AppFolder"
+msgstr "Обриши фасциклу програма"
+
+msgid "Modifications will be effective after reloading the extension."
+msgstr "Измене ће ступити на снагу по поновном учитавању проширења."
+
+msgid "Maximum number of columns :"
+msgstr "Максималан број колона :"
+
+msgid "Delete all related settings when an appfolder is deleted"
+msgstr "Обриши све припадајуће поставке при брисању проширења"
+
+msgid "Delete"
+msgstr "Обриши"
+
+msgid "Rename"
+msgstr "Преименуј"
+
+msgid "Create"
+msgstr "Направи"
+
+msgid "This appfolder already exists."
+msgstr "Ова фасцикла програма већ постоји."
+
+msgid "Remove a category"
+msgstr "Уклони категорију"
+
+msgid "Additional categories"
+msgstr "Додатне категорије"
+
+msgid "Add a category"
+msgstr "Додај категорију"
+
+msgid "Add"
+msgstr "Додај"
+
+msgid "Enter the name of a category"
+msgstr "Унесите име категорије"

@@ -1,0 +1,74 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-04-13 12:23+0200\n"
+"PO-Revision-Date: 2017-09-15 16:40+0200\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.0.3\n"
+"Last-Translator: \n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Language: sr@latin\n"
+
+msgid "Enter a name"
+msgstr "Unesite ime"
+
+msgid "Cancel"
+msgstr "Otkaži"
+
+msgid "Add to"
+msgstr "Dodaj u"
+
+msgid "New AppFolder"
+msgstr "Nova faskila programa"
+
+msgid "Remove from"
+msgstr "Ukloni stavku"
+
+msgid "Delete AppFolder"
+msgstr "Obriši fasciklu programa"
+
+msgid "Modifications will be effective after reloading the extension."
+msgstr "Izmene će stupiti na snagu po ponovnom učitavanju proširenja."
+
+msgid "Maximum number of columns :"
+msgstr "Maksimalan broj kolona :"
+
+msgid "Delete all related settings when an appfolder is deleted"
+msgstr "Obriši sve pripadajuće postavke pri brisanju proširenja"
+
+msgid "Delete"
+msgstr "Obriši"
+
+msgid "Rename"
+msgstr "Preimenuj"
+
+msgid "Create"
+msgstr "Napravi"
+
+msgid "This appfolder already exists."
+msgstr "Ova fascikla programa već postoji."
+
+msgid "Remove a category"
+msgstr "Ukloni kategoriju"
+
+msgid "Additional categories"
+msgstr "Dodatne kategorije"
+
+msgid "Add a category"
+msgstr "Dodaj kategoriju"
+
+msgid "Add"
+msgstr "Dodaj"
+
+msgid "Enter the name of a category"
+msgstr "Unesite ime kategorije"
