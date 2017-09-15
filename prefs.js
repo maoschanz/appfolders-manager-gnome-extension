@@ -18,9 +18,9 @@ function init() {
 
 //-----------------------------------------------
 
-const osefSettingsWidget = new GObject.Class({
-    Name: 'osef.Prefs.Widget',
-    GTypeName: 'osefPrefsWidget',
+const appfolderManagerSettingsWidget = new GObject.Class({
+    Name: 'appfolderManager.Prefs.Widget',
+    GTypeName: 'appfolderManagerSettingsWidget',
     Extends: Gtk.Box,
 
     _init: function(params) {
@@ -58,7 +58,7 @@ const osefSettingsWidget = new GObject.Class({
 //I guess this is like the "enable" in extension.js : something called each
 //time he user try to access the settings' window
 function buildPrefsWidget() {
-    let widget = new osefSettingsWidget();
+    let widget = new appfolderManagerSettingsWidget();
     widget.show_all();
 
     return widget;
