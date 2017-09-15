@@ -1,9 +1,6 @@
 /* TODO
-	se débarasser de folderIconSchema
-	les signaux
 	faire 2 fichiers ?
-	4, 8, puis 10 (gnome-shell:8062): Clutter-CRITICAL divers
-	Celui qui augmente étant clutter_actor_remove_child: assertion 'child->priv->parent != NULL' failed
+	le dnd
 */
 
 const Clutter = imports.gi.Clutter;
@@ -13,7 +10,6 @@ const St = imports.gi.St;
 const Main = imports.ui.main;
 const AppDisplay = imports.ui.appDisplay;
 const PopupMenu = imports.ui.popupMenu;
-const Mainloop = imports.mainloop;
 
 const ModalDialog = imports.ui.modalDialog;
 const ShellEntry = imports.ui.shellEntry;
@@ -29,13 +25,10 @@ const Gettext = imports.gettext.domain('appfolders-manager');
 const _ = Gettext.gettext;
 
 //-------------------------------------------------
-/* i should get rid of those turdish global variables */
 
 let _foldersSchema;
 let _folderList;
 let _settings;
-
-let folderIconSchema = null;
 
 function init() {
 	Convenience.initTranslations();
@@ -67,17 +60,17 @@ let injections=[];
 
 //--------------------------------------------------------------
 
-/* this class is an empty dialog window, without buttons, methods are:
- * _init(label)
- * open()
- * _showError(message)
- * destroy()
- */
-const BaseDialog = new Lang.Class({
-	Name: 'BaseDialog',
+const AppfolderDialog = new Lang.Class({
+	Name: 'AppfolderDialog',
 	Extends: ModalDialog.ModalDialog,
 
-	_init: function(label) {
+	_init: function(rawlabel, buttonLabel, buttonFunction, functionParameter) {
+		
+		let label = new St.Label({ text: rawlabel });
+		
+		
+		this._buttonFunction = buttonFunction;
+		this._functionParameter = functionParameter;
 		
 		this.parent({
 			styleClass: 'run-dialog',
@@ -100,6 +93,11 @@ const BaseDialog = new Lang.Class({
 		
 		this._entryText = null; ///???
 		this._entryText = this._entry.clutter_text;
+		
+		if (buttonFunction == 'rename') {
+			this._entryText.set_text(this._functionParameter.get_string('name'));
+		}
+		
 		this.contentLayout.add(this._entry, { y_align: St.Align.START });
 		this.setInitialKeyFocus(this._entryText);
 		
@@ -129,12 +127,59 @@ const BaseDialog = new Lang.Class({
 		);
 		
 		this._errorBox.hide();
+		
+		this.setButtons([
+			{ action: Lang.bind(this, this.destroy),
+			label: _("Cancel"),
+			key: Clutter.Escape },
+			
+			{ action: Lang.bind(this, this._function),
+			label: buttonLabel,
+			key: Clutter.Return }
+		]);
+		
+		this._entryText.connect('key-press-event', Lang.bind(this, function(o, e) {
+			let symbol = e.get_key_symbol();
+			
+			if (symbol == Clutter.Return || symbol == Clutter.KP_Enter) {
+				this.popModal();
+				log('149');
+				this._function();
+			}
+		}));
+	},
+	
+	_function: function () {
+		switch (this._buttonFunction) {
+			case 'rename':
+				this._rename();
+				break;
+			case 'create':
+				this._addfolder();
+				break;
+			case 'add-category':
+				this._addCategory();
+				break;
+			default:
+				log('[AppfolderDialog] incorrect parameter');
+				break;
+		}
 	},
 	
 	open: function () {
 		this.parent();
 	},
 
+	_alreadyExists: function (folderId) {
+		for(var i = 0; i < _folderList.length; i++) {
+			if (_folderList[i] == folderId) {
+				this._showError( _("This appfolder already exists.") );
+				return true;
+			}
+		}
+		return false;
+	},
+	
 	_showError : function (message) {
 		this._errorMessage.set_text(message);
 
@@ -144,98 +189,15 @@ const BaseDialog = new Lang.Class({
 	},
 
 	destroy: function () {
-		//log('destroying a basedialog object');
+		log('destroying');
 		this.parent();
 	},
-});
-
-//-------------------------------------------------
-
-/* this class build an abstract dialog window, using a BaseDialog attribute named this.dialog ;
- * Methods are:
- * _init(label)
- * _alreadyExists(folderId)
- * open()
- * _showError(message)
- * destroy()
- */
-const GenericDialog = new Lang.Class({
-	Name: 'GenericDialog',
-	Abstract: true,
-
-	_init: function(label) {
-		closeAllMenus();
-		this.dialog = new BaseDialog( label );
-	},
-
-	_alreadyExists: function (folderId) {
-		for(var i = 0; i < _folderList.length; i++) {
-			if (_folderList[i] == folderId) {
-				this.dialog._showError( _("This appfolder already exists.") );
-				return true;
-			}
-		}
-		return false;
-	},
-
-	open: function () {
-		this.dialog.open();
-	},
-
-	_showError : function (message) {
-		this.dialog._showError(message);
-	},
-
-	destroy: function () {
-		this.dialog.destroy();
-	},
-});
-
-//-------------------------------------------------
-
-/* this class build a concrete dialog window, for appfolder creation.
- * Methods are:
- * _init(id)
- * _addfolder()
- * _create(newName, id)
- * open()
- * [from GenericDialog] _alreadyExists(folderId)
- * [from GenericDialog] _showError(message)
- * destroy()
- */
-const createFolderDialog = new Lang.Class({
-	Name: 'createFolderDialog',
-	Extends: GenericDialog,
-
-	_init: function(id) {
-		let label = new St.Label({ text: _("Enter a name") });
-		this.parent(label);
-		
-		this._firstItem = id;
-		
-		this.dialog.setButtons([
-			{ action: Lang.bind(this, this.destroy),
-			label: _("Cancel"),
-			key: Clutter.Escape },
-			
-			{ action: Lang.bind(this, this._addfolder),
-			label: _("Create"),
-			key: Clutter.Return }
-		]);
-		
-		this.dialog._entryText.connect('key-press-event', Lang.bind(this, function(o, e) {
-			let symbol = e.get_key_symbol();
-			
-			if (symbol == Clutter.Return || symbol == Clutter.KP_Enter) {
-				this.dialog.popModal();
-				this._addfolder();
-			}
-		}));
-	},
-
+	
+	//---------------------------------------
+	
 	_addfolder: function () {
-		this._create(this.dialog._entryText.get_text(), this._firstItem);
-		if (!this.dialog._errorBox.visible) {
+		this._create(this._entryText.get_text(), this._functionParameter);
+		if (!this._errorBox.visible) {
 			this.destroy();
 			return Clutter.EVENT_STOP;
 		}
@@ -262,16 +224,15 @@ const createFolderDialog = new Lang.Class({
 	},
 
 	_create: function (newName, id) {
-		
 		let folderId = this._folderId(newName);
-		
 		if (this._alreadyExists(folderId)) {
 			return;
 		}
 		
 		_folderList.push(folderId);
+		log('236');
 		_foldersSchema.set_strv('folder-children', _folderList);
-		
+		log('239');
 		let tmp1 = new Gio.Settings({
 			schema_id: 'org.gnome.desktop.app-folders.folder',
 			path: '/org/gnome/desktop/app-folders/folders/' + folderId + '/'
@@ -280,141 +241,27 @@ const createFolderDialog = new Lang.Class({
 		
 		addToFolder(id, folderId);
 	},
-
-	open: function () {
-		this.dialog._entryText.set_text('');
-		this.parent();
-	},
-
-	destroy: function () {
-		this.parent();
-	},
-});
-
-//-----------------------------------------------
-
-/* this class build a concrete dialog window, for appfolder renaming.
- * Methods are:
- * _init(id)
- * _rename()
- * open()
- * [from GenericDialog] _alreadyExists(folderId)
- * [from GenericDialog] _showError(message)
- * destroy()
- */
-const renameFolderDialog = new Lang.Class({
-	Name: 'renameFolderDialog',
-	Extends: GenericDialog,
-
-	_init: function(id) {
-		let label = new St.Label({ text: _("Enter a name") });
-		this.parent(label);
-		
-		this.dialog.setButtons([
-			{ action: Lang.bind(this, this.destroy),
-			label: _("Cancel"),
-			key: Clutter.Escape },
-			
-			{ action: Lang.bind(this, this._rename),
-			label: _("Rename"),
-			key: Clutter.Return }
-		]);
-		
-		this.dialog._entryText.connect('key-press-event', Lang.bind(this, function(o, e) {
-			let symbol = e.get_key_symbol();
-			if (symbol == Clutter.Return || symbol == Clutter.KP_Enter) {
-				this.dialog.popModal();
-				this._rename();
-			}
-		}));
-	},
-
+	
+	//---------------------------------------
+	
 	_rename: function () {
-		let newName = this.dialog._entryText.get_text();
-		folderIconSchema.set_string('name', newName);
-		folderIconSchema = null;
-		
-		if (!this.dialog._errorBox.visible) {
-			this.destroy();
-			reload();
-			return Clutter.EVENT_STOP;
-		}
-		return null;
-	},
-
-	open: function () {	
-		this.dialog._entryText.set_text(folderIconSchema.get_string('name'));
-		this.parent();
-	},
-
-	destroy: function () {
-		this.parent();
-	},
-
-});
-
-//-----------------------------------------------
-
-/* this class build a concrete dialog window, for adding custom category.
- * Methods are:
- * _init(schema)
- * _addCategory()
- * open()
- * [from GenericDialog] _alreadyExists(folderId)
- * [from GenericDialog] _showError(message)
- * destroy()
- */
-const enterCategoryDialog = new Lang.Class({
-	Name: 'enterCategoryDialog',
-	Extends: GenericDialog,
-
-	_init: function(schema) {
-		
-		let label = new St.Label({ text: _("Enter the name of a category") });
-		/* https://standards.freedesktop.org/menu-spec/latest/apas02.html */
-		
-		this.parent(label);
-		
-		this.schema = schema;
-		
-		this.dialog.setButtons([
-			{ action: Lang.bind(this, this.destroy),
-			label: _("Cancel"),
-			key: Clutter.Escape },
-			
-			{ action: Lang.bind(this, this._addCategory),
-			label: _("Add"),
-			key: Clutter.Return }
-		]);
-		
-		this.dialog._entryText.connect('key-press-event', Lang.bind(this, function(o, e) {
-			let symbol = e.get_key_symbol();
-			
-			if (symbol == Clutter.Return || symbol == Clutter.KP_Enter) {
-				this.dialog.popModal();
-				this._addCategory();
-			}
-		}));
-		
-	},
-
-	_addCategory: function () {
-		addCategory( this.dialog._entryText.get_text(), this.schema );
-		reload();
+		let newName = this._entryText.get_text();
+		this._functionParameter.set_string('name', newName); // génère un bug
 		this.destroy();
 		reload();
 		return Clutter.EVENT_STOP;
 	},
 
-	open: function () {
-		this.parent();
-	},
+	//---------------------------------------
 
-	destroy: function () {
-		this.parent();
+	_addCategory: function () {
+		addCategory( this._entryText.get_text(), this._functionParameter );
+		this.destroy();
+		reload();
+		return Clutter.EVENT_STOP;
 	},
+	
 });
-
 
 //-----------------------------------------------------------------
 
@@ -446,19 +293,9 @@ const FolderIconMenu = new Lang.Class({
 			if (!source.actor.mapped)
 				this.close();
 		}));
-	//	source.actor.connect('destroy', Lang.bind(this, this.destroy));
+		source.actor.connect('destroy', Lang.bind(this, this.destroy));
 		
 		Main.uiGroup.add_actor(this.actor);
-		
-		this.connect('open-state-changed', Lang.bind(this, function (menu, isPoppedUp) {
-			if (!isPoppedUp) {
-				this.close();
-				this.actor.sync_hover();
-				this.emit('menu-state-changed', false);
-			} else {
-				i.emit('menu-state-changed', true);
-			}
-		}));
 	},
 
 	_redisplay: function() {
@@ -491,7 +328,7 @@ const FolderIconMenu = new Lang.Class({
 		let item = new PopupMenu.PopupMenuItem( "+ " + _("Additional categories") );
 		item.connect('activate', Lang.bind(this, function() {
 			popdownAll();
-			let dialog = new enterCategoryDialog( tmp );
+			let dialog = new AppfolderDialog( _("Enter the name of a category"), _("Add"), 'add-category', tmp);
 			dialog.open();
 		}));
 		addCategorySubmenu.menu.addMenuItem(item);
@@ -529,8 +366,7 @@ const FolderIconMenu = new Lang.Class({
 		
 		let renameItem = this._appendMenuItem(_("Rename"));
 		renameItem.connect('activate', Lang.bind(this, function() {
-			folderIconSchema = this._source._folder;
-			let dialog = new renameFolderDialog();
+			let dialog = new AppfolderDialog( _("Enter a name"), _("Rename"), 'rename', this._source._folder);
 			dialog.open();
 		}));
 		
@@ -545,19 +381,18 @@ const FolderIconMenu = new Lang.Class({
 				}
 			}
 			
+			log('395 --');
 			_foldersSchema.set_strv('folder-children', tmp);
+			log('397 --');
 			
 			if ( _settings.get_boolean('total-deletion') ) {
 				this._source._folder.reset('apps');
-				this._source._folder.reset('name');
+				this._source._folder.reset('categories');
+				this._source._folder.reset('name'); // génère un bug
 			}
 			
-			/* i should get rid of this shit */
-			let timeoutId = Mainloop.timeout_add(500, Lang.bind(this, function() {
-				disable();
-				Mainloop.source_remove(timeoutId);
-				enable();
-			}));
+			disable();// le but est de mettre à jour ce qui est injecté dans le menu des appicons
+			enable();
 		}));
 	},
 
@@ -574,22 +409,7 @@ const FolderIconMenu = new Lang.Class({
 
 	popup: function() {
 		this._redisplay();
-		//this.open();
-		
-		if (this.isOpen)
-			return;
-		
-		if (this.isEmpty())
-			return;
-		
-		this.isOpen = true;
-		this._boxPointer.setPosition(this.sourceActor, this._arrowAlignment);
-		//this._boxPointer.setPosition(this._source.actor, this._arrowAlignment); //marche aussi
-		this._boxPointer.show(false);
-		
-		this.actor.raise_top();
-		
-		this._source.emit('open-state-changed', true);
+		this.open();
 	},
 
 	popdown: function() {
@@ -607,32 +427,26 @@ function injectionInAppsMenus() {
 		
 		if (Main.overview.viewSelector.getActivePage() == 2 || Main.overview.viewSelector.getActivePage() == 3) {
 			this._appendSeparator();
-	//------------------------------------------
+			
 			let addto = new PopupMenu.PopupSubMenuMenuItem(_("Add to"));
 			
-			//------------------------------------------
 			let newAppFolder = new PopupMenu.PopupMenuItem('+ ' + _("New AppFolder"));
 			newAppFolder.connect('activate', Lang.bind(this, function() {
 				let id = this._source.app.get_id();
-				
 				popdownAll();
-				
-				let dialog = new createFolderDialog(id);
+				let dialog = new AppfolderDialog( _("Enter a name"), _("Create"), 'create', id);
 				dialog.open();
 			}));
 			addto.menu.addMenuItem(newAppFolder);
-			//------------------------------------------
 			
 			for (var i = 0 ; i < _folderList.length ; i++) {
 				let _folder = _folderList[i];
-				
 				let _tmp = new Gio.Settings({
 					schema_id: 'org.gnome.desktop.app-folders.folder',
 					path: '/org/gnome/desktop/app-folders/folders/' + _folder + '/'
 				});
 				
 				let shouldShow = !isInFolder( this._source.app.get_id(), _tmp );
-				
 				let item = new PopupMenu.PopupMenuItem( AppDisplay._getFolderName( _tmp ) );
 				
 				if(shouldShow) {
@@ -644,9 +458,8 @@ function injectionInAppsMenus() {
 					addto.menu.addMenuItem(item);
 				}
 			}
-			
 			this.addMenuItem(addto);
-	//------------------------------------------
+			
 			let removeFrom = new PopupMenu.PopupSubMenuMenuItem(_("Remove from"));
 			let shouldShow2 = false;
 			for (var i = 0 ; i < _folderList.length ; i++) {
@@ -698,48 +511,46 @@ function injectionInAppsMenus() {
 /* this function builds menus on appfolders when right click on them, using FolderIconMenu objects. */
 function createFolderMenus() {
 	
-	let _folderIcons = Main.overview.viewSelector.appDisplay._views[1].view.folderIcons;
-	_folderIcons.forEach(function(i){
+	if (!AppDisplay.FolderIcon.injections) {
+	
+		AppDisplay.FolderIcon.prototype.injections = true;
 		
-		i._estPrisEnCompte = true;
-		i._menu = null;
-		i._menuManager = new PopupMenu.PopupMenuManager(i);
-		
-		i.popupMenu = function () {
-			i.actor.fake_release();
-			if (!i._menu) {
-				i._menu = new FolderIconMenu(i);
-				//let id = Main.overview.connect('hiding', Lang.bind(this, function () { i._menu.close(); }));
-				i._menuManager.addMenu(i._menu);
+		AppDisplay.FolderIcon.prototype.popupMenu = function () {
+/**/			this.actor.fake_release(); // qu'est-ce?
+			if (!this._menu) {
+				this._menu = new FolderIconMenu(this);
+				this._menuManager.addMenu(this._menu);
 			}
-			i.emit('menu-state-changed', true);
-			i.actor.set_hover(true);
-			i._menu.popup();
-			i._menuManager.ignoreRelease();
+			this.emit('menu-state-changed', true);
+			this.actor.set_hover(true);
+			this._menu.popup();
+			this._menuManager.ignoreRelease(); // qu'est-ce?
 			return false;
 		}
-		
-	//----------------------------------------------------
-		
-		i._onButtonPress = function (actor, event) {
+	
+		AppDisplay.FolderIcon.prototype._onButtonPress = function (actor, event) {
 			let button = event.get_button();
 			if (button == 1) {
-				if(i._menu)
-					i._menu.close();
-				//	i._menu.destroy();
+				if(this._menu)
+					this._menu.close();
+				//	this._menu.destroy();
 			} else if (button == 3) {
-				if(i._menu && i._menu.isOpen) {
-					i._menu.close();
-				} else {
-					closeAllMenus();
-					i.popupMenu();
-				}
+				this.popupMenu();
 				return Clutter.EVENT_STOP;
 			}
 			return Clutter.EVENT_PROPAGATE;
 		}
-		i.actor.connect('button-press-event', Lang.bind(i, i._onButtonPress));
-	});
+	
+		if (injections['_init']) {
+			removeInjection(AppDisplay.FolderIcon.prototype, injections, '_init');
+		}
+		
+		injections['_init'] = injectToFunction(AppDisplay.FolderIcon.prototype, '_init', function(){
+			this._menu = null;
+			this._menuManager = new PopupMenu.PopupMenuManager(this);
+			this.actor.connect('button-press-event', Lang.bind(this, this._onButtonPress));
+		});
+	}
 }
 
 //--------------------------------------------------------------
@@ -753,17 +564,6 @@ function addCategory( categoryName, schema ) {
 	content.push( categoryName );
 	schema.set_strv('categories', content);
 	return null;
-}
-
-//-----------------------------------------------------------------------------
-
-function closeAllMenus() {
-	let _folderIcons = Main.overview.viewSelector.appDisplay._views[1].view.folderIcons;
-	_folderIcons.forEach(function(i){
-		if(i._menu && i._menu.isOpen) {
-			i._menu.close();
-		}
-	});
 }
 
 //-----------------------------------------------------------------------------
@@ -793,87 +593,17 @@ function addToFolder(id, folder) {
 
 //-------------------------------------------------
 
-/* this function reload the whole applications view, and then the extension */
 function reload() {
-//////	Main.overview.viewSelector.appDisplay._views[1].view._redisplay(); // segfault
-		//log('[Appfolder Management] - reload 0/4');
-//////	Main.overview.viewSelector.appDisplay._views[1].view._grid.destroyAll(); // segfault
-	Main.overview.viewSelector.appDisplay._views[1].view._grid.removeAll();
-		//log('[Appfolder Management] - reload 1/4');
-	Main.overview.viewSelector.appDisplay._views[1].view._items = {};
-		//log('[Appfolder Management] - reload 2/4');
-	Main.overview.viewSelector.appDisplay._views[1].view._allItems = [];
-		//log('[Appfolder Management] - reload 3/4');
-	Main.overview.viewSelector.appDisplay._views[1].view._loadApps();
-		//log('[Appfolder Management] - reload 4/4');
-	
-	extReload2();
-	createFolderMenus(); //redondant avec ligne précédente ?
+
+	Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
+	log('reload the view');
 }
 
 //-------------------------------------------------
 
-function extReload() {
-	//do not use ; that's for debugging only
-	disable();
-	enable();
-}
-
-//-------------------------------------------------
-
-/* Absurdly complex way to reload the extension:
- * there is issues with how the whole thing is loaded,
- * so we will reload the extension EACH DAMN TIME THE
- * APPLICATIONS VIEW WILL BE OPENED. The function we use
- * is not extReload because of infinte recursion it
- * would trigger.
- */
-function extReload2() {
-	_settings = Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager');
+function popdownAll() {	
+	Main.overview.viewSelector.appDisplay._views[1].view.emit('open-state-changed', false);
 	
-	let _bool2 = false;
-	let _bool = false;
-	let _folderIcons = Main.overview.viewSelector.appDisplay._views[1].view.folderIcons;
-	_folderIcons.forEach(function(i){
-		if (i.view._grid._colLimit != _settings.get_int('columns-max')) {
-			_bool = true;
-		}
-		
-		if (i._estPrisEnCompte) {
-	//	if (i._menu) {
-			_bool2 = true;
-	//	} else {
-		}
-	});
-	
-	if ( _bool ) {
-		setNbColumns( _settings.get_int('columns-max') );
-	}
-	
-	if(!_bool2){
-		createFolderMenus();
-	}
-}
-
-//-------------------------------------------------
-
-function setNbColumns(setting) {
-	//log('[Appfolder Management] - set columns');
-	let _views = Main.overview.viewSelector.appDisplay._views;
-	for (let i = 0; i < _views.length; i++) {
-		_views[i].view._grid._colLimit = setting;
-	}
-	
-	let _folderIcons = Main.overview.viewSelector.appDisplay._views[1].view.folderIcons;
-	_folderIcons.forEach(function(i){
-		i.view._grid._colLimit = setting;
-	});
-}
-
-//-------------------------------------------------
-
-function popdownAll() {
-	//log('[Appfolder Management] - closing open popups');
 	let _folderIcons = Main.overview.viewSelector.appDisplay._views[1].view.folderIcons;
 	_folderIcons.forEach(function(i){
 		if(i._popup){
@@ -890,30 +620,24 @@ function popdownAll() {
 
 function enable() {
 	_settings = Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager');
-	setNbColumns( _settings.get_int('columns-max') );
+
 	_foldersSchema = new Gio.Settings({ schema_id: 'org.gnome.desktop.app-folders' });
 	_folderList = _foldersSchema.get_strv('folder-children');
 
 	injectionInAppsMenus();
 	
-	injections['show'] = injectToFunction(Overview.Overview.prototype, 'show', function(){
-		//extReload();
-		extReload2();
-	});
+	createFolderMenus();
 }
 
 //-------------------------------------------------
 
 function disable() {
-	removeInjection(AppDisplay.AppIconMenu.prototype, injections, '_redisplay');
-	removeInjection(Overview.Overview.prototype, injections, 'show');
-	setNbColumns( 6 );
 	
-	Main.overview.viewSelector.appDisplay._views[1].view.folderIcons.forEach(function(i){
-		if (i._menu) {
-			i._menu.destroy();
-		}
-	});
+	AppDisplay.FolderIcon.prototype._onButtonPress = null;//undefined;
+	AppDisplay.FolderIcon.prototype.popupMenu = null;//undefined;
+	
+	removeInjection(AppDisplay.AppIconMenu.prototype, injections, '_redisplay');
+	removeInjection(AppDisplay.FolderIcon.prototype, injections, '_init');
 }
 
 //-------------------------------------------------
