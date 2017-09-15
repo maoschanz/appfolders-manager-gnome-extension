@@ -19,6 +19,7 @@ A [GNOME extension](https://extensions.gnome.org/extension/1217/appfolders-manag
 * italian - [amivaleo](https://github.com/amivaleo)
 * polish - [Piotr Komur](https://github.com/pkomur)
 * russian - [DeadMetaler](https://github.com/DeadMetaler)
+* serbian - [Slobodan Terzić](https://github.com/Faenriis)
 
 A huge _thank you_ to translators
 
@@ -30,8 +31,6 @@ Features :
 
 * Add applications to appfolders
 * Remove applications from appfolders
-
-* Set the maximum number of columns (GNOME Shell's default is 6)
 
 * Add a category to a folder 
 * Remove a category from a folder
