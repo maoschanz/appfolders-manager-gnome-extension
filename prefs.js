@@ -35,25 +35,6 @@ const osefSettingsWidget = new GObject.Class({
 		
 		this._settings = Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager');
 		
-		let label = _("Maximum number of columns :");
-		
-		let nbColumns = new Gtk.SpinButton();
-        nbColumns.set_sensitive(true);
-        nbColumns.set_range(4, 10);
-		nbColumns.set_value(6);
-        nbColumns.set_value(this._settings.get_int('columns-max'));
-        nbColumns.set_increments(1, 2);
-        
-		nbColumns.connect('value-changed', Lang.bind(this, function(w){
-			var value = w.get_value_as_int();
-			this._settings.set_int('columns-max', value);
-		}));
-		
-		let hBox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 15 });
-		hBox.pack_start(new Gtk.Label({ label: label, use_markup: true, halign: Gtk.Align.START }), false, false, 0);
-		hBox.pack_end(nbColumns, false, false, 0);
-		this.add(hBox);
-		
 		//----------------------------
 		
 		let checkButton = new Gtk.CheckButton({label:_("Delete all related settings when an appfolder is deleted")});
