@@ -143,7 +143,6 @@ const AppfolderDialog = new Lang.Class({
 			
 			if (symbol == Clutter.Return || symbol == Clutter.KP_Enter) {
 				this.popModal();
-				log('149');
 				this._function();
 			}
 		}));
@@ -189,7 +188,6 @@ const AppfolderDialog = new Lang.Class({
 	},
 
 	destroy: function () {
-		log('destroying');
 		this.parent();
 	},
 	
@@ -230,9 +228,9 @@ const AppfolderDialog = new Lang.Class({
 		}
 		
 		_folderList.push(folderId);
-		log('236');
+		
 		_foldersSchema.set_strv('folder-children', _folderList);
-		log('239');
+		
 		let tmp1 = new Gio.Settings({
 			schema_id: 'org.gnome.desktop.app-folders.folder',
 			path: '/org/gnome/desktop/app-folders/folders/' + folderId + '/'
@@ -364,11 +362,13 @@ const FolderIconMenu = new Lang.Class({
 		
 		this._appendSeparator();
 		
-		let renameItem = this._appendMenuItem(_("Rename"));
-		renameItem.connect('activate', Lang.bind(this, function() {
-			let dialog = new AppfolderDialog( _("Enter a name"), _("Rename"), 'rename', this._source._folder);
-			dialog.open();
-		}));
+		if (_settings.get_boolean('experimental') ) {
+			let renameItem = this._appendMenuItem(_("Rename"));
+			renameItem.connect('activate', Lang.bind(this, function() {
+				let dialog = new AppfolderDialog( _("Enter a name"), _("Rename"), 'rename', this._source._folder);
+				dialog.open();
+			}));
+		}
 		
 		let deleteItem = this._appendMenuItem(_("Delete"));
 		deleteItem.connect('activate', Lang.bind(this, function() {
@@ -381,14 +381,14 @@ const FolderIconMenu = new Lang.Class({
 				}
 			}
 			
-			log('395 --');
 			_foldersSchema.set_strv('folder-children', tmp);
-			log('397 --');
 			
 			if ( _settings.get_boolean('total-deletion') ) {
 				this._source._folder.reset('apps');
 				this._source._folder.reset('categories');
-				this._source._folder.reset('name'); // génère un bug
+				if (_settings.get_boolean('experimental') ) {
+					this._source._folder.reset('name'); // génère un bug
+				}
 			}
 			
 			disable();// le but est de mettre à jour ce qui est injecté dans le menu des appicons
@@ -594,9 +594,8 @@ function addToFolder(id, folder) {
 //-------------------------------------------------
 
 function reload() {
-
 	Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
-	log('reload the view');
+	//log('reload the view');
 }
 
 //-------------------------------------------------
