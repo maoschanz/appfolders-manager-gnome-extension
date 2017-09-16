@@ -3,8 +3,9 @@ A [GNOME extension](https://extensions.gnome.org/extension/1217/appfolders-manag
 
 
 ![Screenshot](http://i.imgur.com/JKcVNyR.jpg)
+![Screenshot](https://i.imgur.com/xNAVlbF.png)
 
-(Sorry the screenshot is in french)
+(Sorry, screenshots are in french)
 
 (More at http://imgur.com/a/PCtqe)
 
@@ -27,7 +28,7 @@ A huge _thank you_ to translators
 Features :
 * Create new appfolders
 * Delete appfolders
-* Rename appfolders
+* Rename appfolders (experimental)
 
 * Add applications to appfolders
 * Remove applications from appfolders
