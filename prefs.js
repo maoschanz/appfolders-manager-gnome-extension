@@ -18,9 +18,9 @@ function init() {
 
 //-----------------------------------------------
 
-const appfolderManagerSettingsWidget = new GObject.Class({
-    Name: 'appfolderManager.Prefs.Widget',
-    GTypeName: 'appfolderManagerSettingsWidget',
+const appfoldersManagerSettingsWidget = new GObject.Class({
+    Name: 'appfoldersManager.Prefs.Widget',
+    GTypeName: 'appfoldersManagerPrefsWidget',
     Extends: Gtk.Box,
 
     _init: function(params) {
@@ -50,6 +50,22 @@ const appfolderManagerSettingsWidget = new GObject.Class({
 		checkButton.set_active(this._settings.get_boolean('total-deletion'));
 
     	this.add(checkButton);
+		
+		//------------
+		
+		let checkButton = new Gtk.CheckButton({label:_("Experimental features (not recommended)")});
+		
+		checkButton.connect('toggled', Lang.bind(this, function(b) {
+			if(b.get_active()) {
+				this._settings.set_boolean('experimental', true);
+			} else {
+				this._settings.set_boolean('experimental', false);
+			}
+		}));
+		
+		checkButton.set_active(this._settings.get_boolean('experimental'));
+
+    	this.add(checkButton);
 	}
 });
 
@@ -58,7 +74,7 @@ const appfolderManagerSettingsWidget = new GObject.Class({
 //I guess this is like the "enable" in extension.js : something called each
 //time he user try to access the settings' window
 function buildPrefsWidget() {
-    let widget = new appfolderManagerSettingsWidget();
+    let widget = new appfoldersManagerSettingsWidget();
     widget.show_all();
 
     return widget;
