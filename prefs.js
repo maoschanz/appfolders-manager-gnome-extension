@@ -53,9 +53,9 @@ const appfoldersManagerSettingsWidget = new GObject.Class({
 		
 		//------------
 		
-		let checkButton = new Gtk.CheckButton({label:_("Experimental features (not recommended)")});
+		let checkButton2 = new Gtk.CheckButton({label:_("Experimental features (not recommended)")});
 		
-		checkButton.connect('toggled', Lang.bind(this, function(b) {
+		checkButton2.connect('toggled', Lang.bind(this, function(b) {
 			if(b.get_active()) {
 				this._settings.set_boolean('experimental', true);
 			} else {
@@ -63,9 +63,9 @@ const appfoldersManagerSettingsWidget = new GObject.Class({
 			}
 		}));
 		
-		checkButton.set_active(this._settings.get_boolean('experimental'));
+		checkButton2.set_active(this._settings.get_boolean('experimental'));
 
-    	this.add(checkButton);
+    	this.add(checkButton2);
 	}
 });
 
