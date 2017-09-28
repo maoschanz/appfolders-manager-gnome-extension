@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist gettext-domain="appfolders-manager">
 	<schema id="org.gnome.shell.extensions.appfolders-manager" path="/org/gnome/shell/extensions/appfolders-manager/">
-    <key type="i" name="columns-max">
-      <default>6</default>
-      <summary>max number of columns</summary>
-      <description>Set the maximum limit of columns in the application view.</description>
-    </key>
     <key type="b" name="total-deletion">
       <default>true</default>
       <summary>complete deletion of an appfolder</summary>
       <description>if a deleted appfolder should be 100% deleted</description>
+    </key>
+    <key type="b" name="experimental">
+      <default>false</default>
+      <summary>Use experimental features</summary>
+      <description>this is not supposed to be activated by the user</description>
     </key>
 	</schema>
 </schemalist>

@@ -49,3 +49,24 @@ msgstr "Удалить"
 
 msgid "Rename"
 msgstr "Переименовать"
+
+msgid "This appfolder already exists."
+msgstr "Эта Папка приложений уже существует"
+
+msgid "Create"
+msgstr "Создать"
+
+msgid "Remove a category"
+msgstr "Удалить категорию"
+
+msgid "Additional categories"
+msgstr "Дополнительные категории"
+
+msgid "Add a category"
+msgstr "Добавить категорию"
+
+msgid "Add"
+msgstr "Добавить"
+
+msgid "Enter the name of a category"
+msgstr "Введите имя категории"

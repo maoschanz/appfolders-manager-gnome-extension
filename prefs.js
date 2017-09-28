@@ -18,9 +18,9 @@ function init() {
 
 //-----------------------------------------------
 
-const osefSettingsWidget = new GObject.Class({
-    Name: 'osef.Prefs.Widget',
-    GTypeName: 'osefPrefsWidget',
+const appfoldersManagerSettingsWidget = new GObject.Class({
+    Name: 'appfoldersManager.Prefs.Widget',
+    GTypeName: 'appfoldersManagerPrefsWidget',
     Extends: Gtk.Box,
 
     _init: function(params) {
@@ -34,25 +34,6 @@ const osefSettingsWidget = new GObject.Class({
 		this.add(new Gtk.Label({ label: labelMain, use_markup: true, halign: Gtk.Align.START }));
 		
 		this._settings = Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager');
-		
-		let label = _("Maximum number of columns :");
-		
-		let nbColumns = new Gtk.SpinButton();
-        nbColumns.set_sensitive(true);
-        nbColumns.set_range(4, 10);
-		nbColumns.set_value(6);
-        nbColumns.set_value(this._settings.get_int('columns-max'));
-        nbColumns.set_increments(1, 2);
-        
-		nbColumns.connect('value-changed', Lang.bind(this, function(w){
-			var value = w.get_value_as_int();
-			this._settings.set_int('columns-max', value);
-		}));
-		
-		let hBox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 15 });
-		hBox.pack_start(new Gtk.Label({ label: label, use_markup: true, halign: Gtk.Align.START }), false, false, 0);
-		hBox.pack_end(nbColumns, false, false, 0);
-		this.add(hBox);
 		
 		//----------------------------
 		
@@ -69,6 +50,22 @@ const osefSettingsWidget = new GObject.Class({
 		checkButton.set_active(this._settings.get_boolean('total-deletion'));
 
     	this.add(checkButton);
+		
+		//------------
+		
+		let checkButton2 = new Gtk.CheckButton({label:_("Experimental features (not recommended)")});
+		
+		checkButton2.connect('toggled', Lang.bind(this, function(b) {
+			if(b.get_active()) {
+				this._settings.set_boolean('experimental', true);
+			} else {
+				this._settings.set_boolean('experimental', false);
+			}
+		}));
+		
+		checkButton2.set_active(this._settings.get_boolean('experimental'));
+
+    	this.add(checkButton2);
 	}
 });
 
@@ -77,7 +74,7 @@ const osefSettingsWidget = new GObject.Class({
 //I guess this is like the "enable" in extension.js : something called each
 //time he user try to access the settings' window
 function buildPrefsWidget() {
-    let widget = new osefSettingsWidget();
+    let widget = new appfoldersManagerSettingsWidget();
     widget.show_all();
 
     return widget;

@@ -3,14 +3,15 @@ A [GNOME extension](https://extensions.gnome.org/extension/1217/appfolders-manag
 
 
 ![Screenshot](http://i.imgur.com/JKcVNyR.jpg)
+![Screenshot](https://i.imgur.com/xNAVlbF.png)
 
-(Sorry the screenshot is in french)
+(Sorry, screenshots are in french)
 
 (More at http://imgur.com/a/PCtqe)
 
 ### Available in :
 
-* belarussian - [DeadMetaler](https://github.com/DeadMetaler)
+* belarusian - [DeadMetaler](https://github.com/DeadMetaler)
 * english - [Maestroschan](https://github.com/Maestroschan/)
 * french - [Maestroschan](https://github.com/Maestroschan/)
 * german - [Marcel Hoppe](https://github.com/hobbypunk90)
@@ -19,6 +20,7 @@ A [GNOME extension](https://extensions.gnome.org/extension/1217/appfolders-manag
 * italian - [amivaleo](https://github.com/amivaleo)
 * polish - [Piotr Komur](https://github.com/pkomur)
 * russian - [DeadMetaler](https://github.com/DeadMetaler)
+* serbian - [Slobodan Terzić](https://github.com/Faenriis)
 
 A huge _thank you_ to translators
 
@@ -26,12 +28,10 @@ A huge _thank you_ to translators
 Features :
 * Create new appfolders
 * Delete appfolders
-* Rename appfolders
+* Rename appfolders (experimental)
 
 * Add applications to appfolders
 * Remove applications from appfolders
-
-* Set the maximum number of columns (GNOME Shell's default is 6)
 
 * Add a category to a folder 
 * Remove a category from a folder
