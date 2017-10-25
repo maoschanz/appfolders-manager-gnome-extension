@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Appfolders Management (GNOME extension)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-07-01 09:52+0200\n"
-"PO-Revision-Date: 2017-07-01 09:53+0200\n"
+"POT-Creation-Date: 2017-10-25 10:04+0200\n"
+"PO-Revision-Date: 2017-10-25 11:21+0200\n"
 "Last-Translator: Piotr Komur <pkomur@gmail.com>\n"
 "Language-Team: Piotr Komur\n"
 "Language: pl\n"
@@ -30,13 +30,13 @@ msgid "Add to"
 msgstr "Dodaj do"
 
 msgid "New AppFolder"
-msgstr "Nowy folder aplikacji"
+msgstr "Nowy folder programów"
 
 msgid "Remove from"
 msgstr "Usuń z"
 
 msgid "Delete AppFolder"
-msgstr "Usuń folder aplikacji"
+msgstr "Usuń folder programów"
 
 msgid "Modifications will be effective after reloading the extension."
 msgstr "Zmiany będą aktywne po ponownym zrestartowaniu środowiska Gnome."
@@ -45,7 +45,7 @@ msgid "Maximum number of columns :"
 msgstr "Maksymalna liczba kolumn:"
 
 msgid "Delete all related settings when an appfolder is deleted"
-msgstr "Usuń powiązane zmiany wraz z usunięciem folderu aplikacji."
+msgstr "Usuń powiązane zmiany wraz z usunięciem folderu programów."
 
 msgid "Delete"
 msgstr "Usuń"
@@ -53,11 +53,26 @@ msgstr "Usuń"
 msgid "Rename"
 msgstr "Zmień nazwę"
 
+msgid "Create"
+msgstr "Utwórz"
+
 msgid "This appfolder already exists."
 msgstr "Folder o tej nazwie już istnieje."
 
-msgid "Create"
-msgstr "Utwórz"
+msgid "Remove a category"
+msgstr "Usuń programy z kategorii"
+
+msgid "Additional categories"
+msgstr "Nowe kategorie"
+
+msgid "Add a category"
+msgstr "Dołącz programy z kategorii"
+
+msgid "Add"
+msgstr "Dodaj"
+
+msgid "Enter the name of a category"
+msgstr "Podaj nazwę kategorii"
 
 #~ msgid "Delete from"
 #~ msgstr "Usuń z"
