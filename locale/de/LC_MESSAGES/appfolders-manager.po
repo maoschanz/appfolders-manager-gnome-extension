@@ -8,10 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-13 12:23+0200\n"
-"PO-Revision-Date: 2017-09-28 11:33+0200\n"
-"Last-Translator: \n"
-"Language-Team: https://github.com/hobbypunk90/appfolders-manager-gnome-extension\n"
+"POT-Creation-Date: 2017-10-28 01:49+0200\n"
+"PO-Revision-Date: 2017-10-28 01:50+0200\n"
+"Last-Translator: Jonatan Hatakeyama Zeidler <jonatan_zeidler@gmx.de>\n"
+"Language-Team: https://github.com/hobbypunk90/appfolders-manager-gnome-"
+"extension\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,56 +20,76 @@ msgstr ""
 "X-Generator: Poedit 2.0.4\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-msgid "Enter a name"
-msgstr "Namen eingeben"
-
+#: extension.js:133
 msgid "Cancel"
 msgstr "Abbrechen"
 
-msgid "Add to"
-msgstr "Hinzufügen zu"
-
-msgid "New AppFolder"
-msgstr "Neuer Ordner"
-
-msgid "Remove from"
-msgstr "Löschen aus"
-
-msgid "Delete AppFolder"
-msgstr "Lösche Ordner"
-
-msgid "Modifications will be effective after reloading the extension."
-msgstr "Änderungen werden nach Neustart der Erweiterung übernommen."
-
-msgid "Maximum number of columns :"
-msgstr "Maximale Anzahl an Spalten:"
-
-msgid "Delete all related settings when an appfolder is deleted"
-msgstr "Lösche alle Einstellungen, wenn ein Ordner gelöscht wird"
-
-msgid "Delete"
-msgstr "Löschen"
-
-msgid "Rename"
-msgstr "Umbenennen"
-
-msgid "Create"
-msgstr "Erstelle"
-
+#: extension.js:175
 msgid "This appfolder already exists."
 msgstr "Dieser Ordner existiert bereits."
 
-msgid "Remove a category"
-msgstr "Lösche eine Kategorie"
-
-msgid "Additional categories"
-msgstr "Hinzugefügte Kategorien"
-
+#: extension.js:302
 msgid "Add a category"
 msgstr "Kategorie hinzufügen"
 
+#: extension.js:326
+msgid "Additional categories"
+msgstr "Hinzugefügte Kategorien"
+
+#: extension.js:329
+msgid "Enter the name of a category"
+msgstr "Gib der Kategorie einen Namen"
+
+#: extension.js:329
 msgid "Add"
 msgstr "Hinzufügen"
 
-msgid "Enter the name of a category"
-msgstr "Gib der Kategorie einen Namen"
+#: extension.js:342
+msgid "Remove a category"
+msgstr "Lösche eine Kategorie"
+
+#: extension.js:366 extension.js:368
+msgid "Rename"
+msgstr "Umbenennen"
+
+#: extension.js:368 extension.js:437
+msgid "Enter a name"
+msgstr "Namen eingeben"
+
+#: extension.js:373
+msgid "Delete"
+msgstr "Löschen"
+
+#: extension.js:431
+msgid "Add to"
+msgstr "Hinzufügen zu"
+
+#: extension.js:433
+msgid "New AppFolder"
+msgstr "Neuer Ordner"
+
+#: extension.js:437
+msgid "Create"
+msgstr "Erstelle"
+
+#: extension.js:463
+msgid "Remove from"
+msgstr "Löschen aus"
+
+#: prefs.js:33
+msgid "Modifications will be effective after reloading the extension."
+msgstr "Änderungen werden nach Neustart der Erweiterung übernommen."
+
+#: prefs.js:40
+msgid "Delete all related settings when an appfolder is deleted"
+msgstr "Lösche alle Einstellungen, wenn ein Ordner gelöscht wird"
+
+#: prefs.js:56
+msgid "Experimental features (not recommended)"
+msgstr "Experimentelle Funktionen (nicht empfohlen)"
+
+#~ msgid "Delete AppFolder"
+#~ msgstr "Lösche Ordner"
+
+#~ msgid "Maximum number of columns :"
+#~ msgstr "Maximale Anzahl an Spalten:"
