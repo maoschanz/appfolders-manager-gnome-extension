@@ -21,7 +21,7 @@ A [GNOME extension](https://extensions.gnome.org/extension/1217/appfolders-manag
 * Polish - [Piotr Komur](https://github.com/pkomur)
 * Russian - [DeadMetaler](https://github.com/DeadMetaler)
 * Serbian - [Slobodan Terzić](https://github.com/Faenriis)
-* Brazilian Portuguese - [Fábio Nogueira] (https://github.com/frnogueira)
+* Brazilian Portuguese - [Fábio Nogueira](https://github.com/frnogueira)
 
 A huge _thank you_ to translators
 
