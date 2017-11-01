@@ -1,0 +1,87 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-10-28 01:49+0200\n"
+"PO-Revision-Date: 2017-11-01 11:31-0300\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.0.4\n"
+"Last-Translator: Fábio Nogueira <fnogueira@gnome.org>\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"Language: pt_BR\n"
+
+#: extension.js:133
+msgid "Cancel"
+msgstr "Cancelar"
+
+#: extension.js:175
+msgid "This appfolder already exists."
+msgstr "Esta appfolder já existe."
+
+#: extension.js:302
+msgid "Add a category"
+msgstr "Adicionar uma categoria"
+
+#: extension.js:326
+msgid "Additional categories"
+msgstr "Categorias adicionais"
+
+#: extension.js:329
+msgid "Enter the name of a category"
+msgstr "Digite o nome de uma categoria"
+
+#: extension.js:329
+msgid "Add"
+msgstr "Adicionar"
+
+#: extension.js:342
+msgid "Remove a category"
+msgstr "Apagar uma categoria"
+
+#: extension.js:366 extension.js:368
+msgid "Rename"
+msgstr "Renomear"
+
+#: extension.js:368 extension.js:437
+msgid "Enter a name"
+msgstr "Digite um nome"
+
+#: extension.js:373
+msgid "Delete"
+msgstr "Excluir"
+
+#: extension.js:431
+msgid "Add to"
+msgstr "Adicionar para"
+
+#: extension.js:433
+msgid "New AppFolder"
+msgstr "Nova AppFolder"
+
+#: extension.js:437
+msgid "Create"
+msgstr "Criar"
+
+#: extension.js:463
+msgid "Remove from"
+msgstr "Remover de"
+
+#: prefs.js:33
+msgid "Modifications will be effective after reloading the extension."
+msgstr "As modificações entrarão em vigor depois de recarregar a extensão."
+
+#: prefs.js:40
+msgid "Delete all related settings when an appfolder is deleted"
+msgstr "Excluir todas as configurações relacionadas quando um appfolder for excluído"
+
+#: prefs.js:56
+msgid "Experimental features (not recommended)"
+msgstr "Recursos experimentais (não recomendado)"

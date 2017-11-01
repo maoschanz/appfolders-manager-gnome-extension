@@ -11,16 +11,17 @@ A [GNOME extension](https://extensions.gnome.org/extension/1217/appfolders-manag
 
 ### Available in :
 
-* belarusian - [DeadMetaler](https://github.com/DeadMetaler)
-* english - [Maestroschan](https://github.com/Maestroschan/)
-* french - [Maestroschan](https://github.com/Maestroschan/)
-* german - [Marcel Hoppe](https://github.com/hobbypunk90)
-* greek - [dirosis](https://github.com/dirosis)
-* hungarian - [Balázs Úr](https://github.com/urbalazs)
-* italian - [amivaleo](https://github.com/amivaleo)
-* polish - [Piotr Komur](https://github.com/pkomur)
-* russian - [DeadMetaler](https://github.com/DeadMetaler)
-* serbian - [Slobodan Terzić](https://github.com/Faenriis)
+* Belarusian - [DeadMetaler](https://github.com/DeadMetaler)
+* English - [Maestroschan](https://github.com/Maestroschan/)
+* French - [Maestroschan](https://github.com/Maestroschan/)
+* German - [Marcel Hoppe](https://github.com/hobbypunk90)
+* Greek - [dirosis](https://github.com/dirosis)
+* Hungarian - [Balázs Úr](https://github.com/urbalazs)
+* Italian - [amivaleo](https://github.com/amivaleo)
+* Polish - [Piotr Komur](https://github.com/pkomur)
+* Russian - [DeadMetaler](https://github.com/DeadMetaler)
+* Serbian - [Slobodan Terzić](https://github.com/Faenriis)
+* Brazilian Portuguese - [Fábio Nogueira](https://github.com/frnogueira)
 
 A huge _thank you_ to translators
 
@@ -48,7 +49,7 @@ Manual installation :
 
 ### Future versions
 * Exclude apps from a folder
-* Drag and drop (i hope)
+* Drag and drop (I hope)
 
 ### See also
 https://github.com/muflone/gnome-appfolders-manager a GTK+ application which manages appfolders
