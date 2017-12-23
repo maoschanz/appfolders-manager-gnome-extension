@@ -11,6 +11,8 @@ const Main = imports.ui.main;
 const AppDisplay = imports.ui.appDisplay;
 const PopupMenu = imports.ui.popupMenu;
 
+const Mainloop = imports.mainloop;
+
 const ModalDialog = imports.ui.modalDialog;
 const ShellEntry = imports.ui.shellEntry;
 const Overview = imports.ui.overview;
@@ -26,9 +28,9 @@ const _ = Gettext.gettext;
 
 //-------------------------------------------------
 
-let _foldersSchema;
-let _folderList;
-let _settings;
+let FOLDER_SCHEMA;
+let FOLDER_LIST;
+let SETTINGS;
 
 function init() {
 	Convenience.initTranslations();
@@ -60,6 +62,18 @@ let injections=[];
 
 //--------------------------------------------------------------
 
+/* this will construct a modal dialog for creating, renaming or modifying categories of existing folders.
+ * the dialog can have different labels/right-buttons/actions depending on arguments given at its creation.
+ * Methods are:
+ * _init(mainLabel, labelOfTheButton, actionOfTheButton, parameterForThisAction)
+ * _function() // linking the button on the right to the correct action
+ * _addfolder() // action when it's a "create appfolder" dialog
+ * _rename() //  action when it's a "rename appfolder" dialog 
+ * _addCategory() // action when it's a "add custom category" dialog
+ * _create(newName, appId) // called by _addfolder
+ * _folderId(newName) // called by _create and return an acceptable id for the appfolder
+ * etc.
+ */
 const AppfolderDialog = new Lang.Class({
 	Name: 'AppfolderDialog',
 	Extends: ModalDialog.ModalDialog,
@@ -67,7 +81,6 @@ const AppfolderDialog = new Lang.Class({
 	_init: function(rawlabel, buttonLabel, buttonFunction, functionParameter) {
 		
 		let label = new St.Label({ text: rawlabel });
-		
 		
 		this._buttonFunction = buttonFunction;
 		this._functionParameter = functionParameter;
@@ -143,6 +156,7 @@ const AppfolderDialog = new Lang.Class({
 			
 			if (symbol == Clutter.Return || symbol == Clutter.KP_Enter) {
 				this.popModal();
+				log('149');
 				this._function();
 			}
 		}));
@@ -170,8 +184,8 @@ const AppfolderDialog = new Lang.Class({
 	},
 
 	_alreadyExists: function (folderId) {
-		for(var i = 0; i < _folderList.length; i++) {
-			if (_folderList[i] == folderId) {
+		for(var i = 0; i < FOLDER_LIST.length; i++) {
+			if (FOLDER_LIST[i] == folderId) {
 				this._showError( _("This appfolder already exists.") );
 				return true;
 			}
@@ -188,6 +202,7 @@ const AppfolderDialog = new Lang.Class({
 	},
 
 	destroy: function () {
+		log('destroying');
 		this.parent();
 	},
 	
@@ -221,15 +236,15 @@ const AppfolderDialog = new Lang.Class({
 		return folderId;
 	},
 
-	_create: function (newName, id) {
+	_create: function (newName, appId) {
 		let folderId = this._folderId(newName);
 		if (this._alreadyExists(folderId)) {
 			return;
 		}
 		
-		_folderList.push(folderId);
+		FOLDER_LIST.push(folderId);
 		
-		_foldersSchema.set_strv('folder-children', _folderList);
+		FOLDER_SCHEMA.set_strv('folder-children', FOLDER_LIST);
 		
 		let tmp1 = new Gio.Settings({
 			schema_id: 'org.gnome.desktop.app-folders.folder',
@@ -237,16 +252,15 @@ const AppfolderDialog = new Lang.Class({
 		});
 		tmp1.set_string('name', newName);
 		
-		addToFolder(id, folderId);
+		addToFolder(appId, folderId);
 	},
 	
 	//---------------------------------------
 	
 	_rename: function () {
 		let newName = this._entryText.get_text();
-		this._functionParameter.set_string('name', newName); // génère un bug
 		this.destroy();
-		reload();
+		this._functionParameter.set_string('name', newName); // génère un bug ?
 		return Clutter.EVENT_STOP;
 	},
 
@@ -362,33 +376,33 @@ const FolderIconMenu = new Lang.Class({
 		
 		this._appendSeparator();
 		
-		if (_settings.get_boolean('experimental') ) {
+//		if (SETTINGS.get_boolean('experimental') ) {
 			let renameItem = this._appendMenuItem(_("Rename"));
 			renameItem.connect('activate', Lang.bind(this, function() {
 				let dialog = new AppfolderDialog( _("Enter a name"), _("Rename"), 'rename', this._source._folder);
 				dialog.open();
 			}));
-		}
+//		}
 		
 		let deleteItem = this._appendMenuItem(_("Delete"));
 		deleteItem.connect('activate', Lang.bind(this, function() {
 			
 			let tmp = [];
-			for(var j=0;j<_folderList.length;j++){
-				if(_folderList[j] == this._source.id) {}
+			for(var j=0;j<FOLDER_LIST.length;j++){
+				if(FOLDER_LIST[j] == this._source.id) {}
 				else {
-					tmp.push(_folderList[j]);
+					tmp.push(FOLDER_LIST[j]);
 				}
 			}
 			
-			_foldersSchema.set_strv('folder-children', tmp);
+			FOLDER_SCHEMA.set_strv('folder-children', tmp);
 			
-			if ( _settings.get_boolean('total-deletion') ) {
+			if ( SETTINGS.get_boolean('total-deletion') ) {
 				this._source._folder.reset('apps');
 				this._source._folder.reset('categories');
-				if (_settings.get_boolean('experimental') ) {
+//				if (SETTINGS.get_boolean('experimental') ) {
 					this._source._folder.reset('name'); // génère un bug
-				}
+//				}
 			}
 			
 			disable();// le but est de mettre à jour ce qui est injecté dans le menu des appicons
@@ -439,8 +453,8 @@ function injectionInAppsMenus() {
 			}));
 			addto.menu.addMenuItem(newAppFolder);
 			
-			for (var i = 0 ; i < _folderList.length ; i++) {
-				let _folder = _folderList[i];
+			for (var i = 0 ; i < FOLDER_LIST.length ; i++) {
+				let _folder = FOLDER_LIST[i];
 				let _tmp = new Gio.Settings({
 					schema_id: 'org.gnome.desktop.app-folders.folder',
 					path: '/org/gnome/desktop/app-folders/folders/' + _folder + '/'
@@ -462,8 +476,8 @@ function injectionInAppsMenus() {
 			
 			let removeFrom = new PopupMenu.PopupSubMenuMenuItem(_("Remove from"));
 			let shouldShow2 = false;
-			for (var i = 0 ; i < _folderList.length ; i++) {
-				let _folder = _folderList[i];
+			for (var i = 0 ; i < FOLDER_LIST.length ; i++) {
+				let _folder = FOLDER_LIST[i];
 				
 				let id = this._source.app.get_id();
 				
@@ -516,7 +530,7 @@ function createFolderMenus() {
 		AppDisplay.FolderIcon.prototype.injections = true;
 		
 		AppDisplay.FolderIcon.prototype.popupMenu = function () {
-/**/			this.actor.fake_release(); // qu'est-ce?
+			this.actor.fake_release(); // qu'est-ce?
 			if (!this._menu) {
 				this._menu = new FolderIconMenu(this);
 				this._menuManager.addMenu(this._menu);
@@ -594,8 +608,9 @@ function addToFolder(id, folder) {
 //-------------------------------------------------
 
 function reload() {
+
 	Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
-	//log('reload the view');
+	log('reload the view');
 }
 
 //-------------------------------------------------
@@ -618,10 +633,10 @@ function popdownAll() {
 //----------------------------------------------------
 
 function enable() {
-	_settings = Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager');
+	SETTINGS = Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager');
 
-	_foldersSchema = new Gio.Settings({ schema_id: 'org.gnome.desktop.app-folders' });
-	_folderList = _foldersSchema.get_strv('folder-children');
+	FOLDER_SCHEMA = new Gio.Settings({ schema_id: 'org.gnome.desktop.app-folders' });
+	FOLDER_LIST = FOLDER_SCHEMA.get_strv('folder-children');
 
 	injectionInAppsMenus();
 	

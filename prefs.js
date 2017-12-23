@@ -65,7 +65,7 @@ const appfoldersManagerSettingsWidget = new GObject.Class({
 		
 		checkButton2.set_active(this._settings.get_boolean('experimental'));
 
-    	this.add(checkButton2);
+//    	this.add(checkButton2);
 	}
 });
 
