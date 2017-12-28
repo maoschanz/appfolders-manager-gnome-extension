@@ -67,3 +67,18 @@ msgstr "Ajouter"
 msgid "Enter the name of a category"
 msgstr "Entrez le nom d'une catégorie"
 
+msgid "More informations about \"additional categories\""
+msgstr "Plus d'informations à propos des \"catégories supplémentaires\""
+
+msgid "Standard specification"
+msgstr "Spécification standard"
+
+msgid "Report bugs or ideas"
+msgstr "Reporter un bug ou une idée"
+
+msgid "This extension can be deactivated once your applications are organized as wished."
+msgstr "Cette extension peut être désactivée une fois que vos applications sont organisées comme souhaité."
+
+
+
+
