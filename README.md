@@ -7,8 +7,6 @@ A [GNOME extension](https://extensions.gnome.org/extension/1217/appfolders-manag
 
 (Sorry, screenshots are in french)
 
-(More at http://imgur.com/a/PCtqe)
-
 ### Available in :
 
 * Belarusian - [DeadMetaler](https://github.com/DeadMetaler)
@@ -40,16 +38,19 @@ Features :
 (categories are defined by a [freedesktop standard](https://standards.freedesktop.org/menu-spec/latest/apa.html), see [this section](https://standards.freedesktop.org/menu-spec/latest/apas02.html) to learn more about additional categories available)
 
 ### Installation
+
+#### Recommended way to do
+
 Install it from https://extensions.gnome.org/extension/1217/appfolders-manager/
 
-Manual installation :
+#### Manual installation
 * Download the .zip archive and extract files in `~/.local/share/gnome-shell/extensions/appfolders-manager@maestroschan.fr`
 * Restart Gnome Shell.
 * Activate the extension.
 
 ### Future versions
-* Exclude apps from a folder
-* Drag and drop (I hope)
+* Drag and drop actions
+* Merge folders
 
 ### See also
 https://github.com/muflone/gnome-appfolders-manager a GTK+ application which manages appfolders
