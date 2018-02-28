@@ -4,12 +4,17 @@
     <key type="b" name="total-deletion">
       <default>true</default>
       <summary>complete deletion of an appfolder</summary>
-      <description>if a deleted appfolder should be 100% deleted</description>
+      <description>if a deleted appfolder should be 100% deleted (false = restauration is possible)</description>
     </key>
     <key type="b" name="experimental">
       <default>false</default>
       <summary>Use experimental features</summary>
-      <description>this is not supposed to be activated by the user</description>
+      <description>this is not supposed to be activated</description>
+    </key>
+    <key type="b" name="dnd">
+      <default>false</default>
+      <summary>Use drag-and-drop</summary>
+      <description>experimental feature, wip</description>
     </key>
 	</schema>
 </schemalist>
