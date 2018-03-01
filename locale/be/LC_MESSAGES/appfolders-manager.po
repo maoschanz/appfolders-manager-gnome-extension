@@ -1,72 +1,98 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <dead.666@bk.ru>, YEAR.
-#
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-06-05 23:48+0300\n"
-"PO-Revision-Date: 2017-06-05 23:48+0300+ZONE\n"
-"Last-Translator: Max Chorny <dead.666@bk.ru>\n"
-"Language-Team: BELARUSIAN <dead.666@bk.ru>\n"
+"POT-Creation-Date: 2018-03-01 01:49+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Max Krapiŭka <metalomaniax@gmail.com>\n"
+"Language-Team: BELARUSIAN <metalomaniax@gmail.com>\n"
 "Language: be\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-msgid "Enter a name"
-msgstr "Увядзіце назву"
-
+#: extension.js:133
 msgid "Cancel"
 msgstr "Адмена"
 
-msgid "Add to"
-msgstr "Дабавіць у"
-
-msgid "New AppFolder"
-msgstr "Новая Папка праграмаў"
-
-msgid "Remove from"
-msgstr "Выдалiць з"
-
-msgid "Delete AppFolder"
-msgstr "Выдалiць Папку праграмаў"
-
-msgid "Modifications will be effective after reloading the extension."
-msgstr "Змены ўступяць у сілу пасля перазагрузкі пашырэння."
-
-msgid "Maximum number of columns :"
-msgstr "Максiмальная колькасць слупкоў :"
-
-msgid "Delete all related settings when an appfolder is deleted"
-msgstr "Выдаляць усе звязаныя налады пры выдаленні Папцы праграмаў."
-
-msgid "Delete"
-msgstr "Выдалiць"
-
-msgid "Rename"
-msgstr "Перайменаваць"
-
+#: extension.js:175
 msgid "This appfolder already exists."
-msgstr "Гэтая Папка праграмаў ужо існуе"
+msgstr "Гэтая папка праграм ужо існуе"
 
-msgid "Create"
-msgstr "Стварыць"
-
-msgid "Remove a category"
-msgstr "Выдаліць катэгорыю"
-
-msgid "Additional categories"
-msgstr "Дадатковыя катэгорыі"
-
+#: extension.js:302
 msgid "Add a category"
 msgstr "Дадаць катэгорыю"
 
+#: extension.js:326
+msgid "Additional categories"
+msgstr "Дадатковыя катэгорыі"
+
+#: extension.js:329
+msgid "Enter the name of a category"
+msgstr "Увядзіце назву катэгорыі"
+
+#: extension.js:329
 msgid "Add"
 msgstr "Дадаць"
 
-msgid "Enter the name of a category"
-msgstr "Увядзіце назву катэгорыі"
+#: extension.js:342
+msgid "Remove a category"
+msgstr "Выдаліць катэгорыю"
+
+#: extension.js:366 extension.js:368
+msgid "Rename"
+msgstr "Перайменаваць"
+
+#: extension.js:368 extension.js:437
+msgid "Enter a name"
+msgstr "Увядзіце назву"
+
+#: extension.js:373
+msgid "Delete"
+msgstr "Выдаліць"
+
+#: extension.js:431
+msgid "Add to"
+msgstr "Дадаць у"
+
+#: extension.js:433
+msgid "New AppFolder"
+msgstr "Новая папка"
+
+#: extension.js:437
+msgid "Create"
+msgstr "Стварыць"
+
+#: extension.js:463
+msgid "Remove from"
+msgstr "Выдаліць з"
+
+#: prefs.js:33
+msgid "Modifications will be effective after reloading the extension."
+msgstr "Змены ўступяць у сілу пасля перазагрузкі пашырэння."
+
+#: prefs.js:40
+msgid "Delete all related settings when an appfolder is deleted"
+msgstr "Выдаляць усе звязаныя налады пры выдаленні Папкі праграм."
+
+#: prefs.js:56
+msgid "Experimental features (not recommended)"
+msgstr "Эксперыментальныя магчымасці (не рэкамендуецца)"
+
+msgid "More informations about \"additional categories\""
+msgstr "Больш інфармацыі пра \"дадатковыя катэгорыі\""
+
+msgid "Standard specification"
+msgstr "Стандартная спецыфікацыя"
+
+msgid "Report bugs or ideas"
+msgstr "Паведаміць пра памылкі, прапанаваць ідэі"
+
+msgid "This extension can be deactivated once your applications are organized as wished."
+msgstr "Гэта пашырэнне можа быць дэактывавана пасля таго як вы канчаткова наладзіце арганізацыю сваіх праграм."
+
