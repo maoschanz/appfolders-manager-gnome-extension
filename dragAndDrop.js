@@ -44,6 +44,13 @@ let injections=[];
 
 //--------------------------------------------------------------
 
+/*
+
+TODO fix the exclusion
+fix the blue removal, or make that actor green
+
+*/
+
 // droppable: create, delete
 const FolderActionBox = new Lang.Class({
 	Name:	'FolderActionBox',
@@ -51,25 +58,30 @@ const FolderActionBox = new Lang.Class({
 	_init:	function(id, color) {
 		this.id = id;
 		this.color = color;
-		let x, y, h, w;
+		let x, y, h, w, i;
 		switch (this.id) {
 			case 'delete':
 				x = 100;
 				y = 130;
 				h = 520;
 				w = 100;
+				i = 'user-trash-symbolic';
+//				i = 'user-trash-symbolic';
 			break;
 			case 'create':
 				x = 1200;
 				y = 130;
 				h = 520;
 				w = 100;
+//				i = 'folder-new-symbolic';
+				i = 'list-add-symbolic';
 			break;
 			default:
 				x = 10;
 				y = 10;
 				h = 10;
 				w = 10;
+				i = 'face-sad-symbolic';
 				this.color = 'white';
 			break;
 		}
@@ -78,8 +90,19 @@ const FolderActionBox = new Lang.Class({
 			width: w,
 			height: h,
 			style: 'background-color: ' + this.color + ';',
-			visible: false,			
+			visible: false,
 		});
+		this.actor.add(new St.Icon({
+			icon_name: i,
+			icon_size: 16,
+			style_class: 'system-status-icon',
+			x_expand: true,
+			y_expand: true,
+			style: 'margin: 5px;',
+			x_align: Clutter.ActorAlign.CENTER,
+			y_align: Clutter.ActorAlign.CENTER,
+		}));
+		
 		let monitor = Main.layoutManager.primaryMonitor;
 		this.actor.set_position(
 			monitor.x + x,
@@ -98,18 +121,16 @@ const FolderActionBox = new Lang.Class({
 			} else if (source instanceof AppDisplay.AppIcon) {
 				return DND.DragMotionResult.MOVE_DROP;
 			}
-			log('nani mono, omae wa ??');
+			log('wtf is that');
 			Main.overview.endItemDrag(this);
 			return DND.DragMotionResult.NO_DROP;
 		}
 		
 		if (this.id == 'create') {
-			if (source instanceof AppDisplay.FolderIcon) {
-				return DND.DragMotionResult.MOVE_DROP;
-			} else if (source instanceof AppDisplay.AppIcon) {
+			if (source instanceof AppDisplay.AppIcon) {
 				return DND.DragMotionResult.MOVE_DROP;
 			}
-			log('nani mono, omae wa ??');
+			log('wtf is that');
 			Main.overview.endItemDrag(this);
 			return DND.DragMotionResult.NO_DROP;
 		}
@@ -120,44 +141,20 @@ const FolderActionBox = new Lang.Class({
 		
 		if (this.id == 'delete') {
 			if (source instanceof AppDisplay.FolderIcon) {
-				log('omg on supprime un dossier ??????');
-				
-				Meta.later_add(Meta.LaterType.BEFORE_REDRAW, Lang.bind(this, function () {
-					
-					let tmp = [];
-					for(var j=0;j<Extension.FOLDER_LIST.length;j++){
-						if(Extension.FOLDER_LIST[j] == source.id) {}
-						else {
-							tmp.push(Extension.FOLDER_LIST[j]);
-						}
-					}
-					
-					Extension.FOLDER_SCHEMA.set_strv('folder-children', tmp);
-					Extension.FOLDER_LIST = tmp; //??
-					
-					if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('total-deletion') ) {
-						source._folder.reset('apps');
-						source._folder.reset('categories');
-						source._folder.reset('name'); // générait un bug // en génère toujours, en plus volumineux mais au moins rien ne crash
-					}
-					
-					return false;
-				}));
-				
-				deleteAction.actor.visible = false;
-				createAction.actor.visible = false;
-				upAction.actor.visible = false;
-				downAction.actor.visible = false;
-						
+				log('on supprime un dossier');
+				this.deleteFolder(source);
+				hideAll();
 				Main.overview.endItemDrag(this);
 				return true;
 				
 			} else if (source instanceof AppDisplay.AppIcon) {
 				log('on retire une appli');
+				this.removeApp(source);
+				hideAll();
 				Main.overview.endItemDrag(this);
 				return true;
 			}
-			log('139 no nani mono, omae wa ??');
+			log('wtf is that ??');
 			Main.overview.endItemDrag(this);
 			return false;
 		}
@@ -185,6 +182,76 @@ const FolderActionBox = new Lang.Class({
 		
 		Main.overview.endItemDrag(this);
 		return true;
+	},
+	
+	removeApp: function(source) {
+		let id = source.app.get_id();
+		log('id : ' + id);
+			
+		let _folder = Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source.id;
+		log('_folder : ' + _folder);
+		
+		let currentFolderSchema = new Gio.Settings({
+			schema_id: 'org.gnome.desktop.app-folders.folder',
+			path: '/org/gnome/desktop/app-folders/folders/' + _folder + '/'
+		});
+		
+		if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) {
+			log('true');
+			Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown();
+		} else {
+			log('false');
+		}
+							
+		if ( Extension.isInFolder(id, currentFolderSchema) ) {
+		
+			let pastContent = currentFolderSchema.get_strv('apps');
+			let presentContent = [];
+			for (var i=0;i<pastContent.length;i++){
+				if (pastContent[i] != id) {
+					presentContent.push(pastContent[i]);
+				}
+			}
+			currentFolderSchema.set_strv('apps', presentContent);
+			
+		} else {
+			//FIXME virer des exclues à l'ajout !!!
+			let pastContent = currentFolderSchema.get_strv('excluded-apps');
+			let presentContent = [];
+			for(i=0;i<pastContent.length;i++){
+				if(pastContent[i] != id) {
+					presentContent.push(pastContent[i]);
+				}
+			}
+			currentFolderSchema.set_strv('excluded-apps', presentContent);
+		}
+		Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
+	},
+	
+	deleteFolder(source) {
+		Meta.later_add(Meta.LaterType.BEFORE_REDRAW, Lang.bind(this, function () {
+			
+			let tmp = [];
+			for(var j=0;j<Extension.FOLDER_LIST.length;j++){
+				if(Extension.FOLDER_LIST[j] == source.id) {}
+				else {
+					tmp.push(Extension.FOLDER_LIST[j]);
+				}
+			}
+			
+			Extension.FOLDER_SCHEMA.set_strv('folder-children', tmp);
+			Extension.FOLDER_LIST = tmp; //??
+			
+			if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('total-deletion') ) {
+				source._folder.reset('apps');
+				source._folder.reset('categories');
+				source._folder.reset('name'); // générait un bug // en génère toujours, en plus volumineux mais au moins rien ne crash
+			}
+			
+			return false;
+		}));
+		
+		hideAll();
 	}
 	
 });
@@ -196,25 +263,28 @@ const NavigationBox = new Lang.Class({
 	_init:	function(id, color) {
 		this.id = id;
 		this.color = color;
-		let x, y, h, w;
+		let x, y, h, w, i;
 		switch (this.id) {
 			case 'up':
 				x = 200;
 				y = 30;
 				h = 100;
 				w = 1000;
+				i = 'pan-up-symbolic';
 			break;
 			case 'down':
 				x = 200;
 				y = 650;
 				h = 100;
 				w = 1000;
+				i = 'pan-down-symbolic';
 			break;
 			default:
 				x = 10;
 				y = 10;
 				h = 10;
 				w = 10;
+				i = 'face-sad-symbolic';
 				this.color = 'white';
 			break;
 		}
@@ -223,8 +293,19 @@ const NavigationBox = new Lang.Class({
 			width: w,
 			height: h,
 			style: 'background-color: ' + this.color + ';',
-			visible: false,			
+			visible: false,
 		});
+		this.actor.add(new St.Icon({
+			icon_name: i,
+			icon_size: 16,
+			style_class: 'system-status-icon',
+			x_expand: true,
+			y_expand: true,
+			style: 'margin: 5px;',
+			x_align: Clutter.ActorAlign.CENTER,
+			y_align: Clutter.ActorAlign.CENTER,
+		}));
+		
 		let monitor = Main.layoutManager.primaryMonitor;
 		this.actor.set_position(
 			monitor.x + x,
@@ -247,7 +328,7 @@ const NavigationBox = new Lang.Class({
 				this.pageUp();
 				return DND.DragMotionResult.MOVE_DROP;
 			}
-			log('nani mono, omae wa ??');
+			log('wtf did i just drag ?');
 			Main.overview.endItemDrag(this);
 			return DND.DragMotionResult.NO_DROP;
 		}
@@ -260,7 +341,7 @@ const NavigationBox = new Lang.Class({
 				this.pageDown();
 				return DND.DragMotionResult.MOVE_DROP;
 			}
-			log('nani mono, omae wa ??');
+			log('wtf did i just drag ?');
 			Main.overview.endItemDrag(this);
 			return DND.DragMotionResult.NO_DROP;
 		}
@@ -304,20 +385,20 @@ const NavigationBox = new Lang.Class({
 	
 });
 
-
 const HybridBox = new Lang.Class({
 	Name:	'HybridBox',
 	
 	_init:	function(id, color) {
 		this.id = id;
 		this.color = color;
-		let x, y, h, w;
+		let x, y, h, w, i;
 		switch (this.id) { //FIXME il faut 2 lignes dans certains cas de toutes façons
 			case 'remove-top':
 				x = 200;
 				y = 130;
 				h = 120;
 				w = 1000;
+				
 			break;
 			case 'remove-bottom':
 				x = 200;
@@ -333,6 +414,7 @@ const HybridBox = new Lang.Class({
 				this.color = 'white';
 			break;
 		}
+		i = 'pan-start-symbolic';
 		
 		this.actor = new St.BoxLayout ({
 			width: w,
@@ -340,6 +422,17 @@ const HybridBox = new Lang.Class({
 			style: 'background-color: ' + this.color + ';',
 			visible: false,			
 		});
+		this.actor.add(new St.Icon({
+			icon_name: i,
+			icon_size: 16,
+			style_class: 'system-status-icon',
+			x_expand: true,
+			y_expand: true,
+			style: 'margin: 5px;',
+			x_align: Clutter.ActorAlign.CENTER,
+			y_align: Clutter.ActorAlign.CENTER,
+		}));
+		
 		let monitor = Main.layoutManager.primaryMonitor;
 		this.actor.set_position(
 			monitor.x + x,
@@ -380,38 +473,81 @@ const HybridBox = new Lang.Class({
 			
 			removeActionTop.actor.visible = false;
 			removeActionBottom.actor.visible = false;
+			upAction.actor.visible = true;
+			downAction.actor.visible = true;
 		}
 	},
 	
-	acceptDrop: function(source, actor, x, y, time) {
+	acceptDrop: function(source, actor, x, y, time) {	//not sure everything make sense
 		log('----------- accept the drop -------------');
 		
-
 		if (source instanceof AppDisplay.FolderIcon) {
-			log('cancel');
+			log('cancel a merging');
+			// TODO ?
 			Main.overview.endItemDrag(this);
-			return false;
+			removeActionTop.actor.visible = false;
+			removeActionBottom.actor.visible = false;
+			return true;
 		} else if (source instanceof AppDisplay.AppIcon) {
 			log('remove-from');
+			this.removeApp(source);
 			Main.overview.endItemDrag(this);
-			return false;
+			removeActionTop.actor.visible = false;
+			removeActionBottom.actor.visible = false;
+			return true;
 		}
-		log('139 no nani mono, omae wa ??');
-		Main.overview.endItemDrag(this);
-		return false;
-
 		
 		log(source);
 		log("*************");
 		log(actor);
 		
-		removeActionTop.actor.visible = false;
-		removeActionBottom.actor.visible = false;
-		
 		Main.overview.endItemDrag(this);
-		return true;
-	}
+		return false;
+	},
 	
+	removeApp: function(source) {
+		let id = source.app.get_id();
+		log('id : ' + id);
+			
+		let _folder = Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source.id;
+		log('_folder : ' + _folder);
+		
+		let currentFolderSchema = new Gio.Settings({
+			schema_id: 'org.gnome.desktop.app-folders.folder',
+			path: '/org/gnome/desktop/app-folders/folders/' + _folder + '/'
+		});
+		
+		if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) {
+			log('true');
+			Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown();
+		} else {
+			log('false');
+		}
+							
+		if ( Extension.isInFolder(id, currentFolderSchema) ) {
+		
+			let pastContent = currentFolderSchema.get_strv('apps');
+			let presentContent = [];
+			for(i=0;i<pastContent.length;i++){
+				if(pastContent[i] != id) {
+					presentContent.push(pastContent[i]);
+				}
+			}
+			currentFolderSchema.set_strv('apps', presentContent);
+			
+		} else {
+			//FIXME virer des exclues à l'ajout !!!
+			let pastContent = currentFolderSchema.get_strv('excluded-apps');
+			let presentContent = [];
+			for(i=0;i<pastContent.length;i++){
+				if(pastContent[i] != id) {
+					presentContent.push(pastContent[i]);
+				}
+			}
+			currentFolderSchema.set_strv('excluded-apps', presentContent);
+		}
+		Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
+	},
 });
 
 
@@ -452,25 +588,29 @@ function dndInjections() {
 						log('it has begun (folder)');
 						deleteAction.actor.visible = true;
 						createAction.actor.visible = true;
-						upAction.actor.visible = true;
-						downAction.actor.visible = true;
 						if (
 							Main.overview.viewSelector.appDisplay._views[1].view._currentPopup
 							&&
 							Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source._boxPointerArrowside == St.Side.TOP
-						) {	
+						) {
+							upAction.actor.visible = false;
+							downAction.actor.visible = false;
 							removeActionTop.actor.visible = true;
 							removeActionBottom.actor.visible = false;
 						} else if (
 							Main.overview.viewSelector.appDisplay._views[1].view._currentPopup
 							&&
 							Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source._boxPointerArrowside == St.Side.BOTTOM
-						) {	
+						) {
+							upAction.actor.visible = false;
+							downAction.actor.visible = false;
 							removeActionTop.actor.visible = false;
 							removeActionBottom.actor.visible = true;
 						} else {
 							removeActionTop.actor.visible = false;
 							removeActionBottom.actor.visible = false;
+							upAction.actor.visible = true;
+							downAction.actor.visible = true;
 						}
 					}
 				));
@@ -479,12 +619,7 @@ function dndInjections() {
 						log('cancelled');
 						Main.overview.cancelledItemDrag(this);
 						
-						deleteAction.actor.visible = false;
-						createAction.actor.visible = false;
-						upAction.actor.visible = false;
-						downAction.actor.visible = false;
-						removeActionTop.actor.visible = false;
-						removeActionBottom.actor.visible = false;
+						hideAll();
 					}
 				));
 				this._draggable.connect('drag-end', Lang.bind(this,
@@ -492,17 +627,10 @@ function dndInjections() {
 						log('it ended');
 						Main.overview.endItemDrag(this);
 						
-						deleteAction.actor.visible = false;
-						createAction.actor.visible = false;
-						upAction.actor.visible = false;
-						downAction.actor.visible = false;
-						removeActionTop.actor.visible = false;
-						removeActionBottom.actor.visible = false;
+						hideAll();
 					}
 				));
 			}
-			
-			
 			
 			
 			
@@ -556,25 +684,29 @@ function dndInjections() {
 					log('it has begun (app)');
 					deleteAction.actor.visible = true;
 					createAction.actor.visible = true;
-					upAction.actor.visible = true;
-					downAction.actor.visible = true;
 					if (
 						Main.overview.viewSelector.appDisplay._views[1].view._currentPopup
 						&&
 						Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source._boxPointerArrowside == St.Side.TOP
-					) {	
+					) {
+						upAction.actor.visible = false;
+						downAction.actor.visible = false;
 						removeActionTop.actor.visible = true;
 						removeActionBottom.actor.visible = false;
 					} else if (
 						Main.overview.viewSelector.appDisplay._views[1].view._currentPopup
 						&&
 						Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source._boxPointerArrowside == St.Side.BOTTOM
-					) {	
+					) {
+						upAction.actor.visible = false;
+						downAction.actor.visible = false;
 						removeActionTop.actor.visible = false;
 						removeActionBottom.actor.visible = true;
 					} else {
 						removeActionTop.actor.visible = false;
 						removeActionBottom.actor.visible = false;
+						upAction.actor.visible = true;
+						downAction.actor.visible = true;
 					}
 					
 				}
@@ -584,12 +716,7 @@ function dndInjections() {
 					log('cancelled');
 					Main.overview.cancelledItemDrag(this);
 					
-					deleteAction.actor.visible = false;
-					createAction.actor.visible = false;
-					upAction.actor.visible = false;
-					downAction.actor.visible = false;
-					removeActionTop.actor.visible = false;
-					removeActionBottom.actor.visible = false;
+					hideAll();
 				}
 			));
 			this._draggable.connect('drag-end', Lang.bind(this,
@@ -597,12 +724,7 @@ function dndInjections() {
 					log('it ended');
 					Main.overview.endItemDrag(this);
 					
-					deleteAction.actor.visible = false;
-					createAction.actor.visible = false;
-					upAction.actor.visible = false;
-					downAction.actor.visible = false;
-					removeActionTop.actor.visible = false;
-					removeActionBottom.actor.visible = false;
+					hideAll();
 				}
 			));
 			
@@ -617,5 +739,12 @@ function dndInjections() {
 	
 }
 
-
+function hideAll() {
+	deleteAction.actor.visible = false;
+	createAction.actor.visible = false;
+	upAction.actor.visible = false;
+	downAction.actor.visible = false;
+	removeActionTop.actor.visible = false;
+	removeActionBottom.actor.visible = false;
+}
 
