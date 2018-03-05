@@ -14,6 +14,7 @@ const Convenience = Me.imports.convenience;
 
 const AppfolderDialog = Me.imports.appfolderDialog;
 const FolderIconMenu = Me.imports.folderIconMenu;
+const DragAndDrop = Me.imports.dragAndDrop;
 
 const Gettext = imports.gettext.domain('appfolders-manager');
 const _ = Gettext.gettext;
@@ -114,42 +115,67 @@ function injectionInAppsMenus() {
 				
 				let id = this._source.app.get_id();
 				
-				let _tmp = new Gio.Settings({
+				let currentFolderSchema = new Gio.Settings({
 					schema_id: 'org.gnome.desktop.app-folders.folder',
 					path: '/org/gnome/desktop/app-folders/folders/' + _folder + '/'
 				});
 				
-				let item = new PopupMenu.PopupMenuItem( AppDisplay._getFolderName( _tmp ) );
+				let item = new PopupMenu.PopupMenuItem( AppDisplay._getFolderName( currentFolderSchema ) );
 				
-				let shouldShow = isInFolder(id, _tmp);
+				let shouldShow = isInFolder(id, currentFolderSchema);
+				
+				if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('experimental') ) {
+					shouldShow = true;
+				}
 				
 				if(shouldShow) {
-					item.connect('activate', Lang.bind(this, function() {
+					item.connect('activate', Lang.bind(this, function(aa, bb, that) {
+						
+						that._source._menuManager._grabHelper.ungrab({ actor: that.actor });
 						
 						// We can't popdown the folder immediatly because the AppDisplay.AppFolderPopup.popdown()
 						// method tries to ungrab the global focus from the folder's popup actor, which isn't
 						// having the focus since the menu is still open. Menus' animation last ~0.25s so we
 						// will wait 0.30s before doing anything.
-						let a = Mainloop.timeout_add(300, Lang.bind(this, function() {
-							Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown();
-						
-							let tmp = new Gio.Settings({
-								schema_id: 'org.gnome.desktop.app-folders.folder',
-								path: '/org/gnome/desktop/app-folders/folders/' + _folder + '/'
-							});
-							
-							let pastContent = tmp.get_strv('apps');
-							let presentContent = [];
-							for(i=0;i<pastContent.length;i++){
-								if(pastContent[i] != id) {
-									presentContent.push(pastContent[i]);
-								}
+//						let a = Mainloop.timeout_add(300, Lang.bind(this, function() {
+							if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) {
+								log('true');
+								Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown();
+							} else {
+								log('false');
 							}
-							tmp.set_strv('apps', presentContent);
+//							let currentFolderSchema = new Gio.Settings({
+//								schema_id: 'org.gnome.desktop.app-folders.folder',
+//								path: '/org/gnome/desktop/app-folders/folders/' + _folder + '/'
+//							});
+							
+							if ( isInFolder(id, currentFolderSchema) ) {
+							
+								let pastContent = currentFolderSchema.get_strv('apps');
+								let presentContent = [];
+								for(i=0;i<pastContent.length;i++){
+									if(pastContent[i] != id) {
+										presentContent.push(pastContent[i]);
+									}
+								}
+								currentFolderSchema.set_strv('apps', presentContent);
+								
+							} else {
+								//FIXME virer des exclues à l'ajout !!!
+								let pastContent = currentFolderSchema.get_strv('excluded-apps');
+								let presentContent = [];
+								for(i=0;i<pastContent.length;i++){
+									if(pastContent[i] != id) {
+										presentContent.push(pastContent[i]);
+									}
+								}
+								currentFolderSchema.set_strv('excluded-apps', presentContent);
+								
+							}
 							Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
-							Mainloop.source_remove(a);
-						}));
-					}));
+//							Mainloop.source_remove(a);
+//						}));
+					}, this));
 					removeFrom.menu.addMenuItem(item);
 					shouldShow2 = true;
 				}
@@ -190,9 +216,6 @@ function createFolderMenus() {
 					this._menu.close();
 				//	this._menu.destroy();
 			} else if (button == 2) {
-				
-				//TODO tests acteurs
-				
 				this.popupMenu();
 				return Clutter.EVENT_STOP;
 			} else if (button == 3) {
@@ -244,6 +267,14 @@ function enable() {
 	FOLDER_LIST = FOLDER_SCHEMA.get_strv('folder-children');
 
 	injectionInAppsMenus();
+	
+	if(
+		Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('experimental')
+		&&
+		Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('dnd')
+	) {
+		DragAndDrop.dndInjections();
+	}
 	
 	createFolderMenus();
 }
