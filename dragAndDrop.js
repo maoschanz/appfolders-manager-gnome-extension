@@ -89,7 +89,8 @@ const FolderActionBox = new Lang.Class({
 		this.actor = new St.BoxLayout ({
 			width: w,
 			height: h,
-			style: 'background-color: ' + this.color + ';',
+			style_class: 'droppableArea',
+//			style: 'background-color: ' + this.color + ';',
 			visible: false,
 		});
 		this.actor.add(new St.Icon({
@@ -98,7 +99,6 @@ const FolderActionBox = new Lang.Class({
 			style_class: 'system-status-icon',
 			x_expand: true,
 			y_expand: true,
-			style: 'margin: 5px;',
 			x_align: Clutter.ActorAlign.CENTER,
 			y_align: Clutter.ActorAlign.CENTER,
 		}));
@@ -130,7 +130,7 @@ const FolderActionBox = new Lang.Class({
 			if (source instanceof AppDisplay.AppIcon) {
 				return DND.DragMotionResult.MOVE_DROP;
 			}
-			log('wtf is that');
+			log('non');
 			Main.overview.endItemDrag(this);
 			return DND.DragMotionResult.NO_DROP;
 		}
@@ -292,7 +292,8 @@ const NavigationBox = new Lang.Class({
 		this.actor = new St.BoxLayout ({
 			width: w,
 			height: h,
-			style: 'background-color: ' + this.color + ';',
+			style_class: 'droppableArea',
+//			style: 'background-color: ' + this.color + ';',
 			visible: false,
 		});
 		this.actor.add(new St.Icon({
@@ -301,7 +302,6 @@ const NavigationBox = new Lang.Class({
 			style_class: 'system-status-icon',
 			x_expand: true,
 			y_expand: true,
-			style: 'margin: 5px;',
 			x_align: Clutter.ActorAlign.CENTER,
 			y_align: Clutter.ActorAlign.CENTER,
 		}));
@@ -319,7 +319,6 @@ const NavigationBox = new Lang.Class({
 	
 	
 	handleDragOver: function(source, actor, x, y, time) {
-		
 		if (this.id == 'up') {
 			if (source instanceof AppDisplay.FolderIcon) {
 				this.pageUp();
@@ -359,9 +358,21 @@ const NavigationBox = new Lang.Class({
 			var currentPage = Main.overview.viewSelector.appDisplay._views[1].view._grid.currentPage;
 			log(currentPage);
 			Main.overview.viewSelector.appDisplay._views[1].view.goToPage( currentPage - 1 );
-		
+			
+			this.updateArrowVisibility();			
 			this._timeoutId = Mainloop.timeout_add(CHANGE_PAGE_TIMEOUT, Lang.bind(this, this.unlock));
 			this.lock = true;
+		}
+	},
+	
+	updateArrowVisibility: function() {
+		upAction.actor.visible = true;
+		downAction.actor.visible = true;
+		if (Main.overview.viewSelector.appDisplay._views[1].view._grid.currentPage == 0) {
+			upAction.actor.visible = false;
+		}
+		if (Main.overview.viewSelector.appDisplay._views[1].view._grid.currentPage == Main.overview.viewSelector.appDisplay._views[1].view._grid._nPages -1) {
+			downAction.actor.visible = false;
 		}
 	},
 	
@@ -370,7 +381,8 @@ const NavigationBox = new Lang.Class({
 			var currentPage = Main.overview.viewSelector.appDisplay._views[1].view._grid.currentPage;
 			log(currentPage);
 			Main.overview.viewSelector.appDisplay._views[1].view.goToPage( currentPage + 1 );
-		
+			
+			this.updateArrowVisibility();	
 			this._timeoutId = Mainloop.timeout_add(CHANGE_PAGE_TIMEOUT, Lang.bind(this, this.unlock));
 			this.lock = true;
 		}
@@ -394,17 +406,17 @@ const HybridBox = new Lang.Class({
 		let x, y, h, w, i;
 		switch (this.id) { //FIXME il faut 2 lignes dans certains cas de toutes façons
 			case 'remove-top':
-				x = 200;
+				x = 300;
 				y = 130;
 				h = 120;
-				w = 1000;
+				w = 800;
 				
 			break;
 			case 'remove-bottom':
-				x = 200;
+				x = 300;
 				y = 530;
 				h = 120;
-				w = 1000;
+				w = 800;
 			break;
 			default:
 				x = 10;
@@ -419,7 +431,8 @@ const HybridBox = new Lang.Class({
 		this.actor = new St.BoxLayout ({
 			width: w,
 			height: h,
-			style: 'background-color: ' + this.color + ';',
+			style_class: 'droppableArea',
+//			style: 'background-color: ' + this.color + ';',
 			visible: false,			
 		});
 		this.actor.add(new St.Icon({
@@ -428,7 +441,6 @@ const HybridBox = new Lang.Class({
 			style_class: 'system-status-icon',
 			x_expand: true,
 			y_expand: true,
-			style: 'margin: 5px;',
 			x_align: Clutter.ActorAlign.CENTER,
 			y_align: Clutter.ActorAlign.CENTER,
 		}));
@@ -587,7 +599,7 @@ function dndInjections() {
 						Main.overview.beginItemDrag(this);
 						log('it has begun (folder)');
 						deleteAction.actor.visible = true;
-						createAction.actor.visible = true;
+						createAction.actor.visible = false;
 						if (
 							Main.overview.viewSelector.appDisplay._views[1].view._currentPopup
 							&&
@@ -609,8 +621,7 @@ function dndInjections() {
 						} else {
 							removeActionTop.actor.visible = false;
 							removeActionBottom.actor.visible = false;
-							upAction.actor.visible = true;
-							downAction.actor.visible = true;
+							upAction.updateArrowVisibility();
 						}
 					}
 				));
@@ -705,8 +716,7 @@ function dndInjections() {
 					} else {
 						removeActionTop.actor.visible = false;
 						removeActionBottom.actor.visible = false;
-						upAction.actor.visible = true;
-						downAction.actor.visible = true;
+						upAction.updateArrowVisibility();
 					}
 					
 				}
