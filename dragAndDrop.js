@@ -54,9 +54,8 @@ fix the blue removal, or make that actor green
 const FolderActionArea = new Lang.Class({
 	Name:	'FolderActionArea',
 	
-	_init:	function(id, color) {
+	_init:	function(id) {
 		this.id = id;
-		this.color = color;
 		let x, y, h, w, i;
 		switch (this.id) {
 			case 'delete':
@@ -72,8 +71,8 @@ const FolderActionArea = new Lang.Class({
 				y = 130;
 				h = 520;
 				w = 100;
-//				i = 'folder-new-symbolic';
-				i = 'list-add-symbolic';
+				i = 'folder-new-symbolic';
+//				i = 'list-add-symbolic';
 			break;
 			default:
 				x = 10;
@@ -81,7 +80,6 @@ const FolderActionArea = new Lang.Class({
 				h = 10;
 				w = 10;
 				i = 'face-sad-symbolic';
-				this.color = 'white';
 			break;
 		}
 		
@@ -89,7 +87,6 @@ const FolderActionArea = new Lang.Class({
 			width: w,
 			height: h,
 			style_class: 'droppableArea',
-//			style: 'background-color: ' + this.color + ';',
 			visible: false,
 		});
 		this.actor.add(new St.Icon({
@@ -102,15 +99,19 @@ const FolderActionArea = new Lang.Class({
 			y_align: Clutter.ActorAlign.CENTER,
 		}));
 		
+		this.setPosition(x, y);
+		Main.layoutManager.overviewGroup.add_actor(this.actor);
+		this.actor._delegate = this;
+		
+		this.lock = false
+	},
+	
+	setPosition: function (x, y) {
 		let monitor = Main.layoutManager.primaryMonitor;
 		this.actor.set_position(
 			monitor.x + x,
 			monitor.y + y
 		);
-		Main.layoutManager.overviewGroup.add_actor(this.actor);
-		this.actor._delegate = this;
-		
-		this.lock = false
 	},
 	
 	handleDragOver: function(source, actor, x, y, time) {
@@ -212,9 +213,8 @@ const FolderActionArea = new Lang.Class({
 const NavigationArea = new Lang.Class({
 	Name:	'NavigationArea',
 	
-	_init:	function(id, color) {
+	_init:	function(id) {
 		this.id = id;
-		this.color = color;
 		let x, y, h, w, i;
 		switch (this.id) {
 			case 'up':
@@ -237,7 +237,6 @@ const NavigationArea = new Lang.Class({
 				h = 10;
 				w = 10;
 				i = 'face-sad-symbolic';
-				this.color = 'white';
 			break;
 		}
 		
@@ -245,7 +244,6 @@ const NavigationArea = new Lang.Class({
 			width: w,
 			height: h,
 			style_class: 'droppableArea',
-//			style: 'background-color: ' + this.color + ';',
 			visible: false,
 		});
 		this.actor.add(new St.Icon({
@@ -258,17 +256,20 @@ const NavigationArea = new Lang.Class({
 			y_align: Clutter.ActorAlign.CENTER,
 		}));
 		
-		let monitor = Main.layoutManager.primaryMonitor;
-		this.actor.set_position(
-			monitor.x + x,
-			monitor.y + y
-		);
+		this.setPosition(x, y);
 		Main.layoutManager.overviewGroup.add_actor(this.actor);
 		this.actor._delegate = this;
 		
 		this.lock = false
 	},
 	
+	setPosition: function (x, y) {
+		let monitor = Main.layoutManager.primaryMonitor;
+		this.actor.set_position(
+			monitor.x + x,
+			monitor.y + y
+		);
+	},
 	
 	handleDragOver: function(source, actor, x, y, time) {
 		if (this.id == 'up') {
@@ -314,6 +315,8 @@ const NavigationArea = new Lang.Class({
 			this.updateArrowVisibility();			
 			this._timeoutId = Mainloop.timeout_add(CHANGE_PAGE_TIMEOUT, Lang.bind(this, this.unlock));
 			this.lock = true;
+			hideAllFolders();
+			computeFolderOverlayActors();
 		}
 	},
 	
@@ -337,6 +340,8 @@ const NavigationArea = new Lang.Class({
 			this.updateArrowVisibility();	
 			this._timeoutId = Mainloop.timeout_add(CHANGE_PAGE_TIMEOUT, Lang.bind(this, this.unlock));
 			this.lock = true;
+			hideAllFolders();
+			computeFolderOverlayActors();
 		}
 	},
 
@@ -352,9 +357,8 @@ const NavigationArea = new Lang.Class({
 const HybridArea = new Lang.Class({
 	Name:	'HybridArea',
 	
-	_init:	function(id, color) {
+	_init:	function(id, asked_x, asked_y) {
 		this.id = id;
-		this.color = color;
 		let x, y, h, w, i;
 		switch (this.id) { //FIXME il faut 2 lignes dans certains cas de toutes façons
 			case 'remove-top':
@@ -362,29 +366,34 @@ const HybridArea = new Lang.Class({
 				y = 130;
 				h = 120;
 				w = 800;
-				
+				i = 'pan-start-symbolic';
 			break;
 			case 'remove-bottom':
 				x = 300;
 				y = 530;
 				h = 120;
 				w = 800;
+				i = 'pan-start-symbolic';
+			break;
+			case 'folder':
+				x = asked_x;
+				y = asked_y;
+				h = 120;
+				w = 120;
+				i = 'list-add-symbolic';
 			break;
 			default:
 				x = 10;
 				y = 10;
 				h = 10;
 				w = 10;
-				this.color = 'white';
 			break;
 		}
-		i = 'pan-start-symbolic';
 		
 		this.actor = new St.BoxLayout ({
 			width: w,
 			height: h,
 			style_class: 'droppableArea',
-//			style: 'background-color: ' + this.color + ';',
 			visible: false,			
 		});
 		this.actor.add(new St.Icon({
@@ -397,15 +406,19 @@ const HybridArea = new Lang.Class({
 			y_align: Clutter.ActorAlign.CENTER,
 		}));
 		
+		this.setPosition(x, y);
+		Main.layoutManager.overviewGroup.add_actor(this.actor);
+		this.actor._delegate = this;
+		
+		this.lock = false
+	},
+	
+	setPosition: function (x, y) {
 		let monitor = Main.layoutManager.primaryMonitor;
 		this.actor.set_position(
 			monitor.x + x,
 			monitor.y + y
 		);
-		Main.layoutManager.overviewGroup.add_actor(this.actor);
-		this.actor._delegate = this;
-		
-		this.lock = false
 	},
 	
 	handleDragOver: function(source, actor, x, y, time) {
@@ -428,17 +441,25 @@ const HybridArea = new Lang.Class({
 		Mainloop.source_remove(this._timeoutId);
 	},
 	
-	popdown: function() {
-		if(!this.lock) {
-			Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown();
+	popdown: function() {		
+		if(!this.lock){ 
+			log('---------- 446 ----------');
+			if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) { //FIXME mécanisme similaire partout
+				log('---------- 448 ----------');
+				Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown();
 			
-			this._timeoutId = Mainloop.timeout_add(POPDOWN_TIMEOUT, Lang.bind(this, this.unlock));
-			this.lock = true;
-			
-			removeActionTop.actor.visible = false;
-			removeActionBottom.actor.visible = false;
-			upAction.actor.visible = true;
-			downAction.actor.visible = true;
+				this._timeoutId = Mainloop.timeout_add(POPDOWN_TIMEOUT, Lang.bind(this, this.unlock));
+				this.lock = true;
+				
+				removeActionTop.actor.visible = false;
+				removeActionBottom.actor.visible = false;
+				upAction.actor.visible = true;
+				downAction.actor.visible = true;
+				
+				hideAllFolders();
+				computeFolderOverlayActors();
+				computeActionActors();
+			}
 		}
 	},
 	
@@ -454,7 +475,7 @@ const HybridArea = new Lang.Class({
 			return true;
 		} else if (source instanceof AppDisplay.AppIcon) {
 			log('remove-from');
-			this.removeApp(source);
+			//this.removeApp(source);
 			Main.overview.endItemDrag(this);
 			removeActionTop.actor.visible = false;
 			removeActionBottom.actor.visible = false;
@@ -469,31 +490,31 @@ const HybridArea = new Lang.Class({
 		return false;
 	},
 	
-	removeApp: function(source) { //FIXME ????? Utile ?
-		let id = source.app.get_id();
-		log('id : ' + id);
-		
-		let _folder = Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source.id;
-		log('_folder : ' + _folder);
-		//FIXME dans le cas où c'est nul il faut supprimer de tous les dossiers mais n'exclure d'aucun,
-		//ce qui demande une autre fonction !
-		
-		let currentFolderSchema = new Gio.Settings({
-			schema_id: 'org.gnome.desktop.app-folders.folder',
-			path: '/org/gnome/desktop/app-folders/folders/' + _folder + '/'
-		});
-		
-		if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) {
-			log('true');
-			Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown();
-		} else {
-			log('false');
-		}
-							
-		Extension.removeFromFolder(id, currentFolderSchema);
-		
-		Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
-	},
+//	removeApp: function(source) { //FIXME ????? Utile ?
+//		let id = source.app.get_id();
+//		log('id : ' + id);
+//		
+//		let _folder = Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source.id;
+//		log('_folder : ' + _folder);
+//		//FIXME dans le cas où c'est nul il faut supprimer de tous les dossiers mais n'exclure d'aucun,
+//		//ce qui demande une autre fonction !
+//		
+//		let currentFolderSchema = new Gio.Settings({
+//			schema_id: 'org.gnome.desktop.app-folders.folder',
+//			path: '/org/gnome/desktop/app-folders/folders/' + _folder + '/'
+//		});
+//		
+//		if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) {
+//			log('true');
+//			Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown();
+//		} else {
+//			log('false');
+//		}
+//							
+//		Extension.removeFromFolder(id, currentFolderSchema);
+//		
+//		Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
+//	},
 });
 
 
@@ -503,21 +524,26 @@ let upAction;
 let downAction;
 let removeActionTop;
 let removeActionBottom;
-let addAction = [];
+let addActions = [];
 	
 function dndInjections() {
 	
-	deleteAction = new FolderActionArea('delete', 'rgba(200,0,0,0.5)');
-	createAction = new FolderActionArea('create', 'rgba(200,0,0,0.5)');
-	upAction = new NavigationArea('up', 'rgba(0,200,0,0.5)');
-	downAction = new NavigationArea('down', 'rgba(0,200,0,0.5)');
-	removeActionTop = new HybridArea('remove-top', 'rgba(0,0,200,0.5)');
-	removeActionBottom = new HybridArea('remove-bottom', 'rgba(0,0,200,0.5)');
+	deleteAction = new FolderActionArea('delete');
+	createAction = new FolderActionArea('create');
+	upAction = new NavigationArea('up');
+	downAction = new NavigationArea('down');
+	removeActionTop = new HybridArea('remove-top', 0, 0);
+	removeActionBottom = new HybridArea('remove-bottom', 0, 0);
+//	for (var i = 0 ; i < Main.overview.viewSelector.appDisplay._views[1].view.folderIcons.length ; i++) {
+//		log('loading folders... ' + i + '/' + Main.overview.viewSelector.appDisplay._views[1].view.folderIcons.length );
+//		addActions[i] = new HybridArea('folder', x, y);
+//	}
+	
 	
 	if (!AppDisplay.FolderIcon.injections2) {
 	
 		AppDisplay.FolderIcon.prototype.injections2 = true;
-		
+						
 		if (injections['_init2']) {
 			removeInjection(AppDisplay.FolderIcon.prototype, injections, '_init2');
 		}
@@ -534,6 +560,8 @@ function dndInjections() {
 						log('it has begun (folder)');
 						deleteAction.actor.visible = true;
 						createAction.actor.visible = false;
+						computeFolderOverlayActors();
+						computeActionActors();
 						if (
 							Main.overview.viewSelector.appDisplay._views[1].view._currentPopup
 							&&
@@ -583,9 +611,6 @@ function dndInjections() {
 		
 		
 		
-		
-		
-		
 	}
 	
 	
@@ -606,7 +631,11 @@ function dndInjections() {
 //	log(Main.overview.viewSelector.appDisplay._views[1].view._grid.bottomPadding);
 //	log(Main.overview.viewSelector.appDisplay._views[1].view._grid.rightPadding);
 //	log(Main.overview.viewSelector.appDisplay._views[1].view._grid.leftPadding);
+	log('~~~~~~~~~~');
 	
+	log(Main.overview.viewSelector.appDisplay._views[1].view._availWidth);
+	
+	log('~~~~~~~~~~');
 	
 	
 	
@@ -629,6 +658,8 @@ function dndInjections() {
 					log('it has begun (app)');
 					deleteAction.actor.visible = true;
 					createAction.actor.visible = true;
+					computeFolderOverlayActors();
+					computeActionActors();
 					if (
 						Main.overview.viewSelector.appDisplay._views[1].view._currentPopup
 						&&
@@ -690,6 +721,92 @@ function hideAll() {
 	downAction.actor.visible = false;
 	removeActionTop.actor.visible = false;
 	removeActionBottom.actor.visible = false;
+	hideAllFolders();
 }
+
+function hideAllFolders () {
+	for (var i = 0; i < addActions.length; i++) {
+		addActions[i].actor.visible = false;
+	}
+}
+
+function computeActionActors () {
+//	let _availWidth = Main.overview.viewSelector.appDisplay._views[1].view._availWidth;
+//	let _availHeight = Main.overview.viewSelector.appDisplay._views[1].view._availHeight;
+	let _availWidth = Main.overview.viewSelector.appDisplay._views[1].view._grid.actor.width;
+	let _availHeight = 
+		(Main.overview.viewSelector.appDisplay._views[1].view._grid.actor.height) / (Main.overview.viewSelector.appDisplay._views[1].view._grid._nPages)
+	;
+	
+	log();
+	log(_availWidth);
+	log(_availHeight);
+	log();
+	log();
+	log();
+	log();
+	log();
+//	   log( Main.overview.viewSelector.appDisplay._views[1].view._grid.actor.x
+//	); log( Main.overview.viewSelector.appDisplay._views[1].view._grid.actor.y
+//	); log( Main.overview.viewSelector.appDisplay._views[1].view._grid.actor.width
+//	); log( Main.overview.viewSelector.appDisplay._views[1].view._grid.actor.height
+//	); log( Main.overview.viewSelector.appDisplay._views[1].view._grid.actor._hItemSize
+//	); log( Main.overview.viewSelector.appDisplay._views[1].view._grid.actor._vItemSize
+//	);
+	
+	
+//	deleteAction.setPosition();
+//	createAction.setPosition();
+//	upAction.actor.setPosition();
+//	downAction.actor.setPosition();
+//	removeActionTop.setPosition();
+//	removeActionBottom.setPosition();
+	
+//	deleteAction.actor.width = ;
+//	createAction.actor.width = ;
+	upAction.actor.width = _availWidth;
+	downAction.actor.width = _availWidth;
+	removeActionTop.actor.width = _availWidth * 0.8;
+	removeActionBottom.actor.width = _availWidth * 0.8;
+	
+	deleteAction.actor.height = _availHeight;
+	createAction.actor.height = _availHeight;
+//	upAction.actor.height = ;
+//	downAction.actor.height = ;
+//	removeActionTop.actor.height = ;
+//	removeActionBottom.actor.height = ;
+}
+
+function computeFolderOverlayActors () {
+
+	let foldersArray = Extension.FOLDER_SCHEMA.get_strv('folder-children');
+		//FIXME ne s'adapte pas au nombre réel de dossiers
+	for (var i = 0 ; i < foldersArray.length ; i++) {
+		log('loading folders... ' + i + '/' + Main.overview.viewSelector.appDisplay._views[1].view.folderIcons.length );
+		let x = Main.overview.viewSelector.appDisplay._views[1].view._availWidth/2;
+		let y = Main.overview.viewSelector.appDisplay._views[1].view._availHeight/2;
+		
+		
+		
+		log('computation in progress... ' + (i * (100 / addActions.length)) + '%...');
+		addActions[i] = new HybridArea('folder', x, y);
+	}
+	
+	log('computation in progress... 100%...');
+	
+	for (var i = 0; i < addActions.length; i++) {
+		let itemPage = Main.overview.viewSelector.appDisplay._views[1].view._grid.getItemPage(
+			Main.overview.viewSelector.appDisplay._views[1].view.folderIcons[i].actor
+		);
+		let currentPage = Main.overview.viewSelector.appDisplay._views[1].view._grid.currentPage;
+		log(currentPage + ' *** ' + itemPage);
+		if ((itemPage == currentPage) && (!Main.overview.viewSelector.appDisplay._views[1].view._currentPopup)) {
+			addActions[i].actor.visible = true;
+			log('the ' + i + 'th actor is visible.');
+		}
+	}
+}
+
+
 
 
