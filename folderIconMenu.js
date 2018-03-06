@@ -73,50 +73,35 @@ var FolderIconMenu = new Lang.Class({
 			path: '/org/gnome/desktop/app-folders/folders/' + this._source.id + '/'
 		});
 		
-		let item = new PopupMenu.PopupMenuItem( _("Add a category") );
-		item.connect('activate', Lang.bind(this, function() {
-			popdownAll();
-			let dialog = new AppfolderDialog.AppfolderDialog(tmp, null);
-			dialog.open();
-		}));
-		
-		this.addMenuItem(item);
-		
-		//--------------
-		
-		let content = tmp.get_strv('categories');
-		
-		if ((content != null) && (content != []) && (content[0] != undefined)) {
+		if (Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('categories')) {
 			
-			let removeCategorySubmenu = new PopupMenu.PopupSubMenuMenuItem(_("Remove a category"));
+			let addCategoryItem = new PopupMenu.PopupMenuItem( _("Add a category") );
+			addCategoryItem.connect('activate', Lang.bind(this, function() {
+				popdownAll();
+				let dialog = new AppfolderDialog.AppfolderDialog(tmp, null);
+				dialog.open();
+			}));
 			
-			for (var i = 0; i < content.length; i++) {
-				let labelItem = content[i] ;
-				let item = new PopupMenu.PopupMenuItem( labelItem );
-				item.connect('activate', Lang.bind(this, function() {
+			this.addMenuItem(addCategoryItem);
+			
+			//--------------
+			
+			let content = tmp.get_strv('categories');
+			
+			if ((content != null) && (content != []) && (content[0] != undefined)) {
+				
+				let removeCategorySubmenu = new PopupMenu.PopupMenuItem(_("Remove a category"));
+				
+				removeCategorySubmenu.connect('activate', Lang.bind(this, function() {
 					popdownAll();
-					let presentContent = [];
-					for(i=0;i<content.length;i++){
-						if(content[i] != labelItem) {
-							presentContent.push(content[i]);
-						}
-					}
-					tmp.set_strv('categories', presentContent);
-					reload();
+					let dialog = new AppfolderDialog.AppfolderDialog(tmp, null);
+					dialog.open();
 				}));
-				removeCategorySubmenu.menu.addMenuItem(item);
+				this.addMenuItem(removeCategorySubmenu);
 			}
-			this.addMenuItem(removeCategorySubmenu);
+			
+			this._appendSeparator();
 		}
-		
-		this._appendSeparator();
-		
-		let mergeWithItem = this._appendMenuItem(_("Merge in"));
-		mergeWithItem.connect('activate', Lang.bind(this, function() {
-			Extension.mergeFolders(this._source, null); //TODO
-		}));
-		
-		this._appendSeparator();
 		
 		let renameItem = this._appendMenuItem(_("Rename"));
 		renameItem.connect('activate', Lang.bind(this, function() {

@@ -217,12 +217,6 @@ function createFolderMenus() {
 }
 
 
-
-
-
-
-
-
 //------------------------------------------------
 //------------------- Generic --------------------
 //------------------ functions -------------------
@@ -232,9 +226,7 @@ function createFolderMenus() {
  * folder, nor about hiding dropping areas, nor
  * about redisplaying the view.
  */
- 
 function removeFromFolder (app_id, folder_schema) {
-	log('generic remove');
 	if ( isInFolder(app_id, folder_schema) ) {
 		let pastContent = folder_schema.get_strv('apps');
 		let presentContent = [];
@@ -245,24 +237,16 @@ function removeFromFolder (app_id, folder_schema) {
 		}
 		folder_schema.set_strv('apps', presentContent);
 	} else {
-		//FIXME à l'ajout, virer les apps ajoutées de la liste des exclues !!!
-		let pastContent = folder_schema.get_strv('excluded-apps');
-		let presentContent = [];
-		for(i=0;i<pastContent.length;i++){
-			if(pastContent[i] != app_id) {
-				presentContent.push(pastContent[i]);
-			}
-		}
-		folder_schema.set_strv('excluded-apps', presentContent);
+		let content = folder_schema.get_strv('excluded-apps');
+		content.push(app_id);
+		folder_schema.set_strv('excluded-apps', content);
 	}
-		
 	return true;
 }
 
 //------------------------------------------------
 
 function deleteFolder (folder_source) {
-	log('generic deletion');
 	Meta.later_add(Meta.LaterType.BEFORE_REDRAW, Lang.bind(this, function () {
 		let tmp = [];
 		for(var j=0;j < FOLDER_LIST.length;j++){
@@ -296,7 +280,6 @@ function mergeFolders (folder_staying, folder_dying) {
 //------------------------------------------------
 
 function createNewFolder (app_source) {
-	log('generic creation');
 	let id = app_source.app.get_id();
 	
 	let dialog = new AppfolderDialog.AppfolderDialog(null , id);
@@ -307,9 +290,19 @@ function createNewFolder (app_source) {
 //------------------------------------------------
 
 function addToFolder (app_source, folder_schema) {
-	log('generic add');
 	let id = app_source.app.get_id();
 	
+	//un-exclude the application if it was excluded
+	let pastExcluded = folder_schema.get_strv('excluded-apps');
+	let presentExcluded = [];
+	for(i=0;i<pastExcluded.length;i++){
+		if(pastExcluded[i] != id) {
+			presentExcluded.push(pastExcluded[i]);
+		}
+	}
+	folder_schema.set_strv('excluded-apps', presentExcluded);
+	
+	//actually add the app
 	let content = folder_schema.get_strv('apps');
 	content.push(id);
 	folder_schema.set_strv('apps', content);
@@ -317,14 +310,8 @@ function addToFolder (app_source, folder_schema) {
 }
 
 //------------------------------------------------
-//------------------------------------------------
-//------------------------------------------------
-//------------------------------------------------
 
-
-//--------------------------------------------------------------
-
-function isInFolder (id, folder) { //FIXME raison d'être de ce machin ici ??
+function isInFolder (id, folder) {
 	let isIn = false;
 	let content_ = folder.get_strv('apps');
 	for(var j=0;j<content_.length;j++){

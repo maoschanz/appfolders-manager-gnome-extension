@@ -527,31 +527,6 @@ const FolderArea = new Lang.Class({
 			this.lock = true;
 			
 			hideAllFolders();
-//			computeFolderOverlayActors();
-//			computeActionActors();
-			
-//			if (
-//				Main.overview.viewSelector.appDisplay._views[1].view._currentPopup
-//				&&
-//				Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source._boxPointerArrowside == St.Side.TOP
-//			) {
-//				upAction.actor.visible = false;
-//				downAction.actor.visible = false;
-//				removeActionTop.actor.visible = true;
-//				removeActionBottom.actor.visible = false;
-//			} else if (
-//				Main.overview.viewSelector.appDisplay._views[1].view._currentPopup
-//				&&
-//				Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source._boxPointerArrowside == St.Side.BOTTOM
-//			) {
-//				upAction.actor.visible = false;
-//				downAction.actor.visible = false;
-//				removeActionTop.actor.visible = false;
-//				removeActionBottom.actor.visible = true;
-//			} else {
-//				removeActionTop.actor.visible = false;
-//				removeActionBottom.actor.visible = false;
-//			}
 		}
 	},
 	
@@ -755,6 +730,7 @@ function computeActionActors () {
 	let pertinentGrid;
 	if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) {
 		pertinentGrid = Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source.view._grid;
+		log('grid inadaptée à un popup fermé');
 	} else {
 		pertinentGrid = Main.overview.viewSelector.appDisplay._views[1].view._grid;
 	}
