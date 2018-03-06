@@ -7,6 +7,7 @@ const Main = imports.ui.main;
 const AppDisplay = imports.ui.appDisplay;
 const PopupMenu = imports.ui.popupMenu;
 const Overview = imports.ui.overview;
+const Meta = imports.gi.Meta;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
@@ -67,12 +68,11 @@ function injectionInAppsMenus() {
 			
 			let newAppFolder = new PopupMenu.PopupMenuItem('+ ' + _("New AppFolder"));
 			newAppFolder.connect('activate', Lang.bind(this, function() {
-				let id = this._source.app.get_id();
+
 				FolderIconMenu.popdownAll(); //FIXME
 				//Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown(); //??
 				
-				let dialog = new AppfolderDialog.AppfolderDialog(null , id);
-				dialog.open();
+				createNewFolder(this._source);
 			}));
 			addto.menu.addMenuItem(newAppFolder);
 			
@@ -90,17 +90,12 @@ function injectionInAppsMenus() {
 				
 				if(shouldShow) {
 					item.connect('activate', Lang.bind(this, function() {
-						let id = this._source.app.get_id();
+						
 						FolderIconMenu.popdownAll(); //FIXME
 						//Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown(); //??
 						
-						let tmp2 = new Gio.Settings({
-							schema_id: 'org.gnome.desktop.app-folders.folder',
-							path: '/org/gnome/desktop/app-folders/folders/' + _folder + '/'
-						});
-						let content = tmp2.get_strv('apps');
-						content.push(id);
-						tmp2.set_strv('apps', content);
+						addToFolder(this._source, _tmp);
+						
 						Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
 					}));
 					addto.menu.addMenuItem(item);
@@ -144,34 +139,9 @@ function injectionInAppsMenus() {
 							} else {
 								log('false');
 							}
-//							let currentFolderSchema = new Gio.Settings({
-//								schema_id: 'org.gnome.desktop.app-folders.folder',
-//								path: '/org/gnome/desktop/app-folders/folders/' + _folder + '/'
-//							});
-							
-							if ( isInFolder(id, currentFolderSchema) ) {
-							
-								let pastContent = currentFolderSchema.get_strv('apps');
-								let presentContent = [];
-								for(i=0;i<pastContent.length;i++){
-									if(pastContent[i] != id) {
-										presentContent.push(pastContent[i]);
-									}
-								}
-								currentFolderSchema.set_strv('apps', presentContent);
-								
-							} else {
-								//FIXME virer des exclues à l'ajout !!!
-								let pastContent = currentFolderSchema.get_strv('excluded-apps');
-								let presentContent = [];
-								for(i=0;i<pastContent.length;i++){
-									if(pastContent[i] != id) {
-										presentContent.push(pastContent[i]);
-									}
-								}
-								currentFolderSchema.set_strv('excluded-apps', presentContent);
-								
-							}
+
+							removeFromFolder(id, currentFolderSchema);
+
 							Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
 //							Mainloop.source_remove(a);
 //						}));
@@ -245,6 +215,112 @@ function createFolderMenus() {
 		});
 	}
 }
+
+
+
+
+
+
+
+
+//------------------------------------------------
+//------------------- Generic --------------------
+//------------------ functions -------------------
+//------------------------------------------------
+/* These functions perform the requested actions
+ * but do not care about popdowning open menu/open
+ * folder, nor about hiding dropping areas, nor
+ * about redisplaying the view.
+ */
+ 
+function removeFromFolder (app_id, folder_schema) {
+	log('generic remove');
+	if ( isInFolder(app_id, folder_schema) ) {
+		let pastContent = folder_schema.get_strv('apps');
+		let presentContent = [];
+		for(i=0;i<pastContent.length;i++){
+			if(pastContent[i] != app_id) {
+				presentContent.push(pastContent[i]);
+			}
+		}
+		folder_schema.set_strv('apps', presentContent);
+	} else {
+		//FIXME à l'ajout, virer les apps ajoutées de la liste des exclues !!!
+		let pastContent = folder_schema.get_strv('excluded-apps');
+		let presentContent = [];
+		for(i=0;i<pastContent.length;i++){
+			if(pastContent[i] != app_id) {
+				presentContent.push(pastContent[i]);
+			}
+		}
+		folder_schema.set_strv('excluded-apps', presentContent);
+	}
+		
+	return true;
+}
+
+//------------------------------------------------
+
+function deleteFolder (folder_source) {
+	log('generic deletion');
+	Meta.later_add(Meta.LaterType.BEFORE_REDRAW, Lang.bind(this, function () {
+		let tmp = [];
+		for(var j=0;j < FOLDER_LIST.length;j++){
+			if(FOLDER_LIST[j] == folder_source.id) {}
+			else {
+				tmp.push(FOLDER_LIST[j]);
+			}
+		}
+		
+		FOLDER_SCHEMA.set_strv('folder-children', tmp);
+		FOLDER_LIST = tmp; //??
+		
+		if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('total-deletion') ) {
+			folder_source._folder.reset('apps');
+			folder_source._folder.reset('categories');
+			folder_source._folder.reset('name'); // générait un bug // en génère toujours, en plus volumineux mais au moins rien ne crash
+		}
+	}));
+	
+	return true;
+}
+
+//------------------------------------------------
+
+function mergeFolders (folder_staying, folder_dying) {
+	log('generic merging');
+	
+	return true;
+}
+
+//------------------------------------------------
+
+function createNewFolder (app_source) {
+	log('generic creation');
+	let id = app_source.app.get_id();
+	
+	let dialog = new AppfolderDialog.AppfolderDialog(null , id);
+	dialog.open();
+	return true;
+}
+
+//------------------------------------------------
+
+function addToFolder (app_source, folder_schema) {
+	log('generic add');
+	let id = app_source.app.get_id();
+	
+	let content = folder_schema.get_strv('apps');
+	content.push(id);
+	folder_schema.set_strv('apps', content);
+	return true;
+}
+
+//------------------------------------------------
+//------------------------------------------------
+//------------------------------------------------
+//------------------------------------------------
+
 
 //--------------------------------------------------------------
 

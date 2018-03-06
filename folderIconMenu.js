@@ -12,6 +12,7 @@ const Signals = imports.signals;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Convenience = Me.imports.convenience;
+const Extension = Me.imports.extension;
 
 const AppfolderDialog = Me.imports.appfolderDialog;
 
@@ -110,6 +111,13 @@ var FolderIconMenu = new Lang.Class({
 		
 		this._appendSeparator();
 		
+		let mergeWithItem = this._appendMenuItem(_("Merge in"));
+		mergeWithItem.connect('activate', Lang.bind(this, function() {
+			Extension.mergeFolders(this._source, null); //TODO
+		}));
+		
+		this._appendSeparator();
+		
 		let renameItem = this._appendMenuItem(_("Rename"));
 		renameItem.connect('activate', Lang.bind(this, function() {
 			let dialog = new AppfolderDialog.AppfolderDialog(this._source._folder, null);
@@ -118,22 +126,7 @@ var FolderIconMenu = new Lang.Class({
 		
 		let deleteItem = this._appendMenuItem(_("Delete"));
 		deleteItem.connect('activate', Lang.bind(this, function() {
-			
-			let tmp = [];
-			for(var j=0;j<this.folderList.length;j++){
-				if(this.folderList[j] == this._source.id) {}
-				else {
-					tmp.push(this.folderList[j]);
-				}
-			}
-			
-			FOLDER_SCHEMA.set_strv('folder-children', tmp);
-			
-			if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('total-deletion') ) {
-				this._source._folder.reset('apps');
-				this._source._folder.reset('categories');
-				this._source._folder.reset('name'); // générait un bug // en génère toujours, en plus volumineux mais au moins rien ne crash
-			}
+			Extension.deleteFolder(this._source);
 		}));
 	},
 

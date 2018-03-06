@@ -5,7 +5,6 @@ const Clutter = imports.gi.Clutter;
 const Gio = imports.gi.Gio;
 const Lang = imports.lang;
 const St = imports.gi.St;
-const Meta = imports.gi.Meta;
 const Main = imports.ui.main;
 const Mainloop = imports.mainloop;
 const GLib = imports.gi.GLib;
@@ -52,8 +51,8 @@ fix the blue removal, or make that actor green
 */
 
 // droppable: create, delete
-const FolderActionBox = new Lang.Class({
-	Name:	'FolderActionBox',
+const FolderActionArea = new Lang.Class({
+	Name:	'FolderActionArea',
 	
 	_init:	function(id, color) {
 		this.id = id;
@@ -154,9 +153,6 @@ const FolderActionBox = new Lang.Class({
 				Main.overview.endItemDrag(this);
 				return true;
 			}
-			log('wtf is that ??');
-			Main.overview.endItemDrag(this);
-			return false;
 		}
 		
 		if (this.id == 'create') {
@@ -165,15 +161,10 @@ const FolderActionBox = new Lang.Class({
 				Main.overview.endItemDrag(this);
 				return false;
 			} else if (source instanceof AppDisplay.AppIcon) {
-				log('creation de dossier');
-				
-				
+				Extension.createNewFolder(source);
 				Main.overview.endItemDrag(this);
-				return false;
+				return true;
 			}
-			log('139 no nani mono, omae wa ??');
-			Main.overview.endItemDrag(this);
-			return false;
 		}
 		
 		log(source);
@@ -181,7 +172,7 @@ const FolderActionBox = new Lang.Class({
 		log(actor);
 		
 		Main.overview.endItemDrag(this);
-		return true;
+		return false;
 	},
 	
 	removeApp: function(source) {
@@ -190,6 +181,8 @@ const FolderActionBox = new Lang.Class({
 			
 		let _folder = Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source.id;
 		log('_folder : ' + _folder);
+		//FIXME dans le cas où c'est nul il faut supprimer de tous les dossiers mais n'exclure d'aucun,
+		//ce qui demande une autre fonction !
 		
 		let currentFolderSchema = new Gio.Settings({
 			schema_id: 'org.gnome.desktop.app-folders.folder',
@@ -197,68 +190,27 @@ const FolderActionBox = new Lang.Class({
 		});
 		
 		if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) {
-			log('true');
+			log('true 191');
 			Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown();
 		} else {
-			log('false');
+			log('false 194');
 		}
 							
-		if ( Extension.isInFolder(id, currentFolderSchema) ) {
+		Extension.removeFromFolder(id, currentFolderSchema);
 		
-			let pastContent = currentFolderSchema.get_strv('apps');
-			let presentContent = [];
-			for (var i=0;i<pastContent.length;i++){
-				if (pastContent[i] != id) {
-					presentContent.push(pastContent[i]);
-				}
-			}
-			currentFolderSchema.set_strv('apps', presentContent);
-			
-		} else {
-			//FIXME virer des exclues à l'ajout !!!
-			let pastContent = currentFolderSchema.get_strv('excluded-apps');
-			let presentContent = [];
-			for(i=0;i<pastContent.length;i++){
-				if(pastContent[i] != id) {
-					presentContent.push(pastContent[i]);
-				}
-			}
-			currentFolderSchema.set_strv('excluded-apps', presentContent);
-		}
 		Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
 	},
 	
 	deleteFolder(source) {
-		Meta.later_add(Meta.LaterType.BEFORE_REDRAW, Lang.bind(this, function () {
-			
-			let tmp = [];
-			for(var j=0;j<Extension.FOLDER_LIST.length;j++){
-				if(Extension.FOLDER_LIST[j] == source.id) {}
-				else {
-					tmp.push(Extension.FOLDER_LIST[j]);
-				}
-			}
-			
-			Extension.FOLDER_SCHEMA.set_strv('folder-children', tmp);
-			Extension.FOLDER_LIST = tmp; //??
-			
-			if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('total-deletion') ) {
-				source._folder.reset('apps');
-				source._folder.reset('categories');
-				source._folder.reset('name'); // générait un bug // en génère toujours, en plus volumineux mais au moins rien ne crash
-			}
-			
-			return false;
-		}));
-		
+		Extension.deleteFolder(source);
 		hideAll();
 	}
 	
 });
 
 
-const NavigationBox = new Lang.Class({
-	Name:	'NavigationBox',
+const NavigationArea = new Lang.Class({
+	Name:	'NavigationArea',
 	
 	_init:	function(id, color) {
 		this.id = id;
@@ -397,8 +349,8 @@ const NavigationBox = new Lang.Class({
 	
 });
 
-const HybridBox = new Lang.Class({
-	Name:	'HybridBox',
+const HybridArea = new Lang.Class({
+	Name:	'HybridArea',
 	
 	_init:	function(id, color) {
 		this.id = id;
@@ -517,12 +469,14 @@ const HybridBox = new Lang.Class({
 		return false;
 	},
 	
-	removeApp: function(source) {
+	removeApp: function(source) { //FIXME ????? Utile ?
 		let id = source.app.get_id();
 		log('id : ' + id);
-			
+		
 		let _folder = Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source.id;
 		log('_folder : ' + _folder);
+		//FIXME dans le cas où c'est nul il faut supprimer de tous les dossiers mais n'exclure d'aucun,
+		//ce qui demande une autre fonction !
 		
 		let currentFolderSchema = new Gio.Settings({
 			schema_id: 'org.gnome.desktop.app-folders.folder',
@@ -536,28 +490,8 @@ const HybridBox = new Lang.Class({
 			log('false');
 		}
 							
-		if ( Extension.isInFolder(id, currentFolderSchema) ) {
+		Extension.removeFromFolder(id, currentFolderSchema);
 		
-			let pastContent = currentFolderSchema.get_strv('apps');
-			let presentContent = [];
-			for(i=0;i<pastContent.length;i++){
-				if(pastContent[i] != id) {
-					presentContent.push(pastContent[i]);
-				}
-			}
-			currentFolderSchema.set_strv('apps', presentContent);
-			
-		} else {
-			//FIXME virer des exclues à l'ajout !!!
-			let pastContent = currentFolderSchema.get_strv('excluded-apps');
-			let presentContent = [];
-			for(i=0;i<pastContent.length;i++){
-				if(pastContent[i] != id) {
-					presentContent.push(pastContent[i]);
-				}
-			}
-			currentFolderSchema.set_strv('excluded-apps', presentContent);
-		}
 		Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
 	},
 });
@@ -573,12 +507,12 @@ let addAction = [];
 	
 function dndInjections() {
 	
-	deleteAction = new FolderActionBox('delete', 'rgba(200,0,0,0.5)');
-	createAction = new FolderActionBox('create', 'rgba(200,0,0,0.5)');
-	upAction = new NavigationBox('up', 'rgba(0,200,0,0.5)');
-	downAction = new NavigationBox('down', 'rgba(0,200,0,0.5)');
-	removeActionTop = new HybridBox('remove-top', 'rgba(0,0,200,0.5)');
-	removeActionBottom = new HybridBox('remove-bottom', 'rgba(0,0,200,0.5)');
+	deleteAction = new FolderActionArea('delete', 'rgba(200,0,0,0.5)');
+	createAction = new FolderActionArea('create', 'rgba(200,0,0,0.5)');
+	upAction = new NavigationArea('up', 'rgba(0,200,0,0.5)');
+	downAction = new NavigationArea('down', 'rgba(0,200,0,0.5)');
+	removeActionTop = new HybridArea('remove-top', 'rgba(0,0,200,0.5)');
+	removeActionBottom = new HybridArea('remove-bottom', 'rgba(0,0,200,0.5)');
 	
 	if (!AppDisplay.FolderIcon.injections2) {
 	
@@ -757,4 +691,5 @@ function hideAll() {
 	removeActionTop.actor.visible = false;
 	removeActionBottom.actor.visible = false;
 }
+
 
