@@ -16,6 +16,7 @@ const Extension = Me.imports.extension;
 
 const CHANGE_PAGE_TIMEOUT = 250;
 const POPDOWN_TIMEOUT = 500;
+const POPDOWN_ACTOR_HEIGHT = 100;
 
 //-------------------------------------------------
 /* do not edit this section */
@@ -463,58 +464,11 @@ const HybridArea = new Lang.Class({
 		}
 	},
 	
-	acceptDrop: function(source, actor, x, y, time) {	//not sure everything make sense
-		log('----------- accept the drop -------------');
-		
-		if (source instanceof AppDisplay.FolderIcon) {
-			log('cancel a merging');
-			// TODO ?
-			Main.overview.endItemDrag(this);
-			removeActionTop.actor.visible = false;
-			removeActionBottom.actor.visible = false;
-			return true;
-		} else if (source instanceof AppDisplay.AppIcon) {
-			log('remove-from');
-			//this.removeApp(source);
-			Main.overview.endItemDrag(this);
-			removeActionTop.actor.visible = false;
-			removeActionBottom.actor.visible = false;
-			return true;
-		}
-		
-		log(source);
-		log("*************");
-		log(actor);
-		
+	acceptDrop: function(source, actor, x, y, time) {
 		Main.overview.endItemDrag(this);
 		return false;
 	},
 	
-//	removeApp: function(source) { //FIXME ????? Utile ?
-//		let id = source.app.get_id();
-//		log('id : ' + id);
-//		
-//		let _folder = Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source.id;
-//		log('_folder : ' + _folder);
-//		//FIXME dans le cas où c'est nul il faut supprimer de tous les dossiers mais n'exclure d'aucun,
-//		//ce qui demande une autre fonction !
-//		
-//		let currentFolderSchema = new Gio.Settings({
-//			schema_id: 'org.gnome.desktop.app-folders.folder',
-//			path: '/org/gnome/desktop/app-folders/folders/' + _folder + '/'
-//		});
-//		
-//		if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) {
-//			log('true');
-//			Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown();
-//		} else {
-//			log('false');
-//		}
-//							
-//		Extension.removeFromFolder(id, currentFolderSchema);
-//		
-//		Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
-//	},
 });
 
 
@@ -534,10 +488,6 @@ function dndInjections() {
 	downAction = new NavigationArea('down');
 	removeActionTop = new HybridArea('remove-top', 0, 0);
 	removeActionBottom = new HybridArea('remove-bottom', 0, 0);
-//	for (var i = 0 ; i < Main.overview.viewSelector.appDisplay._views[1].view.folderIcons.length ; i++) {
-//		log('loading folders... ' + i + '/' + Main.overview.viewSelector.appDisplay._views[1].view.folderIcons.length );
-//		addActions[i] = new HybridArea('folder', x, y);
-//	}
 	
 	
 	if (!AppDisplay.FolderIcon.injections2) {
@@ -614,29 +564,6 @@ function dndInjections() {
 	}
 	
 	
-//	log(Main.overview.viewSelector.appDisplay._views[1].view._grid.actor.x);
-//	log(Main.overview.viewSelector.appDisplay._views[1].view._grid.actor.y);
-//	log(Main.overview.viewSelector.appDisplay._views[1].view._grid.actor.width); //96
-//	log(Main.overview.viewSelector.appDisplay._views[1].view._grid.actor.height);
-//	log('~~~~~~~~~~');
-//	log(Main.overview.viewSelector.appDisplay._views[1].view._grid._getHItemSize()); //96
-//	log(Main.overview.viewSelector.appDisplay._views[1].view._grid._rowsPerPage);
-//	log('~~~~~~~~~~');
-//	log(Main.overview.viewSelector.appDisplay._views[1].view._grid._grid.x);
-//	log(Main.overview.viewSelector.appDisplay._views[1].view._grid._grid.y);
-//	log(Main.overview.viewSelector.appDisplay._views[1].view._grid._grid.width); //96
-//	log(Main.overview.viewSelector.appDisplay._views[1].view._grid._grid.height);
-//	log('~~~~~~~~~~');
-//	log(Main.overview.viewSelector.appDisplay._views[1].view._grid.topPadding);
-//	log(Main.overview.viewSelector.appDisplay._views[1].view._grid.bottomPadding);
-//	log(Main.overview.viewSelector.appDisplay._views[1].view._grid.rightPadding);
-//	log(Main.overview.viewSelector.appDisplay._views[1].view._grid.leftPadding);
-	log('~~~~~~~~~~');
-	
-	log(Main.overview.viewSelector.appDisplay._views[1].view._availWidth);
-	
-	log('~~~~~~~~~~');
-	
 	
 	
 	if (!AppDisplay.AppIcon.injections2) {
@@ -710,8 +637,6 @@ function dndInjections() {
 	
 	
 	
-	
-	
 }
 
 function hideAll() {
@@ -731,39 +656,39 @@ function hideAllFolders () {
 }
 
 function computeActionActors () {
-//	let _availWidth = Main.overview.viewSelector.appDisplay._views[1].view._availWidth;
-//	let _availHeight = Main.overview.viewSelector.appDisplay._views[1].view._availHeight;
-	let _availWidth = Main.overview.viewSelector.appDisplay._views[1].view._grid.actor.width;
-	let _availHeight = 
-		(Main.overview.viewSelector.appDisplay._views[1].view._grid.actor.height) / (Main.overview.viewSelector.appDisplay._views[1].view._grid._nPages)
+
+	let monitor = Main.layoutManager.primaryMonitor;
+	
+	let pertinentGrid;
+	if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) {
+		pertinentGrid = Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source.view._grid;
+	} else {
+		pertinentGrid = Main.overview.viewSelector.appDisplay._views[1].view._grid;
+	}
+	let _availWidth = pertinentGrid.actor.width;
+	let _availHeight = //do not use the pertinentGrid here since it's a scrollable grid.
+		(Main.overview.viewSelector.appDisplay._views[1].view._grid.actor.height)
+		/
+		(Main.overview.viewSelector.appDisplay._views[1].view._grid._nPages)
 	;
 	
-	log();
-	log(_availWidth);
-	log(_availHeight);
-	log();
-	log();
-	log();
-	log();
-	log();
-//	   log( Main.overview.viewSelector.appDisplay._views[1].view._grid.actor.x
-//	); log( Main.overview.viewSelector.appDisplay._views[1].view._grid.actor.y
-//	); log( Main.overview.viewSelector.appDisplay._views[1].view._grid.actor.width
-//	); log( Main.overview.viewSelector.appDisplay._views[1].view._grid.actor.height
-//	); log( Main.overview.viewSelector.appDisplay._views[1].view._grid.actor._hItemSize
-//	); log( Main.overview.viewSelector.appDisplay._views[1].view._grid.actor._vItemSize
-//	);
+	let xMiddle = ( monitor.x + monitor.width ) / 2;
+	let yMiddle = ( monitor.y + monitor.height ) / 2;
 	
+	let sideMargin = (monitor.width - _availWidth) / 2;
 	
-//	deleteAction.setPosition();
-//	createAction.setPosition();
-//	upAction.actor.setPosition();
-//	downAction.actor.setPosition();
-//	removeActionTop.setPosition();
-//	removeActionBottom.setPosition();
+	let topOfTheGrid = yMiddle - (_availHeight/2);
+	let bottomOfTheGrid = yMiddle + (_availHeight/2);
 	
-//	deleteAction.actor.width = ;
-//	createAction.actor.width = ;
+	deleteAction.setPosition( sideMargin/2 ,  topOfTheGrid );
+	createAction.setPosition( monitor.width - sideMargin, topOfTheGrid );
+	upAction.setPosition( sideMargin, 0 );
+	downAction.setPosition( sideMargin, bottomOfTheGrid );
+	removeActionTop.setPosition( sideMargin + _availWidth * 0.1, topOfTheGrid );
+	removeActionBottom.setPosition( sideMargin + _availWidth * 0.1, bottomOfTheGrid - POPDOWN_ACTOR_HEIGHT );
+	
+	deleteAction.actor.width = sideMargin/2;
+	createAction.actor.width = sideMargin/2;
 	upAction.actor.width = _availWidth;
 	downAction.actor.width = _availWidth;
 	removeActionTop.actor.width = _availWidth * 0.8;
@@ -771,10 +696,10 @@ function computeActionActors () {
 	
 	deleteAction.actor.height = _availHeight;
 	createAction.actor.height = _availHeight;
-//	upAction.actor.height = ;
-//	downAction.actor.height = ;
-//	removeActionTop.actor.height = ;
-//	removeActionBottom.actor.height = ;
+	upAction.actor.height = topOfTheGrid;
+	downAction.actor.height = monitor.height - bottomOfTheGrid;
+	removeActionTop.actor.height = POPDOWN_ACTOR_HEIGHT;
+	removeActionBottom.actor.height = POPDOWN_ACTOR_HEIGHT;
 }
 
 function computeFolderOverlayActors () {
@@ -783,16 +708,26 @@ function computeFolderOverlayActors () {
 		//FIXME ne s'adapte pas au nombre réel de dossiers
 	for (var i = 0 ; i < foldersArray.length ; i++) {
 		log('loading folders... ' + i + '/' + Main.overview.viewSelector.appDisplay._views[1].view.folderIcons.length );
+		
+		//------------------------------------
+		
 		let x = Main.overview.viewSelector.appDisplay._views[1].view._availWidth/2;
 		let y = Main.overview.viewSelector.appDisplay._views[1].view._availHeight/2;
 		
 		
 		
-		log('computation in progress... ' + (i * (100 / addActions.length)) + '%...');
-		addActions[i] = new HybridArea('folder', x, y);
+		
+		
+		
+		log('positionning the overlay at: ' + x + ', ' + y);
+		
+		//------------------------------------
+		
+		log('In progress... ' + (i * (100 / addActions.length)) + '%...');
+		addActions[i] = new HybridArea('folder', x-30+i*30, y-30+i*30);
 	}
 	
-	log('computation in progress... 100%...');
+	log('In progress... 100%...');
 	
 	for (var i = 0; i < addActions.length; i++) {
 		let itemPage = Main.overview.viewSelector.appDisplay._views[1].view._grid.getItemPage(

@@ -1,13 +1,7 @@
 .droppableArea
 {
-	background-color: rgba(100,100,200,0.5);
-	border-radius: 15px;
-}
-
-.activeDroppableArea
-{
+	background-color: rgba(100,100,200,0.8);
 	border-radius: 15px;
 	border-width: 1px;
-	background-color: rgba(100,100,200,0.8);
 	border-color: rgba(200,200,200,1.0);
 }
