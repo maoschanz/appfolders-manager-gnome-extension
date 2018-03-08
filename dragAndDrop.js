@@ -158,9 +158,7 @@ const FolderActionArea = new Lang.Class({
 		}
 	},
 	
-	acceptDrop: function(source, actor, x, y, time) {
-		log('----------- accept the drop -------------');
-		
+	acceptDrop: function(source, actor, x, y, time) {		
 		if (this.id == 'delete') {
 			if (source instanceof AppDisplay.FolderIcon) {
 				log('on supprime un dossier');
@@ -170,17 +168,18 @@ const FolderActionArea = new Lang.Class({
 				return true;
 				
 			} else if (source instanceof AppDisplay.AppIcon) {
-				log('on retire une appli');
-				this.removeApp(source);
+				log('théoriquement impossible');
+				//this.removeApp(source);
 				hideAll();
 				Main.overview.endItemDrag(this);
-				return true;
+				//return true;
+				return false;
 			}
 		}
 		
 		if (this.id == 'create') {
 			if (source instanceof AppDisplay.FolderIcon) {
-				log('ça ne fait pas sens de creer un dossier en droppant un dossier, sombre connard');
+				log('théoriquement impossible');
 				Main.overview.endItemDrag(this);
 				return false;
 			} else if (source instanceof AppDisplay.AppIcon) {
@@ -192,36 +191,6 @@ const FolderActionArea = new Lang.Class({
 		
 		Main.overview.endItemDrag(this);
 		return false;
-	},
-	
-	removeApp: function(source) {
-		let id = source.app.get_id();
-		log('id : ' + id);
-		
-		if(!Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) {
-			log('ERREUR : pas de dossier ouvert, il faut implémenter l\'exclusion totale');
-			return;
-		}
-		let _folder = Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source.id;
-		log('_folder : ' + _folder);
-		//FIXME dans le cas où c'est nul il faut supprimer de tous les dossiers mais n'exclure d'aucun,
-		//ce qui demande une autre fonction !
-		
-		let currentFolderSchema = new Gio.Settings({
-			schema_id: 'org.gnome.desktop.app-folders.folder',
-			path: '/org/gnome/desktop/app-folders/folders/' + _folder + '/'
-		});
-		
-		if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) {
-			log('true 191');
-			Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown();
-		} else {
-			log('false 194');
-		}
-							
-		Extension.removeFromFolder(id, currentFolderSchema);
-		
-		Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
 	},
 	
 	deleteFolder(source) {
@@ -251,20 +220,10 @@ const NavigationArea = new Lang.Class({
 				y = 650;
 				i = 'pan-down-symbolic';
 			break;
-			case 'popdown-top':
+			default:
 				x = 300;
 				y = 130;
 				i = 'pan-start-symbolic';
-			break;
-			case 'popdown-bottom':
-				x = 300;
-				y = 530;
-				i = 'pan-start-symbolic';
-			break;
-			default:
-				x = 10;
-				y = 10;
-				i = 'face-sad-symbolic';
 			break;
 		}
 		
@@ -296,7 +255,6 @@ const NavigationArea = new Lang.Class({
 				this.pageUp();
 				return DND.DragMotionResult.CONTINUE;
 			}
-			log('wtf did i just drag ?');
 			Main.overview.endItemDrag(this);
 			return DND.DragMotionResult.NO_DROP;
 		}
@@ -309,7 +267,6 @@ const NavigationArea = new Lang.Class({
 				this.pageDown();
 				return DND.DragMotionResult.CONTINUE;
 			}
-			log('wtf did i just drag ?');
 			Main.overview.endItemDrag(this);
 			return DND.DragMotionResult.NO_DROP;
 		}
@@ -319,7 +276,7 @@ const NavigationArea = new Lang.Class({
 			they have to be NavigationArea because their lifecycle
 			is the same as regular "up/down" areas' lifecycle.
 		*/
-		if (this.id == 'popdown-top') {
+		if ( (this.id == 'popdown-bottom') || (this.id == 'popdown-top') ){
 			if (source instanceof AppDisplay.FolderIcon) {
 				this.popdown();
 				return DND.DragMotionResult.CONTINUE;
@@ -327,32 +284,15 @@ const NavigationArea = new Lang.Class({
 				this.popdown();
 				return DND.DragMotionResult.MOVE_DROP;
 			}
-			log('wtf did i just drag ?');
 			Main.overview.endItemDrag(this);
 			return DND.DragMotionResult.NO_DROP;
 		}
-		
-		if (this.id == 'popdown-bottom') {
-			if (source instanceof AppDisplay.FolderIcon) {
-				this.popdown();
-				return DND.DragMotionResult.CONTINUE;
-			} else if (source instanceof AppDisplay.AppIcon) {
-				this.popdown();
-				return DND.DragMotionResult.MOVE_DROP;
-			}
-			log('wtf did i just drag ?');
-			Main.overview.endItemDrag(this);
-			return DND.DragMotionResult.NO_DROP;
-		}
-		
 	},
 	
 	popdown: function() {
 		this._timeoutId = Mainloop.timeout_add(POPDOWN_TIMEOUT, Lang.bind(this, this.unlock));
 		if(!this.lock){
-			log('---------- 446 ----------');
 			if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) { //FIXME mécanisme similaire partout ??
-				log('---------- 448 ----------');
 				Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown();
 			
 				this.lock = true;
@@ -418,12 +358,8 @@ const NavigationArea = new Lang.Class({
 				return true;
 			} else if (source instanceof AppDisplay.AppIcon) {
 				this.removeApp(source);
-			
-				updateArrowVisibility();
-				createAction.hide();
-				deleteAction.hide(); //normalement inutile pour le moment (et pour toujours ?)
-				
-				log('removing from navigationArea');
+				hideAll();
+				log('removing (navigationArea)');
 				Main.overview.endItemDrag(this);
 				return true;
 			}
@@ -437,7 +373,7 @@ const NavigationArea = new Lang.Class({
 		log('id : ' + id);
 		
 		if(!Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) {
-			log('ERREUR : pas de dossier ouvert, il faut implémenter l\'exclusion totale');
+			log('ERREUR : pas de dossier ouvert');
 			return;
 		}
 		let _folder = Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source.id;
@@ -461,6 +397,18 @@ const NavigationArea = new Lang.Class({
 	
 });
 
+/*
+ * This corresponds to the area upon a folder. Position and visibility of the actor
+ * is handled by exterior functions.
+ * 
+ * "this.id" is the folder's id, a string, as written in the gsettings key.
+ * 
+ * Hovering-while-dragging during OPEN_FOLDER_TIMEOUT milliseconds upon this
+ * class' actor will open the corresponding folder.
+ * 
+ * Dropping another folder on this folder will merge them (dropped folder is deleted)
+ * Dropping an app on this folder will add it to the folder
+ */
 const FolderArea = new Lang.Class({
 	Name:		'FolderArea',
 	Extends:	DroppableArea,
@@ -486,7 +434,7 @@ const FolderArea = new Lang.Class({
 		Main.layoutManager.overviewGroup.add_actor(this.actor);
 		this.actor._delegate = this;
 		
-		this.lock = false
+		this.lock = true;
 	},
 	
 	handleDragOver: function(source, actor, x, y, time) {
@@ -503,17 +451,39 @@ const FolderArea = new Lang.Class({
 		
 	},
 	
+	//FIXME pareil que la navigation svp
 	unlock: function() {
 		this.lock = false;
-		log('unlock - (opening a folder)');
-		
-		//FIXME ???
-		
-		computeFolderOverlayActors();
-		updateActorsPositions();
-		
-		//FIXME ??
-		
+		log('unlock');
+		Mainloop.source_remove(this._timeoutId);
+	},
+	
+	popupFolder: function() {
+		this._timeoutId = Mainloop.timeout_add(OPEN_FOLDER_TIMEOUT, Lang.bind(this, this.unlock));
+		if(!this.lock){
+			log('popupFolder +++++++++');
+			for(var i = 0; i < Main.overview.viewSelector.appDisplay._views[1].view.folderIcons.length; i++) {
+				log('ET...' + Main.overview.viewSelector.appDisplay._views[1].view.folderIcons[i].id + ' ... ' + this.id);
+				if (Main.overview.viewSelector.appDisplay._views[1].view.folderIcons[i].id == this.id) {
+					log('ET QUE S\'OUVRE LE DOSSIER !');
+					Main.overview.viewSelector.appDisplay._views[1].view.folderIcons[i]._ensurePopup();
+					Main.overview.viewSelector.appDisplay._views[1].view.folderIcons[i].view.actor.vscroll.adjustment.value = 0;
+					Main.overview.viewSelector.appDisplay._views[1].view.folderIcons[i]._openSpaceForPopup();
+					break;
+				}
+			}
+			
+			computeFolderOverlayActors(); //inutile puisqu'on les cache lol
+			updateActorsPositions(); //useless selon moi puisque les positions ne bougent pas
+			hideAllFolders();
+			
+			this._timeoutId2 = Mainloop.timeout_add(500, Lang.bind(this, this.updateRemoveArrow)); //FIXME ????
+			
+			this.lock = true;
+		}
+	},
+	
+	updateRemoveArrow: function () {
 		if ( // The free space is upon the open folder
 			Main.overview.viewSelector.appDisplay._views[1].view._currentPopup
 			&&
@@ -536,34 +506,13 @@ const FolderArea = new Lang.Class({
 			removeActionTop.hide();
 			removeActionBottom.hide();
 		}
-		
-		Mainloop.source_remove(this._timeoutId);
-	},
-	
-	popupFolder: function() {		
-		if(!this.lock){
-			log('popupFolder +++++++++');
-			for(var i = 0; i < Main.overview.viewSelector.appDisplay._views[1].view.folderIcons.length; i++) {
-				log('ET...' + Main.overview.viewSelector.appDisplay._views[1].view.folderIcons[i].id + ' ... ' + this.id);
-				if (Main.overview.viewSelector.appDisplay._views[1].view.folderIcons[i].id == this.id) {
-					log('ET QUE S\'OUVRE LE DOSSIER !');
-					Main.overview.viewSelector.appDisplay._views[1].view.folderIcons[i]._ensurePopup();
-					Main.overview.viewSelector.appDisplay._views[1].view.folderIcons[i].view.actor.vscroll.adjustment.value = 0;
-					Main.overview.viewSelector.appDisplay._views[1].view.folderIcons[i]._openSpaceForPopup();
-					break;
-				}
-			}
-		
-			this._timeoutId = Mainloop.timeout_add(OPEN_FOLDER_TIMEOUT, Lang.bind(this, this.unlock));
-			this.lock = true;
-			
-			hideAllFolders();
-		}
+		Mainloop.source_remove(this._timeoutId2);
 	},
 	
 	acceptDrop: function(source, actor, x, y, time) {
 		//TODO
 		
+		log('addToFolder ' + this.id + ' ' + source.id);
 		
 		
 		Main.overview.endItemDrag(this);
@@ -572,6 +521,7 @@ const FolderArea = new Lang.Class({
 	
 });
 
+//-----------------------------------------------
 
 let deleteAction;
 let createAction;
@@ -658,9 +608,6 @@ function dndInjections() {
 		});
 	}
 	
-	
-	
-	
 	if (!AppDisplay.AppIcon.injections2) {
 	
 		AppDisplay.AppIcon.prototype.injections2 = true;
@@ -728,10 +675,9 @@ function dndInjections() {
 	
 	
 	}
-	
-	
-	
 }
+
+//---------------------------------------------
 
 function updateArrowVisibility () {
 	upAction.actor.show();
@@ -865,7 +811,6 @@ function computeFolderOverlayActors () {
 	}
 	log('folders overlays are finished');
 }
-
 
 
 
