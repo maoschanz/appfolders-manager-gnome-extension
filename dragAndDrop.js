@@ -54,45 +54,68 @@ set positions of these actors for folders
 
 */
 
-// droppable: create, delete
+const DroppableArea = new Lang.Class({
+	Name:		'DroppableArea',
+	Abstract:	true,
+	
+	_init:		function (id) {
+		this.id = id;
+		
+		this.actor = new St.BoxLayout ({
+			width: 10,
+			height: 10,
+			visible: false,
+		});
+	},
+	
+	setPosition: function (x, y) {
+		let monitor = Main.layoutManager.primaryMonitor;
+		this.actor.set_position(
+			monitor.x + x,
+			monitor.y + y
+		);
+	},
+	
+	hide:		function () {
+		this.actor.visible = false;
+	},
+	
+	show:		function () {
+		this.actor.visible = true;
+	},
+	
+});
+
+
 const FolderActionArea = new Lang.Class({
-	Name:	'FolderActionArea',
+	Name:		'FolderActionArea',
+	Extends:	DroppableArea,
 	
 	_init:	function(id) {
-		this.id = id;
-		let x, y, h, w, i;
+		this.parent(id);
+		
+		let x, y, i;
+		
 		switch (this.id) {
 			case 'delete':
 				x = 100;
 				y = 130;
-				h = 520;
-				w = 100;
 				i = 'user-trash-symbolic';
-//				i = 'user-trash-symbolic';
 			break;
 			case 'create':
 				x = 1200;
 				y = 130;
-				h = 520;
-				w = 100;
 				i = 'folder-new-symbolic';
-//				i = 'list-add-symbolic';
 			break;
 			default:
 				x = 10;
 				y = 10;
-				h = 10;
-				w = 10;
 				i = 'face-sad-symbolic';
 			break;
 		}
 		
-		this.actor = new St.BoxLayout ({
-			width: w,
-			height: h,
-			style_class: 'actionArea',
-			visible: false,
-		});
+		this.actor.style_class = 'actionArea';
+		
 		this.actor.add(new St.Icon({
 			icon_name: i,
 			icon_size: 16,
@@ -108,14 +131,6 @@ const FolderActionArea = new Lang.Class({
 		this.actor._delegate = this;
 		
 		this.lock = false
-	},
-	
-	setPosition: function (x, y) {
-		let monitor = Main.layoutManager.primaryMonitor;
-		this.actor.set_position(
-			monitor.x + x,
-			monitor.y + y
-		);
 	},
 	
 	handleDragOver: function(source, actor, x, y, time) {
@@ -205,61 +220,49 @@ const FolderActionArea = new Lang.Class({
 	deleteFolder(source) {
 		Extension.deleteFolder(source);
 		hideAll();
-	}
+	},
 	
 });
 
 
 const NavigationArea = new Lang.Class({
 	Name:	'NavigationArea',
+	Extends:	DroppableArea,
 	
 	_init:	function(id) {
-		this.id = id;
-		let x, y, h, w, i;
+		this.parent(id);
+		
+		let x, y, i;
 		switch (this.id) { //FIXME arbitrary hardcoded values are overwriten anyway
 			case 'up':
 				x = 200;
 				y = 30;
-				h = 100;
-				w = 1000;
 				i = 'pan-up-symbolic';
 			break;
 			case 'down':
 				x = 200;
 				y = 650;
-				h = 100;
-				w = 1000;
 				i = 'pan-down-symbolic';
 			break;
 			case 'popdown-top':
 				x = 300;
 				y = 130;
-				h = 120;
-				w = 800;
 				i = 'pan-start-symbolic';
 			break;
 			case 'popdown-bottom':
 				x = 300;
 				y = 530;
-				h = 120;
-				w = 800;
 				i = 'pan-start-symbolic';
 			break;
 			default:
 				x = 10;
 				y = 10;
-				h = 10;
-				w = 10;
 				i = 'face-sad-symbolic';
 			break;
 		}
 		
-		this.actor = new St.BoxLayout ({
-			width: w,
-			height: h,
-			style_class: 'navigationArea',
-			visible: false,
-		});
+		this.actor.style_class = 'navigationArea';
+		
 		this.actor.add(new St.Icon({
 			icon_name: i,
 			icon_size: 16,
@@ -275,14 +278,6 @@ const NavigationArea = new Lang.Class({
 		this.actor._delegate = this;
 		
 		this.lock = false
-	},
-	
-	setPosition: function (x, y) {
-		let monitor = Main.layoutManager.primaryMonitor;
-		this.actor.set_position(
-			monitor.x + x,
-			monitor.y + y
-		);
 	},
 	
 	handleDragOver: function(source, actor, x, y, time) {
@@ -357,7 +352,7 @@ const NavigationArea = new Lang.Class({
 			
 				hideAllFolders();
 				computeFolderOverlayActors();
-				computeActionActors();
+				updateActorsPositions();
 			}
 		}
 	},
@@ -417,25 +412,18 @@ const NavigationArea = new Lang.Class({
 });
 
 const FolderArea = new Lang.Class({
-	Name:	'FolderArea',
+	Name:		'FolderArea',
+	Extends:	DroppableArea,
 	
-	_init:	function(id, asked_x, asked_y) {
-		this.id = id;
-		let x, y, h, w, i;
-		x = asked_x;
-		y = asked_y;
-		h = 96;
-		w = 96;
-		i = 'list-add-symbolic';
+	_init:		function(id, asked_x, asked_y) {
+		this.parent(id);
 		
-		this.actor = new St.BoxLayout ({
-			width: w,
-			height: h,
-			style_class: 'folderArea',
-			visible: false,			
-		});
+		this.actor.style_class = 'folderArea';
+		this.actor.width = 96;
+		this.actor.height = 96;
+		
 		this.actor.add(new St.Icon({
-			icon_name: i,
+			icon_name: 'list-add-symbolic',
 			icon_size: 16,
 			style_class: 'system-status-icon',
 			x_expand: true,
@@ -444,19 +432,11 @@ const FolderArea = new Lang.Class({
 			y_align: Clutter.ActorAlign.CENTER,
 		}));
 		
-		this.setPosition(x, y);
+		this.setPosition(asked_x, asked_y);
 		Main.layoutManager.overviewGroup.add_actor(this.actor);
 		this.actor._delegate = this;
 		
 		this.lock = false
-	},
-	
-	setPosition: function (x, y) {
-		let monitor = Main.layoutManager.primaryMonitor;
-		this.actor.set_position(
-			monitor.x + x,
-			monitor.y + y
-		);
 	},
 	
 	handleDragOver: function(source, actor, x, y, time) {
@@ -480,7 +460,7 @@ const FolderArea = new Lang.Class({
 		//FIXME ???
 		
 		computeFolderOverlayActors();
-		computeActionActors();
+		updateActorsPositions();
 		
 		//FIXME ??
 		
@@ -520,7 +500,7 @@ const FolderArea = new Lang.Class({
 					Main.overview.viewSelector.appDisplay._views[1].view.folderIcons[i]._ensurePopup();
 					Main.overview.viewSelector.appDisplay._views[1].view.folderIcons[i].view.actor.vscroll.adjustment.value = 0;
 					Main.overview.viewSelector.appDisplay._views[1].view.folderIcons[i]._openSpaceForPopup();
-				}
+				} //FIXME pas optimal, le parcours se poursuit après l'ouverture du bon dossier
 			}
 		
 			this._timeoutId = Mainloop.timeout_add(OPEN_FOLDER_TIMEOUT, Lang.bind(this, this.unlock));
@@ -580,7 +560,7 @@ function dndInjections() {
 						deleteAction.actor.visible = true;
 						createAction.actor.visible = false;
 						computeFolderOverlayActors();
-						computeActionActors();
+						updateActorsPositions();
 						if (
 							Main.overview.viewSelector.appDisplay._views[1].view._currentPopup
 							&&
@@ -654,7 +634,7 @@ function dndInjections() {
 					log('it has begun (app)');
 					deleteAction.actor.visible = true;
 					createAction.actor.visible = true;
-					computeActionActors();
+					updateActorsPositions();
 					computeFolderOverlayActors();
 					if (
 						Main.overview.viewSelector.appDisplay._views[1].view._currentPopup
@@ -723,7 +703,7 @@ function hideAllFolders () {
 	}
 }
 
-function computeActionActors () {
+function updateActorsPositions () {
 
 	let monitor = Main.layoutManager.primaryMonitor;
 	
@@ -775,6 +755,11 @@ function computeFolderOverlayActors () {
 	
 	let foldersArray = Extension.FOLDER_SCHEMA.get_strv('folder-children');
 		//FIXME ne s'adapte pas au nombre réel de dossiers
+		
+	for (var i = 0; i < addActions.length; i++) {
+		addActions[i].actor.destroy();
+	}
+	
 	for (var i = 0 ; i < foldersArray.length ; i++) {
 		
 		let x = Main.overview.viewSelector.appDisplay._views[1].view._availWidth/2;
@@ -793,6 +778,7 @@ function computeFolderOverlayActors () {
 	}
 	
 	for (var i = 0; i < addActions.length; i++) {
+		// FIXME getItemPage est une piètre idée dans le cas d'un drag de folders
 		let itemPage = Main.overview.viewSelector.appDisplay._views[1].view._grid.getItemPage(
 			Main.overview.viewSelector.appDisplay._views[1].view.folderIcons[i].actor
 		);
@@ -808,6 +794,10 @@ function computeFolderOverlayActors () {
 	}
 	log('folders overlays are finished');
 }
+
+
+
+
 
 
 
