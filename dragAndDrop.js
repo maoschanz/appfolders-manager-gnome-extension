@@ -2,7 +2,6 @@
 const DND = imports.ui.dnd;
 const AppDisplay = imports.ui.appDisplay;
 const Clutter = imports.gi.Clutter;
-const Gio = imports.gi.Gio;
 const Lang = imports.lang;
 const St = imports.gi.St;
 const Main = imports.ui.main;
@@ -48,8 +47,6 @@ let injections=[];
 /*
 
 TODO
-
-fix generic function parameters and use ids
 
 moving folders don't redraw overlays actors for folders ?? of course.
 
@@ -194,7 +191,7 @@ const FolderActionArea = new Lang.Class({
 	},
 	
 	deleteFolder(source) {
-		Extension.deleteFolder(source);
+		Extension.deleteFolder(source.id);
 		hideAll();
 	},
 	
@@ -392,16 +389,11 @@ const NavigationArea = new Lang.Class({
 		//FIXME dans le cas où c'est nul il faut supprimer de tous les dossiers mais n'exclure d'aucun,
 		//ce qui demande une autre fonction !
 		
-		let currentFolderSchema = new Gio.Settings({
-			schema_id: 'org.gnome.desktop.app-folders.folder',
-			path: '/org/gnome/desktop/app-folders/folders/' + _folder + '/'
-		});
-		
 		if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) {
 			Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown();
 		}
 							
-		Extension.removeFromFolder(id, currentFolderSchema);
+		Extension.removeFromFolder(id, _folder);
 		
 		Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
 	},
@@ -451,16 +443,8 @@ const BigArea = new Lang.Class({
 				Main.overview.endItemDrag(this);
 				return false;
 			}
-			let currentFolderSchema = new Gio.Settings({
-				schema_id: 'org.gnome.desktop.app-folders.folder',
-				path: '/org/gnome/desktop/app-folders/folders/' + _folder + '/'
-			});
-			let draggedFolderSchema = new Gio.Settings({
-				schema_id: 'org.gnome.desktop.app-folders.folder',
-				path: '/org/gnome/desktop/app-folders/folders/' + source.id + '/'
-			});
 			log('merging ' + _folder + ' with ' + source.id);
-			Extension.mergeFolders(currentFolderSchema, draggedFolderSchema);
+			Extension.mergeFolders(_folder, source.id);
 			Main.overview.endItemDrag(this);
 			return true;
 		} else if (source instanceof AppDisplay.AppIcon) {
@@ -470,16 +454,12 @@ const BigArea = new Lang.Class({
 				Main.overview.endItemDrag(this);
 				return false;
 			}
-			let currentFolderSchema = new Gio.Settings({
-				schema_id: 'org.gnome.desktop.app-folders.folder',
-				path: '/org/gnome/desktop/app-folders/folders/' + _folder + '/'
-			});
-			if(Extension.isInFolder(source.id, currentFolderSchema)) {
+			if(Extension.isInFolder(source.id, _folder)) {
 				log('app déjà ici');
 				Main.overview.endItemDrag(this);
 				return false;
 			}
-			Extension.addToFolder(source, currentFolderSchema);
+			Extension.addToFolder(source, _folder);
 			Main.overview.endItemDrag(this);
 			return true;
 		}
@@ -865,8 +845,8 @@ function updateActorsPositions () {
 	downAction.setPosition( sideMargin, bottomOfTheGrid );
 	removeActionTop.setPosition( sideMargin + _availWidth * 0.1, topOfTheGrid );
 	removeActionBottom.setPosition( sideMargin + _availWidth * 0.1, bottomOfTheGrid - POPDOWN_ACTOR_HEIGHT );
-	addToTop.setPosition( sideMargin + _availWidth * 0.1, topOfTheGrid + POPDOWN_ACTOR_HEIGHT );
-	addToBottom.setPosition( sideMargin + _availWidth * 0.1, topOfTheGrid );
+	addToTop.setPosition( sideMargin + _availWidth * 0.05, topOfTheGrid + POPDOWN_ACTOR_HEIGHT );
+	addToBottom.setPosition( sideMargin + _availWidth * 0.05, topOfTheGrid );
 	
 	deleteAction.actor.width = sideMargin/2;
 	createAction.actor.width = sideMargin/2;
@@ -874,8 +854,8 @@ function updateActorsPositions () {
 	downAction.actor.width = _availWidth;
 	removeActionTop.actor.width = _availWidth * 0.8;
 	removeActionBottom.actor.width = _availWidth * 0.8;
-	addToTop.actor.width = _availWidth * 0.8; //???
-	addToBottom.actor.width = _availWidth * 0.8;
+	addToTop.actor.width = _availWidth * 0.9; //???
+	addToBottom.actor.width = _availWidth * 0.9;
 	
 	deleteAction.actor.height = _availHeight;
 	createAction.actor.height = _availHeight;

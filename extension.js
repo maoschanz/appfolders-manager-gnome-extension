@@ -94,7 +94,7 @@ function injectionInAppsMenus() {
 						FolderIconMenu.popdownAll(); //FIXME
 						//Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown(); //??
 						
-						addToFolder(this._source, _tmp);
+						addToFolder(this._source, _folder);
 						
 						Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
 					}));
@@ -226,8 +226,9 @@ function createFolderMenus() {
  * folder, nor about hiding dropping areas, nor
  * about redisplaying the view.
  */
-function removeFromFolder (app_id, folder_schema) {
-	if ( isInFolder(app_id, folder_schema) ) {
+function removeFromFolder (app_id, folder_id) {
+	let folder_schema = folderSchema(folder_id);
+	if ( isInFolder(app_id, folder_id) ) {
 		let pastContent = folder_schema.get_strv('apps');
 		let presentContent = [];
 		for(var i=0;i<pastContent.length;i++){
@@ -246,11 +247,11 @@ function removeFromFolder (app_id, folder_schema) {
 
 //------------------------------------------------
 
-function deleteFolder (folder_source) { //FIXME passer par l'id
+function deleteFolder (folder_id) { //FIXME passer par l'id
 	Meta.later_add(Meta.LaterType.BEFORE_REDRAW, Lang.bind(this, function () {
 		let tmp = [];
 		for(var j=0;j < FOLDER_LIST.length;j++){
-			if(FOLDER_LIST[j] == folder_source.id) {}
+			if(FOLDER_LIST[j] == folder_id) {}
 			else {
 				tmp.push(FOLDER_LIST[j]);
 			}
@@ -259,10 +260,12 @@ function deleteFolder (folder_source) { //FIXME passer par l'id
 		FOLDER_SCHEMA.set_strv('folder-children', tmp);
 		FOLDER_LIST = tmp; //??
 		
+		let folder_schema = folderSchema (folder_id);
+		
 		if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('total-deletion') ) {
-			folder_source._folder.reset('apps');
-			folder_source._folder.reset('categories');
-			folder_source._folder.reset('name'); // générait un bug // en génère toujours, en plus volumineux mais au moins rien ne crash
+			folder_schema.reset('apps');
+			folder_schema.reset('categories');
+			folder_schema.reset('name'); // générait un bug // en génère toujours, en plus volumineux mais au moins rien ne crash
 		}
 	}));
 	
@@ -271,39 +274,40 @@ function deleteFolder (folder_source) { //FIXME passer par l'id
 
 //------------------------------------------------
 
-function mergeFolders (folder_staying, folder_dying) {
-	log('generic merging');
+function mergeFolders (folder_staying_id, folder_dying_id) {
 	
-	let newerContent = folder_dying.get_strv('categories');
-	let presentContent = folder_staying.get_strv('categories');
+	let folder_dying_schema = folderSchema (folder_dying_id);
+	let folder_staying_schema = folderSchema (folder_staying_id);
+	let newerContent = folder_dying_schema.get_strv('categories');
+	let presentContent = folder_staying_schema.get_strv('categories');
 	for(var i=0;i<newerContent.length;i++){
 		if(presentContent.indexOf(newerContent[i]) == -1) {
 			presentContent.push(newerContent[i]);
 		}
 	}
-	folder_staying.set_strv('categories', presentContent);
+	folder_staying_schema.set_strv('categories', presentContent);
 	
-	newerContent = folder_dying.get_strv('excluded-apps');
-	presentContent = folder_staying.get_strv('excluded-apps');
+	newerContent = folder_dying_schema.get_strv('excluded-apps');
+	presentContent = folder_staying_schema.get_strv('excluded-apps');
 	for(var i=0;i<newerContent.length;i++){
 		if(presentContent.indexOf(newerContent[i]) == -1) {
 			presentContent.push(newerContent[i]);
 		}
 	}
-	folder_staying.set_strv('excluded-apps', presentContent);
+	folder_staying_schema.set_strv('excluded-apps', presentContent);
 	
-	newerContent = folder_dying.get_strv('apps');
-	presentContent = folder_staying.get_strv('apps');
+	newerContent = folder_dying_schema.get_strv('apps');
+	presentContent = folder_staying_schema.get_strv('apps');
 	for(var i=0;i<newerContent.length;i++){
 		if(presentContent.indexOf(newerContent[i]) == -1) {
-//		if(!isInFolder(newerContent[i], folder_staying)) {
+//		if(!isInFolder(newerContent[i], folder_staying_id)) {
 			presentContent.push(newerContent[i]);
 			//FIXME utiliser addToFolder malgré ses paramètres chiants
 		}
 	}
-	folder_staying.set_strv('apps', presentContent);
+	folder_staying_schema.set_strv('apps', presentContent);
 	
-	//TODO après avoir réparé deleteFolder il faudra l'utiliser
+	deleteFolder(folder_dying_id);
 	
 	return true;
 }
@@ -320,8 +324,10 @@ function createNewFolder (app_source) {
 
 //------------------------------------------------
 
-function addToFolder (app_source, folder_schema) {
+function addToFolder (app_source, folder_id) {
 	let id = app_source.app.get_id();
+	
+	let folder_schema = folderSchema (folder_id);
 	
 	//un-exclude the application if it was excluded
 	let pastExcluded = folder_schema.get_strv('excluded-apps');
@@ -342,7 +348,8 @@ function addToFolder (app_source, folder_schema) {
 
 //------------------------------------------------
 
-function isInFolder (app_id, folder_schema) {
+function isInFolder (app_id, folder_id) {
+	let folder_schema = folderSchema (folder_id);
 	let isIn = false;
 	let content_ = folder_schema.get_strv('apps');
 	for(var j=0;j<content_.length;j++){
@@ -353,6 +360,16 @@ function isInFolder (app_id, folder_schema) {
 	return isIn;
 }
 
+//--------------------------------------------------
+
+function folderSchema (folder_id) {
+	let a = new Gio.Settings({
+		schema_id: 'org.gnome.desktop.app-folders.folder',
+		path: '/org/gnome/desktop/app-folders/folders/' + folder_id + '/'
+	});
+	return a;
+}
+		
 //----------------------------------------------------
 
 function enable() {

@@ -111,7 +111,7 @@ var FolderIconMenu = new Lang.Class({
 		
 		let deleteItem = this._appendMenuItem(_("Delete"));
 		deleteItem.connect('activate', Lang.bind(this, function() {
-			Extension.deleteFolder(this._source);
+			Extension.deleteFolder(this._source.id);
 		}));
 	},
 
