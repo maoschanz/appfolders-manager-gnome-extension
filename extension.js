@@ -230,7 +230,7 @@ function removeFromFolder (app_id, folder_schema) {
 	if ( isInFolder(app_id, folder_schema) ) {
 		let pastContent = folder_schema.get_strv('apps');
 		let presentContent = [];
-		for(i=0;i<pastContent.length;i++){
+		for(var i=0;i<pastContent.length;i++){
 			if(pastContent[i] != app_id) {
 				presentContent.push(pastContent[i]);
 			}
@@ -246,7 +246,7 @@ function removeFromFolder (app_id, folder_schema) {
 
 //------------------------------------------------
 
-function deleteFolder (folder_source) {
+function deleteFolder (folder_source) { //FIXME passer par l'id
 	Meta.later_add(Meta.LaterType.BEFORE_REDRAW, Lang.bind(this, function () {
 		let tmp = [];
 		for(var j=0;j < FOLDER_LIST.length;j++){
@@ -273,6 +273,37 @@ function deleteFolder (folder_source) {
 
 function mergeFolders (folder_staying, folder_dying) {
 	log('generic merging');
+	
+	let newerContent = folder_dying.get_strv('categories');
+	let presentContent = folder_staying.get_strv('categories');
+	for(var i=0;i<newerContent.length;i++){
+		if(presentContent.indexOf(newerContent[i]) == -1) {
+			presentContent.push(newerContent[i]);
+		}
+	}
+	folder_staying.set_strv('categories', presentContent);
+	
+	newerContent = folder_dying.get_strv('excluded-apps');
+	presentContent = folder_staying.get_strv('excluded-apps');
+	for(var i=0;i<newerContent.length;i++){
+		if(presentContent.indexOf(newerContent[i]) == -1) {
+			presentContent.push(newerContent[i]);
+		}
+	}
+	folder_staying.set_strv('excluded-apps', presentContent);
+	
+	newerContent = folder_dying.get_strv('apps');
+	presentContent = folder_staying.get_strv('apps');
+	for(var i=0;i<newerContent.length;i++){
+		if(presentContent.indexOf(newerContent[i]) == -1) {
+//		if(!isInFolder(newerContent[i], folder_staying)) {
+			presentContent.push(newerContent[i]);
+			//FIXME utiliser addToFolder malgré ses paramètres chiants
+		}
+	}
+	folder_staying.set_strv('apps', presentContent);
+	
+	//TODO après avoir réparé deleteFolder il faudra l'utiliser
 	
 	return true;
 }
@@ -311,11 +342,11 @@ function addToFolder (app_source, folder_schema) {
 
 //------------------------------------------------
 
-function isInFolder (id, folder) {
+function isInFolder (app_id, folder_schema) {
 	let isIn = false;
-	let content_ = folder.get_strv('apps');
+	let content_ = folder_schema.get_strv('apps');
 	for(var j=0;j<content_.length;j++){
-		if(content_[j] == id) {
+		if(content_[j] == app_id) {
 			isIn = true;
 		}
 	}

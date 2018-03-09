@@ -16,8 +16,8 @@ const Extension = Me.imports.extension;
 
 const CHANGE_PAGE_TIMEOUT = 300;
 const POPDOWN_TIMEOUT = 1000;
-const OPEN_FOLDER_TIMEOUT = 1000;
-const POPDOWN_ACTOR_HEIGHT = 96;
+const OPEN_FOLDER_TIMEOUT = 1500;
+const POPDOWN_ACTOR_HEIGHT = 122;
 
 //-------------------------------------------------
 /* do not edit this section */
@@ -48,11 +48,12 @@ let injections=[];
 /*
 
 TODO
+
+fix generic function parameters and use ids
+
 moving folders don't redraw overlays actors for folders ?? of course.
 
 set positions of actors for folders
-
-adding
 
 */
 
@@ -88,7 +89,6 @@ const DroppableArea = new Lang.Class({
 	},
 	
 });
-
 
 const FolderActionArea = new Lang.Class({
 	Name:		'FolderActionArea',
@@ -200,7 +200,6 @@ const FolderActionArea = new Lang.Class({
 	
 });
 
-
 const NavigationArea = new Lang.Class({
 	Name:	'NavigationArea',
 	Extends:	DroppableArea,
@@ -290,7 +289,10 @@ const NavigationArea = new Lang.Class({
 	},
 	
 	popdown: function() {
-		this._timeoutId = Mainloop.timeout_add(POPDOWN_TIMEOUT, Lang.bind(this, this.unlock));
+		if(this.lock && !this.timeoutSet) {
+			this._timeoutId = Mainloop.timeout_add(POPDOWN_TIMEOUT, Lang.bind(this, this.unlock));
+			this.timeoutSet = true;
+		}
 		if(!this.lock){
 			if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) { //FIXME mécanisme similaire partout ??
 				Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown();
@@ -299,6 +301,8 @@ const NavigationArea = new Lang.Class({
 				
 				removeActionTop.hide();
 				removeActionBottom.hide();
+				addToTop.hide();
+				addToBottom.hide();
 				upAction.actor.show();
 				downAction.actor.show();
 			
@@ -313,12 +317,16 @@ const NavigationArea = new Lang.Class({
 	
 	unlock: function() {
 		this.lock = false;
+		this.timeoutSet = false;
 		log('unlock');
 		Mainloop.source_remove(this._timeoutId);
 	},
 	
 	pageUp: function() {
-		this._timeoutId = Mainloop.timeout_add(CHANGE_PAGE_TIMEOUT, Lang.bind(this, this.unlock));
+		if(this.lock && !this.timeoutSet) {
+			this._timeoutId = Mainloop.timeout_add(CHANGE_PAGE_TIMEOUT, Lang.bind(this, this.unlock));
+			this.timeoutSet = true;
+		}
 		if(!this.lock) {
 			var currentPage = Main.overview.viewSelector.appDisplay._views[1].view._grid.currentPage;
 			log('up currentPage : ' + currentPage + ' ××××××××××××××××××××');
@@ -335,7 +343,10 @@ const NavigationArea = new Lang.Class({
 	},
 	
 	pageDown: function() {
-		this._timeoutId = Mainloop.timeout_add(CHANGE_PAGE_TIMEOUT, Lang.bind(this, this.unlock));
+		if(this.lock && !this.timeoutSet) {
+			this._timeoutId = Mainloop.timeout_add(CHANGE_PAGE_TIMEOUT, Lang.bind(this, this.unlock));
+			this.timeoutSet = true;
+		}
 		if(!this.lock) {
 			var currentPage = Main.overview.viewSelector.appDisplay._views[1].view._grid.currentPage;
 			log('down currentPage : ' + currentPage + ' ××××××××××××××××××××');
@@ -394,7 +405,87 @@ const NavigationArea = new Lang.Class({
 		
 		Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
 	},
+});
+
+const BigArea = new Lang.Class({
+	Name:	'BigArea',
+	Extends:	DroppableArea,
 	
+	_init:	function(id) {
+		this.parent(id);
+		
+		let x = 300;
+		let y = 130;
+		
+		this.actor.style_class = 'droppableArea';
+		
+		this.setPosition(x, y);
+		Main.layoutManager.overviewGroup.add_actor(this.actor);
+		this.actor._delegate = this;
+		
+		this.lock = true;
+	},
+	
+	handleDragOver: function(source, actor, x, y, time) {
+		/*
+			The popdowning actors behave like a FolderArea actor but
+			they have to be NavigationArea because their lifecycle
+			is the same as regular "up/down" areas' lifecycle.
+		*/
+		if (source instanceof AppDisplay.FolderIcon) {
+			log('427 merge');
+			return DND.DragMotionResult.MOVE_DROP;
+		} else if (source instanceof AppDisplay.AppIcon) {
+			log('430 add');
+			return DND.DragMotionResult.MOVE_DROP;
+		}
+		Main.overview.endItemDrag(this);
+		return DND.DragMotionResult.NO_DROP;
+	},
+
+	acceptDrop: function(source, actor, x, y, time) { //FIXME recharger la vue ou au minimum les icônes des dossiers
+		if (source instanceof AppDisplay.FolderIcon) {
+			let _folder = Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source.id;
+			if(_folder == undefined) {
+				log('pas de folder ouvert (théoriquement impossible)');
+				Main.overview.endItemDrag(this);
+				return false;
+			}
+			let currentFolderSchema = new Gio.Settings({
+				schema_id: 'org.gnome.desktop.app-folders.folder',
+				path: '/org/gnome/desktop/app-folders/folders/' + _folder + '/'
+			});
+			let draggedFolderSchema = new Gio.Settings({
+				schema_id: 'org.gnome.desktop.app-folders.folder',
+				path: '/org/gnome/desktop/app-folders/folders/' + source.id + '/'
+			});
+			log('merging ' + _folder + ' with ' + source.id);
+			Extension.mergeFolders(currentFolderSchema, draggedFolderSchema);
+			Main.overview.endItemDrag(this);
+			return true;
+		} else if (source instanceof AppDisplay.AppIcon) {
+			let _folder = Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source.id;
+			if(_folder == undefined) {
+				log('pas de folder ouvert (théoriquement impossible)');
+				Main.overview.endItemDrag(this);
+				return false;
+			}
+			let currentFolderSchema = new Gio.Settings({
+				schema_id: 'org.gnome.desktop.app-folders.folder',
+				path: '/org/gnome/desktop/app-folders/folders/' + _folder + '/'
+			});
+			if(Extension.isInFolder(source.id, currentFolderSchema)) {
+				log('app déjà ici');
+				Main.overview.endItemDrag(this);
+				return false;
+			}
+			Extension.addToFolder(source, currentFolderSchema);
+			Main.overview.endItemDrag(this);
+			return true;
+		}
+		Main.overview.endItemDrag(this);
+		return false;
+	},
 });
 
 /*
@@ -454,18 +545,20 @@ const FolderArea = new Lang.Class({
 	//FIXME pareil que la navigation svp
 	unlock: function() {
 		this.lock = false;
+		this.timeoutSet = false;
 		log('unlock');
 		Mainloop.source_remove(this._timeoutId);
 	},
 	
 	popupFolder: function() {
-		this._timeoutId = Mainloop.timeout_add(OPEN_FOLDER_TIMEOUT, Lang.bind(this, this.unlock));
+		if(this.lock && !this.timeoutSet) {
+			this._timeoutId = Mainloop.timeout_add(OPEN_FOLDER_TIMEOUT, Lang.bind(this, this.unlock));
+			this.timeoutSet = true;
+		}
 		if(!this.lock){
 			log('popupFolder +++++++++');
 			for(var i = 0; i < Main.overview.viewSelector.appDisplay._views[1].view.folderIcons.length; i++) {
-				log('ET...' + Main.overview.viewSelector.appDisplay._views[1].view.folderIcons[i].id + ' ... ' + this.id);
 				if (Main.overview.viewSelector.appDisplay._views[1].view.folderIcons[i].id == this.id) {
-					log('ET QUE S\'OUVRE LE DOSSIER !');
 					Main.overview.viewSelector.appDisplay._views[1].view.folderIcons[i]._ensurePopup();
 					Main.overview.viewSelector.appDisplay._views[1].view.folderIcons[i].view.actor.vscroll.adjustment.value = 0;
 					Main.overview.viewSelector.appDisplay._views[1].view.folderIcons[i]._openSpaceForPopup();
@@ -493,6 +586,8 @@ const FolderArea = new Lang.Class({
 			downAction.hide();
 			removeActionTop.show();
 			removeActionBottom.hide();
+			addToBottom.hide();
+			addToTop.show();
 		} else if ( // The free space is below the open folder
 			Main.overview.viewSelector.appDisplay._views[1].view._currentPopup
 			&&
@@ -502,9 +597,13 @@ const FolderArea = new Lang.Class({
 			downAction.hide();
 			removeActionTop.hide();
 			removeActionBottom.show();
+			addToBottom.show();
+			addToTop.hide();
 		} else { // No open folder
 			removeActionTop.hide();
 			removeActionBottom.hide();
+			addToBottom.hide();
+			addToTop.hide();
 		}
 		Mainloop.source_remove(this._timeoutId2);
 	},
@@ -529,6 +628,8 @@ let upAction;
 let downAction;
 let removeActionTop;
 let removeActionBottom;
+let addToTop;
+let addToBottom;
 let addActions = [];
 	
 function dndInjections() {
@@ -539,6 +640,8 @@ function dndInjections() {
 	downAction = new NavigationArea('down');
 	removeActionTop = new NavigationArea('popdown-top');
 	removeActionBottom = new NavigationArea('popdown-bottom');
+	addToTop = new BigArea('popdown-top');
+	addToBottom = new BigArea('popdown-bottom');
 	
 	
 	if (!AppDisplay.FolderIcon.injections2) {
@@ -572,6 +675,8 @@ function dndInjections() {
 							downAction.hide();
 							removeActionTop.show();
 							removeActionBottom.hide();
+							addToBottom.hide();
+							addToTop.show();
 						} else if (
 							Main.overview.viewSelector.appDisplay._views[1].view._currentPopup
 							&&
@@ -581,9 +686,13 @@ function dndInjections() {
 							downAction.hide();
 							removeActionTop.hide();
 							removeActionBottom.show();
+							addToBottom.show();
+							addToTop.hide();
 						} else {
 							removeActionTop.hide();
 							removeActionBottom.hide();
+							addToBottom.hide();
+							addToTop.hide();
 							updateArrowVisibility();
 						}
 					}
@@ -638,6 +747,8 @@ function dndInjections() {
 						downAction.hide();
 						removeActionTop.show();
 						removeActionBottom.hide();
+						addToBottom.hide();
+						addToTop.show();
 					} else if (
 						Main.overview.viewSelector.appDisplay._views[1].view._currentPopup
 						&&
@@ -647,9 +758,13 @@ function dndInjections() {
 						downAction.hide();
 						removeActionTop.hide();
 						removeActionBottom.show();
+						addToBottom.show();
+						addToTop.hide();
 					} else {
 						removeActionTop.hide();
 						removeActionBottom.hide();
+						addToBottom.hide();
+						addToTop.hide();
 						updateArrowVisibility();
 					}
 				}
@@ -670,10 +785,7 @@ function dndInjections() {
 					hideAll();
 				}
 			));
-			
 		});
-	
-	
 	}
 }
 
@@ -697,6 +809,8 @@ function hideAll() {
 	downAction.hide();
 	removeActionTop.hide();
 	removeActionBottom.hide();
+	addToTop.hide();
+	addToBottom.hide();
 	hideAllFolders();
 }
 
@@ -709,6 +823,7 @@ function hideAllFolders () {
 let previousWidth = 0;
 
 function updateActorsPositions () {
+
 	let monitor = Main.layoutManager.primaryMonitor;
 	let pertinentGrid;
 	let _availWidth;
@@ -750,6 +865,8 @@ function updateActorsPositions () {
 	downAction.setPosition( sideMargin, bottomOfTheGrid );
 	removeActionTop.setPosition( sideMargin + _availWidth * 0.1, topOfTheGrid );
 	removeActionBottom.setPosition( sideMargin + _availWidth * 0.1, bottomOfTheGrid - POPDOWN_ACTOR_HEIGHT );
+	addToTop.setPosition( sideMargin + _availWidth * 0.1, topOfTheGrid + POPDOWN_ACTOR_HEIGHT );
+	addToBottom.setPosition( sideMargin + _availWidth * 0.1, topOfTheGrid );
 	
 	deleteAction.actor.width = sideMargin/2;
 	createAction.actor.width = sideMargin/2;
@@ -757,6 +874,8 @@ function updateActorsPositions () {
 	downAction.actor.width = _availWidth;
 	removeActionTop.actor.width = _availWidth * 0.8;
 	removeActionBottom.actor.width = _availWidth * 0.8;
+	addToTop.actor.width = _availWidth * 0.8; //???
+	addToBottom.actor.width = _availWidth * 0.8;
 	
 	deleteAction.actor.height = _availHeight;
 	createAction.actor.height = _availHeight;
@@ -764,6 +883,8 @@ function updateActorsPositions () {
 	downAction.actor.height = monitor.height - bottomOfTheGrid;
 	removeActionTop.actor.height = POPDOWN_ACTOR_HEIGHT;
 	removeActionBottom.actor.height = POPDOWN_ACTOR_HEIGHT;
+	addToTop.actor.height = _availHeight - POPDOWN_ACTOR_HEIGHT;
+	addToBottom.actor.height = _availHeight - POPDOWN_ACTOR_HEIGHT;
 	
 	updateArrowVisibility();
 }
@@ -787,11 +908,24 @@ function computeFolderOverlayActors () {
 		
 		
 		
+		x = x-60+i*40;
+		y = y-40+i*20;
+		
+		
 		log('positionning the overlay of ' + foldersArray[i] + ' at: ' + x + ', ' + y);
 		
 		//------------------------------------
 		
-		addActions[i] = new FolderArea(foldersArray[i], x-60+i*40, y-40+i*20); // temporary, of course
+		addActions[i] = new FolderArea(foldersArray[i], x, y); // temporary, of course
+		
+		
+		
+		
+		
+		
+		
+		
+		
 	}
 	
 	for (var i = 0; i < addActions.length; i++) {
