@@ -48,9 +48,9 @@ let injections=[];
 
 TODO
 
-moving folders don't redraw overlays actors for folders ?? of course.
-
 set positions of actors for folders
+
+moving folders don't redraw overlays actors for folders ?? of course. And it bugs.
 
 */
 
@@ -484,22 +484,31 @@ const FolderArea = new Lang.Class({
 	Name:		'FolderArea',
 	Extends:	DroppableArea,
 	
-	_init:		function(id, asked_x, asked_y) {
+	_init:		function(id, asked_x, asked_y, page) {
 		this.parent(id);
+		this.page = page;
 		
 		this.actor.style_class = 'folderArea';
 		this.actor.width = 96;
 		this.actor.height = 96;
 		
-		this.actor.add(new St.Icon({
-			icon_name: 'list-add-symbolic',
-			icon_size: 16,
-			style_class: 'system-status-icon',
+		this.actor.add(new St.Label({
+			text: this.id,
 			x_expand: true,
 			y_expand: true,
 			x_align: Clutter.ActorAlign.CENTER,
 			y_align: Clutter.ActorAlign.CENTER,
 		}));
+		
+//		this.actor.add(new St.Icon({
+//			icon_name: 'list-add-symbolic',
+//			icon_size: 16,
+//			style_class: 'system-status-icon',
+//			x_expand: true,
+//			y_expand: true,
+//			x_align: Clutter.ActorAlign.CENTER,
+//			y_align: Clutter.ActorAlign.CENTER,
+//		}));
 		
 		this.setPosition(asked_x, asked_y);
 		Main.layoutManager.overviewGroup.add_actor(this.actor);
@@ -588,12 +597,22 @@ const FolderArea = new Lang.Class({
 		Mainloop.source_remove(this._timeoutId2);
 	},
 	
-	acceptDrop: function(source, actor, x, y, time) {
-		//TODO
-		
-		log('addToFolder ' + this.id + ' ' + source.id);
-		
-		
+	acceptDrop: function(source, actor, x, y, time) { //FIXME recharger la vue ou au minimum les icônes des dossiers
+		if (source instanceof AppDisplay.FolderIcon) {
+			log('merging ' + this.id + ' with ' + source.id);
+			Extension.mergeFolders(this.id, source.id);
+			Main.overview.endItemDrag(this);
+			return true;
+		} else if (source instanceof AppDisplay.AppIcon) {
+//			if(Extension.isInFolder(source.id, this.id)) {
+//				log('app déjà ici');
+//				Main.overview.endItemDrag(this);
+//				return false;
+//			}
+			Extension.addToFolder(source, this.id);
+			Main.overview.endItemDrag(this);
+			return true;
+		}
 		Main.overview.endItemDrag(this);
 		return false;
 	},
@@ -878,44 +897,75 @@ function computeFolderOverlayActors () {
 		addActions[i].actor.destroy();
 	}
 	
-	for (var i = 0 ; i < foldersArray.length ; i++) {
+	let availWidth = Main.overview.viewSelector.appDisplay._views[1].view._grid.actor.width;
+	let availHeight = Main.overview.viewSelector.appDisplay._views[1].view._grid.getPageHeight();
+	
+	let x = availWidth/2;
+	let y = availHeight/2;
+	
+	let items = Main.overview.viewSelector.appDisplay._views[1].view._grid._grid.get_n_children();
+	
+	let nItems = 0;
+	
+	let indexes = [];
+	let folders = [];
+	
+	Main.overview.viewSelector.appDisplay._views[1].view._allItems.forEach(function(icon) {
+		if (icon.actor.visible) {
+			if (icon instanceof AppDisplay.FolderIcon) {
+				indexes.push(nItems);
+				folders.push(icon);
+			}
+			nItems++;
+		}
+	});
+	
+	let monitor = Main.layoutManager.primaryMonitor;
+	let rowsPerPage = Main.overview.viewSelector.appDisplay._views[1].view._grid._rowsPerPage;
+	let [nColumns, usedWidth] = Main.overview.viewSelector.appDisplay._views[1].view._grid._computeLayout(availWidth);
+	let xMiddle = ( monitor.x + monitor.width ) / 2;
+	let yMiddle = ( monitor.y + monitor.height ) / 2;
+	
+	for (var i=0; i < indexes.length; i++) {
+	
+		log(folders[i].id + ' (index ' + indexes[i] + ')');
 		
-		let x = Main.overview.viewSelector.appDisplay._views[1].view._availWidth/2;
-		let y = Main.overview.viewSelector.appDisplay._views[1].view._availHeight/2;
+		log(Main.overview.viewSelector.appDisplay._views[1].view._grid._childrenPerPage);
 		
-		// TODO
+		let inPageIndex = indexes[i] % Main.overview.viewSelector.appDisplay._views[1].view._grid._childrenPerPage;
+		let page = Math.floor(indexes[i] / Main.overview.viewSelector.appDisplay._views[1].view._grid._childrenPerPage);
+		log('inPageIndex: ' + inPageIndex);
 		
+		x = (inPageIndex % nColumns) - (nColumns/2);
+		y = ((inPageIndex - (inPageIndex % nColumns)) / rowsPerPage) - (rowsPerPage/2);
 		
+		log(x + ' ' + y);
 		
+		x *= usedWidth / (nColumns + 0.2); /*FIXME responsivness*/
+		y *= availHeight / (rowsPerPage + 2); /*FIXME responsivness*/
 		
-		x = x-60+i*40;
-		y = y-40+i*20;
+		log(x + ' ' + y);
 		
+		x = Math.floor(x + xMiddle + (20)); /*FIXME responsivness*/
+		y = Math.floor(y + yMiddle - (50)); /*FIXME responsivness*/
 		
-		log('positionning the overlay of ' + foldersArray[i] + ' at: ' + x + ', ' + y);
+		log(x + ' ' + y);
 		
-		//------------------------------------
-		
-		addActions[i] = new FolderArea(foldersArray[i], x, y); // temporary, of course
-		
-		
-		
-		
-		
-		
-		
+		log('positionning the overlay of ' + folders[i].id + ' at: ' + x + ', ' + y);
 		
 		
+		addActions[i] = new FolderArea(folders[i].id, x, y, page);
+	
 	}
+
+/* TODO mécanisme pour mettre à jour les pages ? ou pas ? */
+
+//-----------
 	
 	for (var i = 0; i < addActions.length; i++) {
-		// FIXME getItemPage est une piètre idée dans le cas d'un drag de folders
-		let itemPage = Main.overview.viewSelector.appDisplay._views[1].view._grid.getItemPage(
-			Main.overview.viewSelector.appDisplay._views[1].view.folderIcons[i].actor
-		);
 		let currentPage = Main.overview.viewSelector.appDisplay._views[1].view._grid.currentPage;
-		log(currentPage + ' *** ' + itemPage);
-		if ((itemPage == currentPage) && (!Main.overview.viewSelector.appDisplay._views[1].view._currentPopup)) {
+		log(currentPage + ' *** ' + addActions[i].page);
+		if ((addActions[i].page == currentPage) && (!Main.overview.viewSelector.appDisplay._views[1].view._currentPopup)) {
 			addActions[i].show();
 			log('the ' + i + 'th actor is visible.');
 		} else {
