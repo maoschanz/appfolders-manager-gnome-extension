@@ -437,16 +437,16 @@ const BigArea = new Lang.Class({
 
 	acceptDrop: function(source, actor, x, y, time) { //FIXME recharger la vue ou au minimum les icônes des dossiers
 		if (source instanceof AppDisplay.FolderIcon) {
-			let _folder = Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source.id;
-			if(_folder == undefined) {
-				log('pas de folder ouvert (théoriquement impossible)');
+//			let _folder = Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source.id;
+//			if(_folder == undefined) {
+//				log('pas de folder ouvert (théoriquement impossible)');
 				Main.overview.endItemDrag(this);
 				return false;
-			}
-			log('merging ' + _folder + ' with ' + source.id);
-			Extension.mergeFolders(_folder, source.id);
-			Main.overview.endItemDrag(this);
-			return true;
+//			}
+//			log('merging ' + _folder + ' with ' + source.id); //FIXME TODO
+//			Extension.mergeFolders(_folder, source.id);
+//			Main.overview.endItemDrag(this);
+//			return true;
 		} else if (source instanceof AppDisplay.AppIcon) {
 			let _folder = Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source.id;
 			if(_folder == undefined) {
@@ -599,6 +599,8 @@ const FolderArea = new Lang.Class({
 	
 	acceptDrop: function(source, actor, x, y, time) { //FIXME recharger la vue ou au minimum les icônes des dossiers
 		if (source instanceof AppDisplay.FolderIcon) {
+//			destroyAllFolderAreas();
+			hideAll();
 			log('merging ' + this.id + ' with ' + source.id);
 			Extension.mergeFolders(this.id, source.id);
 			Main.overview.endItemDrag(this);
@@ -888,14 +890,16 @@ function updateActorsPositions () {
 	updateArrowVisibility();
 }
 
-function computeFolderOverlayActors () {
-	
-	let foldersArray = Extension.FOLDER_SCHEMA.get_strv('folder-children');
-		//FIXME à confirmer : ne s'adapte pas au nombre réel de dossiers ??
-		
+function destroyAllFolderAreas () {
+	//TODO déconnecter de force
 	for (var i = 0; i < addActions.length; i++) {
 		addActions[i].actor.destroy();
 	}
+}
+
+function computeFolderOverlayActors () {
+	
+	destroyAllFolderAreas();
 	
 	let availWidth = Main.overview.viewSelector.appDisplay._views[1].view._grid.actor.width;
 	let availHeight = Main.overview.viewSelector.appDisplay._views[1].view._grid.getPageHeight();
@@ -926,7 +930,7 @@ function computeFolderOverlayActors () {
 	let xMiddle = ( monitor.x + monitor.width ) / 2;
 	let yMiddle = ( monitor.y + monitor.height ) / 2;
 	
-	for (var i=0; i < indexes.length; i++) {
+	for (var i = 0; i < indexes.length; i++) {
 	
 		log(folders[i].id + ' (index ' + indexes[i] + ')');
 		
