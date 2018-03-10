@@ -47,7 +47,9 @@ let injections=[];
 
 TODO
 
-set positions of actors for folders
+not display the dragged folder's area
+
+reload after cancelled folder dragging
 
 */
 
@@ -62,6 +64,7 @@ const DroppableArea = new Lang.Class({
 			width: 10,
 			height: 10,
 			visible: false,
+			style_class: 'invisibleArea',
 		});
 		
 		this.actor._delegate = this;
@@ -108,16 +111,16 @@ const FolderActionArea = new Lang.Class({
 		switch (this.id) {
 			case 'delete':
 				i = 'user-trash-symbolic';
+				this.actor.style_class = 'destructiveArea';
 			break;
 			case 'create':
 				i = 'folder-new-symbolic';
+				this.actor.style_class = 'nonDestructiveArea';
 			break;
 			default:
 				i = 'face-sad-symbolic';
 			break;
 		}
-		
-		this.actor.style_class = 'actionArea';
 		
 		this.actor.add(new St.Icon({
 			icon_name: i,
@@ -200,10 +203,9 @@ const NavigationArea = new Lang.Class({
 			break;
 			default:
 				i = 'pan-start-symbolic';
+				this.actor.style_class = 'destructiveArea';
 			break;
 		}
-		
-		this.actor.style_class = 'navigationArea';
 		
 		this.actor.add(new St.Icon({
 			icon_name: i,
@@ -281,7 +283,7 @@ const NavigationArea = new Lang.Class({
 			
 			this.lock = true;
 			hideAllFolders();
-			computeFolderOverlayActors();
+			updateFoldersVisibility(); //load folders of the new page
 		}
 	},
 	
@@ -297,7 +299,7 @@ const NavigationArea = new Lang.Class({
 			updateArrowVisibility();
 			this.lock = true;
 			hideAllFolders();
-			computeFolderOverlayActors();
+			updateFoldersVisibility();//load folders of the new page
 		}
 	},
 
@@ -345,7 +347,7 @@ const BigArea = new Lang.Class({
 	_init:	function(id) {
 		this.parent(id);
 		
-		this.actor.style_class = 'droppableArea';
+		this.actor.style_class = 'invisibleArea';
 		
 		this.setPosition(10, 10);
 		Main.layoutManager.overviewGroup.add_actor(this.actor);
@@ -404,7 +406,7 @@ const FolderArea = new Lang.Class({
 		this.parent(id);
 		this.page = page;
 		
-		this.actor.style_class = 'folderArea';
+		this.actor.style_class = 'nonDestructiveArea';
 		this.actor.width = 96;
 		this.actor.height = 96;
 		
@@ -782,16 +784,25 @@ function destroyAllFolderAreas () {
 }
 
 function computeFolderOverlayActors () {
-	
 	destroyAllFolderAreas();
 	
-	let availWidth = Main.overview.viewSelector.appDisplay._views[1].view._grid.actor.width;
-	let availHeight = Main.overview.viewSelector.appDisplay._views[1].view._grid.getPageHeight();
+	let allAppsGrid = Main.overview.viewSelector.appDisplay._views[1].view._grid;
+	let availWidth = allAppsGrid.actor.width;
+//	let availWidth = allAppsGrid.actor.width;
+
+	let availHeightPerPage = (allAppsGrid.actor.height)/(allAppsGrid._nPages);
+
+	let parentBox = allAppsGrid.actor.get_parent().allocation;
+	let gridBox = allAppsGrid.actor.get_theme_node().get_content_box(parentBox);
+	box = allAppsGrid._grid.get_theme_node().get_content_box(gridBox);
+	let children = allAppsGrid._getVisibleChildren();
+	availWidth = box.x2 - box.x1;
+	availHeight = box.y2 - box.y1;
 	
 	let x = availWidth/2;
 	let y = availHeight/2;
 	
-	let items = Main.overview.viewSelector.appDisplay._views[1].view._grid._grid.get_n_children();
+	let items = allAppsGrid._grid.get_n_children();
 	
 	let nItems = 0;
 	
@@ -809,49 +820,38 @@ function computeFolderOverlayActors () {
 	});
 	
 	let monitor = Main.layoutManager.primaryMonitor;
-	let rowsPerPage = Main.overview.viewSelector.appDisplay._views[1].view._grid._rowsPerPage;
-	let [nColumns, usedWidth] = Main.overview.viewSelector.appDisplay._views[1].view._grid._computeLayout(availWidth);
+	let rowsPerPage = allAppsGrid._rowsPerPage;
+	let [nColumns, usedWidth] = allAppsGrid._computeLayout(availWidth);
 	let xMiddle = ( monitor.x + monitor.width ) / 2;
 	let yMiddle = ( monitor.y + monitor.height ) / 2;
 	
 	for (var i = 0; i < indexes.length; i++) {
-	
-		log(folders[i].id + ' (index ' + indexes[i] + ')');
+		let inPageIndex = indexes[i] % allAppsGrid._childrenPerPage;
+		let page = Math.floor(indexes[i] / allAppsGrid._childrenPerPage);
+		log('Le dossier ' + folders[i].id + ' est en ' + inPageIndex + 'ème position sur la ' + page + 'ème page.');
 		
-		log(Main.overview.viewSelector.appDisplay._views[1].view._grid._childrenPerPage);
+		[x, y] = folders[i].actor.get_position();
 		
-		let inPageIndex = indexes[i] % Main.overview.viewSelector.appDisplay._views[1].view._grid._childrenPerPage;
-		let page = Math.floor(indexes[i] / Main.overview.viewSelector.appDisplay._views[1].view._grid._childrenPerPage);
-		log('inPageIndex: ' + inPageIndex);
+		x += allAppsGrid.leftPadding * 3; //FIXME this works, but for no reason
+		y += allAppsGrid.topPadding;
 		
-		x = (inPageIndex % nColumns) - (nColumns/2);
-		y = ((inPageIndex - (inPageIndex % nColumns)) / rowsPerPage) - (rowsPerPage/2);
+		y = y + ((monitor.height - availHeightPerPage) / 2);
 		
-		log(x + ' ' + y);
-		
-		x *= usedWidth / (nColumns + 0.2); /*FIXME responsivness*/
-		y *= availHeight / (rowsPerPage + 2); /*FIXME responsivness*/
-		
-		log(x + ' ' + y);
-		
-		x = Math.floor(x + xMiddle + (20)); /*FIXME responsivness*/
-		y = Math.floor(y + yMiddle - (50)); /*FIXME responsivness*/
-		
-		log(x + ' ' + y);
+		y = y - (page * availHeightPerPage);
 		
 		log('positionning the overlay of ' + folders[i].id + ' at: ' + x + ', ' + y);
-		
 		addActions[i] = new FolderArea(folders[i].id, x, y, page);
-	
 	}
 
-/* mécanisme pour mettre à jour les pages ? pas la peine */
+	updateFoldersVisibility();
+}
 
 //-----------
-	
+
+function updateFoldersVisibility () {
 	for (var i = 0; i < addActions.length; i++) {
 		let currentPage = Main.overview.viewSelector.appDisplay._views[1].view._grid.currentPage;
-		log(currentPage + ' *** ' + addActions[i].page);
+		log(currentPage + 'ème page ; dossier en page ' + addActions[i].page);
 		if ((addActions[i].page == currentPage) && (!Main.overview.viewSelector.appDisplay._views[1].view._currentPopup)) {
 			addActions[i].show();
 		} else {

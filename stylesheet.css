@@ -1,24 +1,16 @@
-.droppableArea
+.invisibleArea
 {
-	background-color: rgba(80,80,100,0.5);
+	background-color: rgba(255,255,255,0.1);
+}
+
+.destructiveArea
+{
+	background-color: rgba(255,50,50,0.7);
 	border-radius: 15px;
 }
 
-.folderArea
+.nonDestructiveArea
 {
-/*	le but c'est qu'ici ce soit vide à la fin */
-	background-color: rgba(100,100,200,0.8);
-	border-radius: 15px;
-}
-
-.navigationArea
-{
-	background-color: rgba(255,255,255,0.7);
-	border-radius: 15px;
-}
-
-.actionArea
-{
-	background-color: rgba(50,50,100,0.7);
+	background-color: rgba(50,200,200,0.7);
 	border-radius: 15px;
 }
