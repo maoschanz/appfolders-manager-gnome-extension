@@ -66,6 +66,10 @@ const DroppableArea = new Lang.Class({
 			height: 10,
 			visible: false,
 		});
+		
+		this.actor._delegate = this;
+		
+		this.lock = true;
 	},
 	
 	setPosition: function (x, y) {
@@ -85,6 +89,14 @@ const DroppableArea = new Lang.Class({
 		this.actor.visible = true;
 	},
 	
+	unlock: function() {
+		this.lock = false;
+		this.timeoutSet = false;
+		log('unlock');
+		Mainloop.source_remove(this._timeoutId);
+	},
+	
+	
 });
 
 const FolderActionArea = new Lang.Class({
@@ -98,18 +110,12 @@ const FolderActionArea = new Lang.Class({
 		
 		switch (this.id) {
 			case 'delete':
-				x = 100;
-				y = 130;
 				i = 'user-trash-symbolic';
 			break;
 			case 'create':
-				x = 1200;
-				y = 130;
 				i = 'folder-new-symbolic';
 			break;
 			default:
-				x = 10;
-				y = 10;
 				i = 'face-sad-symbolic';
 			break;
 		}
@@ -126,11 +132,9 @@ const FolderActionArea = new Lang.Class({
 			y_align: Clutter.ActorAlign.CENTER,
 		}));
 		
-		this.setPosition(x, y);
+		this.setPosition(10, 10);
 		Main.layoutManager.overviewGroup.add_actor(this.actor);
-		this.actor._delegate = this;
 		
-		this.lock = false
 	},
 	
 	handleDragOver: function(source, actor, x, y, time) {
@@ -140,7 +144,6 @@ const FolderActionArea = new Lang.Class({
 			} else if (source instanceof AppDisplay.AppIcon) {
 				return DND.DragMotionResult.MOVE_DROP;
 			}
-			log('wtf is that');
 			Main.overview.endItemDrag(this);
 			return DND.DragMotionResult.NO_DROP;
 		}
@@ -149,7 +152,6 @@ const FolderActionArea = new Lang.Class({
 			if (source instanceof AppDisplay.AppIcon) {
 				return DND.DragMotionResult.MOVE_DROP;
 			}
-			log('non');
 			Main.overview.endItemDrag(this);
 			return DND.DragMotionResult.NO_DROP;
 		}
@@ -158,39 +160,26 @@ const FolderActionArea = new Lang.Class({
 	acceptDrop: function(source, actor, x, y, time) {		
 		if (this.id == 'delete') {
 			if (source instanceof AppDisplay.FolderIcon) {
-				log('on supprime un dossier');
 				this.deleteFolder(source);
-				hideAll();
 				Main.overview.endItemDrag(this);
 				return true;
-				
-			} else if (source instanceof AppDisplay.AppIcon) {
-				log('théoriquement impossible');
-				//this.removeApp(source);
-				hideAll();
-				Main.overview.endItemDrag(this);
-				//return true;
-				return false;
 			}
 		}
 		
 		if (this.id == 'create') {
-			if (source instanceof AppDisplay.FolderIcon) {
-				log('théoriquement impossible');
-				Main.overview.endItemDrag(this);
-				return false;
-			} else if (source instanceof AppDisplay.AppIcon) {
+			if (source instanceof AppDisplay.AppIcon) {
 				Extension.createNewFolder(source);
 				Main.overview.endItemDrag(this);
 				return true;
 			}
 		}
 		
+		hideAll();
 		Main.overview.endItemDrag(this);
 		return false;
 	},
 	
-	deleteFolder(source) {
+	deleteFolder: function(source) {
 		Extension.deleteFolder(source.id);
 		hideAll();
 	},
@@ -205,20 +194,14 @@ const NavigationArea = new Lang.Class({
 		this.parent(id);
 		
 		let x, y, i;
-		switch (this.id) { //FIXME arbitrary hardcoded values are overwriten anyway
+		switch (this.id) {
 			case 'up':
-				x = 200;
-				y = 30;
 				i = 'pan-up-symbolic';
 			break;
 			case 'down':
-				x = 200;
-				y = 650;
 				i = 'pan-down-symbolic';
 			break;
 			default:
-				x = 300;
-				y = 130;
 				i = 'pan-start-symbolic';
 			break;
 		}
@@ -237,34 +220,17 @@ const NavigationArea = new Lang.Class({
 		
 		this.setPosition(x, y);
 		Main.layoutManager.overviewGroup.add_actor(this.actor);
-		this.actor._delegate = this;
-		
-		this.lock = true;
 	},
 	
 	handleDragOver: function(source, actor, x, y, time) {
 		if (this.id == 'up') {
-			if (source instanceof AppDisplay.FolderIcon) {
-				this.pageUp();
-				return DND.DragMotionResult.CONTINUE;
-			} else if (source instanceof AppDisplay.AppIcon) {
-				this.pageUp();
-				return DND.DragMotionResult.CONTINUE;
-			}
-			Main.overview.endItemDrag(this);
-			return DND.DragMotionResult.NO_DROP;
+			this.pageUp();
+			return DND.DragMotionResult.CONTINUE;
 		}
 		
 		if (this.id == 'down') {
-			if (source instanceof AppDisplay.FolderIcon) {
-				this.pageDown();
-				return DND.DragMotionResult.CONTINUE;
-			} else if (source instanceof AppDisplay.AppIcon) {
-				this.pageDown();
-				return DND.DragMotionResult.CONTINUE;
-			}
-			Main.overview.endItemDrag(this);
-			return DND.DragMotionResult.NO_DROP;
+			this.pageDown();
+			return DND.DragMotionResult.CONTINUE;
 		}
 		
 		/*
@@ -273,16 +239,17 @@ const NavigationArea = new Lang.Class({
 			is the same as regular "up/down" areas' lifecycle.
 		*/
 		if ( (this.id == 'popdown-bottom') || (this.id == 'popdown-top') ){
-			if (source instanceof AppDisplay.FolderIcon) {
-				this.popdown();
-				return DND.DragMotionResult.CONTINUE;
-			} else if (source instanceof AppDisplay.AppIcon) {
+			if (source instanceof AppDisplay.AppIcon) {
 				this.popdown();
 				return DND.DragMotionResult.MOVE_DROP;
+			} else {
+				this.popdown();
+				return DND.DragMotionResult.CONTINUE;
 			}
-			Main.overview.endItemDrag(this);
-			return DND.DragMotionResult.NO_DROP;
 		}
+		
+		Main.overview.endItemDrag(this);
+		return DND.DragMotionResult.NO_DROP;
 	},
 	
 	popdown: function() {
@@ -291,7 +258,7 @@ const NavigationArea = new Lang.Class({
 			this.timeoutSet = true;
 		}
 		if(!this.lock){
-			if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) { //FIXME mécanisme similaire partout ??
+			if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) { //FIXME mécanisme similaire partout ?? utile ?
 				Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown();
 			
 				this.lock = true;
@@ -307,18 +274,9 @@ const NavigationArea = new Lang.Class({
 				computeFolderOverlayActors();
 				updateActorsPositions();
 			}
-		} else {
-			log('×××××××××××××××××××× popdown locked ××××××××××××××××××××');
 		}
 	},
-	
-	unlock: function() {
-		this.lock = false;
-		this.timeoutSet = false;
-		log('unlock');
-		Mainloop.source_remove(this._timeoutId);
-	},
-	
+
 	pageUp: function() {
 		if(this.lock && !this.timeoutSet) {
 			this._timeoutId = Mainloop.timeout_add(CHANGE_PAGE_TIMEOUT, Lang.bind(this, this.unlock));
@@ -326,7 +284,6 @@ const NavigationArea = new Lang.Class({
 		}
 		if(!this.lock) {
 			var currentPage = Main.overview.viewSelector.appDisplay._views[1].view._grid.currentPage;
-			log('up currentPage : ' + currentPage + ' ××××××××××××××××××××');
 			Main.overview.viewSelector.appDisplay._views[1].view.goToPage( currentPage - 1 );
 			
 			updateArrowVisibility();
@@ -334,8 +291,6 @@ const NavigationArea = new Lang.Class({
 			this.lock = true;
 			hideAllFolders();
 			computeFolderOverlayActors();
-		} else {
-			log('×××××××××××××××××××× down locked ××××××××××××××××××××');
 		}
 	},
 	
@@ -346,15 +301,12 @@ const NavigationArea = new Lang.Class({
 		}
 		if(!this.lock) {
 			var currentPage = Main.overview.viewSelector.appDisplay._views[1].view._grid.currentPage;
-			log('down currentPage : ' + currentPage + ' ××××××××××××××××××××');
 			Main.overview.viewSelector.appDisplay._views[1].view.goToPage( currentPage + 1 );
 			
 			updateArrowVisibility();
 			this.lock = true;
 			hideAllFolders();
 			computeFolderOverlayActors();
-		} else {
-			log('×××××××××××××××××××× up locked ××××××××××××××××××××');
 		}
 	},
 
@@ -366,8 +318,7 @@ const NavigationArea = new Lang.Class({
 				return true;
 			} else if (source instanceof AppDisplay.AppIcon) {
 				this.removeApp(source);
-				hideAll();
-				log('removing (navigationArea)');
+				log('removing');
 				Main.overview.endItemDrag(this);
 				return true;
 			}
@@ -394,6 +345,7 @@ const NavigationArea = new Lang.Class({
 		}
 							
 		Extension.removeFromFolder(id, _folder);
+		hideAll();
 		
 		Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
 	},
@@ -406,16 +358,10 @@ const BigArea = new Lang.Class({
 	_init:	function(id) {
 		this.parent(id);
 		
-		let x = 300;
-		let y = 130;
-		
 		this.actor.style_class = 'droppableArea';
 		
-		this.setPosition(x, y);
+		this.setPosition(10, 10);
 		Main.layoutManager.overviewGroup.add_actor(this.actor);
-		this.actor._delegate = this;
-		
-		this.lock = true;
 	},
 	
 	handleDragOver: function(source, actor, x, y, time) {
@@ -431,31 +377,30 @@ const BigArea = new Lang.Class({
 			log('430 add');
 			return DND.DragMotionResult.MOVE_DROP;
 		}
-		Main.overview.endItemDrag(this);
+		Main.overview.endItemDrag(this); //vraiment ?
 		return DND.DragMotionResult.NO_DROP;
 	},
 
 	acceptDrop: function(source, actor, x, y, time) { //FIXME recharger la vue ou au minimum les icônes des dossiers
 		if (source instanceof AppDisplay.FolderIcon) {
-//			let _folder = Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source.id;
-//			if(_folder == undefined) {
-//				log('pas de folder ouvert (théoriquement impossible)');
-				Main.overview.endItemDrag(this);
-				return false;
-//			}
-//			log('merging ' + _folder + ' with ' + source.id); //FIXME TODO
-//			Extension.mergeFolders(_folder, source.id);
-//			Main.overview.endItemDrag(this);
-//			return true;
-		} else if (source instanceof AppDisplay.AppIcon) {
+			hideAll();
 			let _folder = Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source.id;
 			if(_folder == undefined) {
 				log('pas de folder ouvert (théoriquement impossible)');
 				Main.overview.endItemDrag(this);
 				return false;
 			}
+			log('merging ' + _folder + ' with ' + source.id);
+			//Extension.mergeFolders(_folder, source.id); //FIXME TODO supprime les 2 dossiers ???
+			Main.overview.endItemDrag(this);
+			return true;
+		} else if (source instanceof AppDisplay.AppIcon) {
+			let _folder = Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source.id;
+			if(_folder == undefined) {
+				Main.overview.endItemDrag(this);
+				return false;
+			}
 			if(Extension.isInFolder(source.id, _folder)) {
-				log('app déjà ici');
 				Main.overview.endItemDrag(this);
 				return false;
 			}
@@ -512,9 +457,6 @@ const FolderArea = new Lang.Class({
 		
 		this.setPosition(asked_x, asked_y);
 		Main.layoutManager.overviewGroup.add_actor(this.actor);
-		this.actor._delegate = this;
-		
-		this.lock = true;
 	},
 	
 	handleDragOver: function(source, actor, x, y, time) {
@@ -528,15 +470,6 @@ const FolderArea = new Lang.Class({
 		}
 		Main.overview.endItemDrag(this);
 		return DND.DragMotionResult.NO_DROP;
-		
-	},
-	
-	//FIXME pareil que la navigation svp
-	unlock: function() {
-		this.lock = false;
-		this.timeoutSet = false;
-		log('unlock');
-		Mainloop.source_remove(this._timeoutId);
 	},
 	
 	popupFolder: function() {
@@ -545,7 +478,6 @@ const FolderArea = new Lang.Class({
 			this.timeoutSet = true;
 		}
 		if(!this.lock){
-			log('popupFolder +++++++++');
 			for(var i = 0; i < Main.overview.viewSelector.appDisplay._views[1].view.folderIcons.length; i++) {
 				if (Main.overview.viewSelector.appDisplay._views[1].view.folderIcons[i].id == this.id) {
 					Main.overview.viewSelector.appDisplay._views[1].view.folderIcons[i]._ensurePopup();
@@ -599,7 +531,6 @@ const FolderArea = new Lang.Class({
 	
 	acceptDrop: function(source, actor, x, y, time) { //FIXME recharger la vue ou au minimum les icônes des dossiers
 		if (source instanceof AppDisplay.FolderIcon) {
-//			destroyAllFolderAreas();
 			hideAll();
 			log('merging ' + this.id + ' with ' + source.id);
 			Extension.mergeFolders(this.id, source.id);
@@ -957,12 +888,11 @@ function computeFolderOverlayActors () {
 		
 		log('positionning the overlay of ' + folders[i].id + ' at: ' + x + ', ' + y);
 		
-		
 		addActions[i] = new FolderArea(folders[i].id, x, y, page);
 	
 	}
 
-/* TODO mécanisme pour mettre à jour les pages ? ou pas ? */
+/* mécanisme pour mettre à jour les pages ? pas la peine */
 
 //-----------
 	
@@ -971,16 +901,10 @@ function computeFolderOverlayActors () {
 		log(currentPage + ' *** ' + addActions[i].page);
 		if ((addActions[i].page == currentPage) && (!Main.overview.viewSelector.appDisplay._views[1].view._currentPopup)) {
 			addActions[i].show();
-			log('the ' + i + 'th actor is visible.');
 		} else {
 			addActions[i].hide();
-			log('the ' + i + 'th actor is not.');
 		}
 	}
-	log('folders overlays are finished');
 }
-
-
-
 
 
