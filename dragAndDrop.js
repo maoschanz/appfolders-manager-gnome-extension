@@ -6,7 +6,6 @@ const Lang = imports.lang;
 const St = imports.gi.St;
 const Main = imports.ui.main;
 const Mainloop = imports.mainloop;
-const GLib = imports.gi.GLib;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
@@ -49,8 +48,6 @@ let injections=[];
 TODO
 
 set positions of actors for folders
-
-moving folders don't redraw overlays actors for folders ?? of course. And it bugs.
 
 */
 
@@ -263,16 +260,10 @@ const NavigationArea = new Lang.Class({
 			
 				this.lock = true;
 				
-				removeActionTop.hide();
-				removeActionBottom.hide();
-				addToTop.hide();
-				addToBottom.hide();
-				upAction.actor.show();
-				downAction.actor.show();
-			
-				hideAllFolders();
 				computeFolderOverlayActors();
 				updateActorsPositions();
+				
+				updateState('app-in-allview');
 			}
 		}
 	},
@@ -312,11 +303,7 @@ const NavigationArea = new Lang.Class({
 
 	acceptDrop: function(source, actor, x, y, time) {
 		if ((this.id == 'popdown-top') || (this.id == 'popdown-bottom')) {
-			if (source instanceof AppDisplay.FolderIcon) {
-				log('canceling a merge, nothing to do');
-				Main.overview.endItemDrag(this);
-				return true;
-			} else if (source instanceof AppDisplay.AppIcon) {
+			if (source instanceof AppDisplay.AppIcon) {
 				this.removeApp(source);
 				log('removing');
 				Main.overview.endItemDrag(this);
@@ -370,11 +357,7 @@ const BigArea = new Lang.Class({
 			they have to be NavigationArea because their lifecycle
 			is the same as regular "up/down" areas' lifecycle.
 		*/
-		if (source instanceof AppDisplay.FolderIcon) {
-			log('427 merge');
-			return DND.DragMotionResult.MOVE_DROP;
-		} else if (source instanceof AppDisplay.AppIcon) {
-			log('430 add');
+		if (source instanceof AppDisplay.AppIcon) {
 			return DND.DragMotionResult.MOVE_DROP;
 		}
 		Main.overview.endItemDrag(this); //vraiment ?
@@ -382,19 +365,7 @@ const BigArea = new Lang.Class({
 	},
 
 	acceptDrop: function(source, actor, x, y, time) { //FIXME recharger la vue ou au minimum les icônes des dossiers
-		if (source instanceof AppDisplay.FolderIcon) {
-			hideAll();
-			let _folder = Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source.id;
-			if(_folder == undefined) {
-				log('pas de folder ouvert (théoriquement impossible)');
-				Main.overview.endItemDrag(this);
-				return false;
-			}
-			log('merging ' + _folder + ' with ' + source.id);
-			//Extension.mergeFolders(_folder, source.id); //FIXME TODO supprime les 2 dossiers ???
-			Main.overview.endItemDrag(this);
-			return true;
-		} else if (source instanceof AppDisplay.AppIcon) {
+		if (source instanceof AppDisplay.AppIcon) {
 			let _folder = Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source.id;
 			if(_folder == undefined) {
 				Main.overview.endItemDrag(this);
@@ -420,7 +391,7 @@ const BigArea = new Lang.Class({
  * "this.id" is the folder's id, a string, as written in the gsettings key.
  * 
  * Hovering-while-dragging during OPEN_FOLDER_TIMEOUT milliseconds upon this
- * class' actor will open the corresponding folder.
+ * class' actor will open the corresponding folder if the dragged item is an AppIcon.
  * 
  * Dropping another folder on this folder will merge them (dropped folder is deleted)
  * Dropping an app on this folder will add it to the folder
@@ -462,7 +433,6 @@ const FolderArea = new Lang.Class({
 	handleDragOver: function(source, actor, x, y, time) {
 		log('________________ 463 ________________');
 		if (source instanceof AppDisplay.FolderIcon) {
-			this.popupFolder();
 			return DND.DragMotionResult.MOVE_DROP;
 		} else if (source instanceof AppDisplay.AppIcon) {
 			this.popupFolder();
@@ -487,8 +457,6 @@ const FolderArea = new Lang.Class({
 				}
 			}
 			
-			computeFolderOverlayActors(); //inutile puisqu'on les cache lol
-			updateActorsPositions(); //useless selon moi puisque les positions ne bougent pas
 			hideAllFolders();
 			
 			this._timeoutId2 = Mainloop.timeout_add(500, Lang.bind(this, this.updateRemoveArrow)); //FIXME ????
@@ -498,34 +466,7 @@ const FolderArea = new Lang.Class({
 	},
 	
 	updateRemoveArrow: function () {
-		if ( // The free space is upon the open folder
-			Main.overview.viewSelector.appDisplay._views[1].view._currentPopup
-			&&
-			Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source._boxPointerArrowside == St.Side.TOP
-		) {
-			upAction.hide();
-			downAction.hide();
-			removeActionTop.show();
-			removeActionBottom.hide();
-			addToBottom.hide();
-			addToTop.show();
-		} else if ( // The free space is below the open folder
-			Main.overview.viewSelector.appDisplay._views[1].view._currentPopup
-			&&
-			Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source._boxPointerArrowside == St.Side.BOTTOM
-		) {
-			upAction.hide();
-			downAction.hide();
-			removeActionTop.hide();
-			removeActionBottom.show();
-			addToBottom.show();
-			addToTop.hide();
-		} else { // No open folder
-			removeActionTop.hide();
-			removeActionBottom.hide();
-			addToBottom.hide();
-			addToTop.hide();
-		}
+		updateFolderViewInterface();
 		Mainloop.source_remove(this._timeoutId2);
 	},
 	
@@ -533,10 +474,11 @@ const FolderArea = new Lang.Class({
 		if (source instanceof AppDisplay.FolderIcon) {
 			hideAll();
 			log('merging ' + this.id + ' with ' + source.id);
-			Extension.mergeFolders(this.id, source.id);
+			Extension.mergeFolders(this.id, source.id); //FIXME suppression intempestive ???
 			Main.overview.endItemDrag(this);
 			return true;
 		} else if (source instanceof AppDisplay.AppIcon) {
+			hideAll();
 //			if(Extension.isInFolder(source.id, this.id)) {
 //				log('app déjà ici');
 //				Main.overview.endItemDrag(this);
@@ -594,38 +536,10 @@ function dndInjections() {
 						//this._removeMenuTimeout(); //FIXME ??
 						Main.overview.beginItemDrag(this);
 						log('it has begun (folder)');
-						deleteAction.show();
-						createAction.hide();
 						computeFolderOverlayActors();
 						updateActorsPositions();
-						if (
-							Main.overview.viewSelector.appDisplay._views[1].view._currentPopup
-							&&
-							Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source._boxPointerArrowside == St.Side.TOP
-						) {
-							upAction.hide();
-							downAction.hide();
-							removeActionTop.show();
-							removeActionBottom.hide();
-							addToBottom.hide();
-							addToTop.show();
-						} else if (
-							Main.overview.viewSelector.appDisplay._views[1].view._currentPopup
-							&&
-							Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source._boxPointerArrowside == St.Side.BOTTOM
-						) {
-							upAction.hide();
-							downAction.hide();
-							removeActionTop.hide();
-							removeActionBottom.show();
-							addToBottom.show();
-							addToTop.hide();
-						} else {
-							removeActionTop.hide();
-							removeActionBottom.hide();
-							addToBottom.hide();
-							addToTop.hide();
-							updateArrowVisibility();
+						if (!Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) {
+							updateState('folder-in-allview');
 						}
 					}
 				));
@@ -666,38 +580,12 @@ function dndInjections() {
 					//this._removeMenuTimeout(); //FIXME ??
 					Main.overview.beginItemDrag(this);
 					log('it has begun (app)');
-					deleteAction.hide(); //FIXME à modifier dans le futur ?
-					createAction.show();
 					updateActorsPositions();
 					computeFolderOverlayActors();
-					if (
-						Main.overview.viewSelector.appDisplay._views[1].view._currentPopup
-						&&
-						Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source._boxPointerArrowside == St.Side.TOP
-					) {
-						upAction.hide();
-						downAction.hide();
-						removeActionTop.show();
-						removeActionBottom.hide();
-						addToBottom.hide();
-						addToTop.show();
-					} else if (
-						Main.overview.viewSelector.appDisplay._views[1].view._currentPopup
-						&&
-						Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source._boxPointerArrowside == St.Side.BOTTOM
-					) {
-						upAction.hide();
-						downAction.hide();
-						removeActionTop.hide();
-						removeActionBottom.show();
-						addToBottom.show();
-						addToTop.hide();
+					if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup){
+						updateState('app-in-folderview');
 					} else {
-						removeActionTop.hide();
-						removeActionBottom.hide();
-						addToBottom.hide();
-						addToTop.hide();
-						updateArrowVisibility();
+						updateState('app-in-allview');
 					}
 				}
 			));
@@ -724,14 +612,79 @@ function dndInjections() {
 //---------------------------------------------
 
 function updateArrowVisibility () {
-	upAction.actor.show();
-	downAction.actor.show();
 	if (Main.overview.viewSelector.appDisplay._views[1].view._grid.currentPage == 0) {
-		upAction.actor.hide();
+		upAction.hide();
+	} else {
+		upAction.show();
 	}
 	if (Main.overview.viewSelector.appDisplay._views[1].view._grid.currentPage == Main.overview.viewSelector.appDisplay._views[1].view._grid._nPages -1) {
-		downAction.actor.hide();
+		downAction.hide();
+	} else {
+		downAction.show();
 	}
+}
+
+function updateFolderViewInterface () {
+	if ( // The free space is upon the open folder
+		Main.overview.viewSelector.appDisplay._views[1].view._currentPopup
+		&&
+		Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source._boxPointerArrowside == St.Side.TOP
+	) {
+		upAction.hide();
+		downAction.hide();
+		
+		removeActionTop.show();
+		removeActionBottom.hide();
+		addToBottom.hide();
+		addToTop.show();
+	} else if ( // The free space is below the open folder
+		Main.overview.viewSelector.appDisplay._views[1].view._currentPopup
+		&&
+		Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source._boxPointerArrowside == St.Side.BOTTOM
+	) {
+		upAction.hide();
+		downAction.hide();
+		
+		removeActionTop.hide();
+		removeActionBottom.show();
+		addToBottom.show();
+		addToTop.hide();
+	} else { // No open folder
+		removeActionTop.hide();
+		removeActionBottom.hide();
+		addToBottom.hide();
+		addToTop.hide();
+	}
+}
+
+function updateState (state) {
+	
+	switch (state) {
+		case 'folder-in-allview':
+			deleteAction.show();
+			createAction.hide();
+			updateArrowVisibility();
+		break;
+		case 'app-in-allview':
+			removeActionTop.hide();
+			removeActionBottom.hide();
+			addToTop.hide();
+			addToBottom.hide();
+			deleteAction.hide();
+			createAction.show();
+			updateArrowVisibility();
+		break;
+		case 'app-in-folderview':
+			hideAllFolders();
+			deleteAction.hide();
+			createAction.show();
+			updateFolderViewInterface();
+		break;
+		default:
+			hideAll();
+		break;
+	}
+	log('update : ' + state);
 }
 
 function hideAll() {
@@ -822,7 +775,7 @@ function updateActorsPositions () {
 }
 
 function destroyAllFolderAreas () {
-	//TODO déconnecter de force
+	//TODO FIXME déconnecter de force
 	for (var i = 0; i < addActions.length; i++) {
 		addActions[i].actor.destroy();
 	}

@@ -251,8 +251,8 @@ function deleteFolder (folder_id) { //FIXME passer par l'id
 	Meta.later_add(Meta.LaterType.BEFORE_REDRAW, Lang.bind(this, function () {
 		let tmp = [];
 		for(var j=0;j < FOLDER_LIST.length;j++){
-			if(FOLDER_LIST[j] == folder_id) {}
-			else {
+			if(FOLDER_LIST[j] == folder_id) {
+			} else {
 				tmp.push(FOLDER_LIST[j]);
 			}
 		}
@@ -265,6 +265,7 @@ function deleteFolder (folder_id) { //FIXME passer par l'id
 		if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('total-deletion') ) {
 			folder_schema.reset('apps');
 			folder_schema.reset('categories');
+			folder_schema.reset('excluded-apps');
 			folder_schema.reset('name'); // générait un bug // en génère toujours, en plus volumineux mais au moins rien ne crash
 		}
 	}));
