@@ -16,5 +16,10 @@
       <summary>Use drag-and-drop</summary>
       <description>experimental feature, wip</description>
     </key>
+    <key type="b" name="categories">
+      <default>true</default>
+      <summary>Use categories</summary>
+      <description>If the interface for managing categories should be shown.</description>
+    </key>
 	</schema>
 </schemalist>
