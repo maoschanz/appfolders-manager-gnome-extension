@@ -115,6 +115,34 @@ const appfoldersManagerSettingsWidget = new GObject.Class({
 		
 		//----------------------------
 		
+		let frameText = _("Show frames around actors");
+		let frameSwitch = new Gtk.Switch({visible: this._settings.get_boolean('experimental')});
+		frameSwitch.set_state(true);
+		frameSwitch.set_state(this._settings.get_boolean('show-frame'));
+		
+		frameSwitch.connect('notify::active', Lang.bind(this, function(widget) {
+			if (widget.active) {
+				this._settings.set_boolean('show-frame', true);
+			} else {
+				this._settings.set_boolean('show-frame', false);
+			}
+		}));
+		
+		let frameBox = new Gtk.Box({
+			orientation: Gtk.Orientation.HORIZONTAL,
+			spacing: 15,
+			margin: 6,
+			visible: this._settings.get_boolean('experimental')
+		});
+		frameBox.pack_start(new Gtk.Label({
+			label: frameText,
+			halign: Gtk.Align.START,
+			visible: this._settings.get_boolean('experimental')
+		}), false, false, 0);
+		frameBox.pack_end(frameSwitch, false, false, 0);
+		
+		//----------------------------
+		
 		let experimentalText = _("Debug & experimental features (not recommended)");
 		let experimentalSwitch = new Gtk.Switch();
 		experimentalSwitch.set_state(true);
@@ -124,9 +152,11 @@ const appfoldersManagerSettingsWidget = new GObject.Class({
 			if (widget.active) {
 				this._settings.set_boolean('experimental', true);
 				dndBox.visible = true;
+				frameBox.visible = true;
 			} else {
 				this._settings.set_boolean('experimental', false);
 				dndBox.visible = false;
+				frameBox.visible = false;
 			}
 		}));
 		
@@ -145,6 +175,7 @@ const appfoldersManagerSettingsWidget = new GObject.Class({
 		this.add_row(deleteAllBox, generalSection);
 		this.add_row(experimentalBox, generalSection);
 		this.add_row(dndBox, generalSection);
+		this.add_row(frameBox, generalSection);
 		
 		//-------------------------
 		

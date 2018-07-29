@@ -1,3 +1,4 @@
+'use strict';
 
 const DND = imports.ui.dnd;
 const AppDisplay = imports.ui.appDisplay;
@@ -15,7 +16,7 @@ const Extension = Me.imports.extension;
 const CHANGE_PAGE_TIMEOUT = 300;
 const POPDOWN_TIMEOUT = 1000;
 const OPEN_FOLDER_TIMEOUT = 1500;
-const POPDOWN_ACTOR_HEIGHT = 122;
+const POPDOWN_ACTOR_HEIGHT = 122; //FIXME booooo ugly
 
 //-------------------------------------------------
 /* do not edit this section */
@@ -43,16 +44,6 @@ let injections=[];
 
 //--------------------------------------------------------------
 
-/*
-
-TODO
-
-not display the dragged folder's area
-
-reload after cancelled folder dragging
-
-*/
-
 const DroppableArea = new Lang.Class({
 	Name:		'DroppableArea',
 	Abstract:	true,
@@ -64,8 +55,11 @@ const DroppableArea = new Lang.Class({
 			width: 10,
 			height: 10,
 			visible: false,
-			style_class: 'invisibleArea',
 		});
+		
+		if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('show-frame') ) {
+			this.actor.style_class = 'framedArea';
+		}
 		
 		this.actor._delegate = this;
 		
@@ -95,8 +89,6 @@ const DroppableArea = new Lang.Class({
 		log('unlock');
 		Mainloop.source_remove(this._timeoutId);
 	},
-	
-	
 });
 
 const FolderActionArea = new Lang.Class({
@@ -106,26 +98,25 @@ const FolderActionArea = new Lang.Class({
 	_init:	function(id) {
 		this.parent(id);
 		
-		let x, y, i;
+		let x, y, label;
 		
 		switch (this.id) {
 			case 'delete':
-				i = 'user-trash-symbolic';
-				this.actor.style_class = 'destructiveArea';
+				label = _("Delete this folder");
+				this.actor.style_class = 'shadowedAreaBottom';
 			break;
 			case 'create':
-				i = 'folder-new-symbolic';
-				this.actor.style_class = 'nonDestructiveArea';
+				label = _("Create a new folder");
+				this.actor.style_class = 'shadowedAreaTop';
 			break;
 			default:
-				i = 'face-sad-symbolic';
+				label = 'invalid id';
 			break;
 		}
 		
-		this.actor.add(new St.Icon({
-			icon_name: i,
-			icon_size: 16,
-			style_class: 'system-status-icon',
+		this.actor.add(new St.Label({
+			text: label,
+			style_class: 'dropAreaLabel',
 			x_expand: true,
 			y_expand: true,
 			x_align: Clutter.ActorAlign.CENTER,
@@ -134,46 +125,28 @@ const FolderActionArea = new Lang.Class({
 		
 		this.setPosition(10, 10);
 		Main.layoutManager.overviewGroup.add_actor(this.actor);
-		
 	},
 	
-	handleDragOver: function(source, actor, x, y, time) {
-		if (this.id == 'delete') {
-			if (source instanceof AppDisplay.FolderIcon) {
-				return DND.DragMotionResult.MOVE_DROP;
-			} else if (source instanceof AppDisplay.AppIcon) {
-				return DND.DragMotionResult.MOVE_DROP;
-			}
-			Main.overview.endItemDrag(this);
-			return DND.DragMotionResult.NO_DROP;
+	handleDragOver: function(source, actor, x, y, time) {		
+		if (source instanceof AppDisplay.AppIcon) {
+			return DND.DragMotionResult.MOVE_DROP;
+		} else if ((source instanceof AppDisplay.FolderIcon) && (this.id == 'delete')) {
+			return DND.DragMotionResult.MOVE_DROP;
 		}
-		
-		if (this.id == 'create') {
-			if (source instanceof AppDisplay.AppIcon) {
-				return DND.DragMotionResult.MOVE_DROP;
-			}
-			Main.overview.endItemDrag(this);
-			return DND.DragMotionResult.NO_DROP;
-		}
+		Main.overview.endItemDrag(this);
+		return DND.DragMotionResult.NO_DROP;
 	},
 	
 	acceptDrop: function(source, actor, x, y, time) {		
-		if (this.id == 'delete') {
-			if (source instanceof AppDisplay.FolderIcon) {
-				this.deleteFolder(source);
-				Main.overview.endItemDrag(this);
-				return true;
-			}
+		if ((source instanceof AppDisplay.FolderIcon) && (this.id == 'delete')) {
+			this.deleteFolder(source);
+			Main.overview.endItemDrag(this);
+			return true;
+		} else if ((source instanceof AppDisplay.AppIcon) && (this.id == 'create')) {
+			Extension.createNewFolder(source);
+			Main.overview.endItemDrag(this);
+			return true;
 		}
-		
-		if (this.id == 'create') {
-			if (source instanceof AppDisplay.AppIcon) {
-				Extension.createNewFolder(source);
-				Main.overview.endItemDrag(this);
-				return true;
-			}
-		}
-		
 		hideAll();
 		Main.overview.endItemDrag(this);
 		return false;
@@ -197,19 +170,28 @@ const NavigationArea = new Lang.Class({
 		switch (this.id) {
 			case 'up':
 				i = 'pan-up-symbolic';
+				this.actor.style_class = 'shadowedAreaTop';
 			break;
 			case 'down':
 				i = 'pan-down-symbolic';
+				this.actor.style_class = 'shadowedAreaBottom';
+			break;
+			case 'popdown-bottom':
+				i = 'pan-start-symbolic';
+				this.actor.style_class = 'shadowedAreaBottom';
+			break;
+			case 'popdown-top':
+				i = 'pan-start-symbolic';
+				this.actor.style_class = 'shadowedAreaTop';
 			break;
 			default:
 				i = 'pan-start-symbolic';
-				this.actor.style_class = 'destructiveArea';
 			break;
 		}
 		
 		this.actor.add(new St.Icon({
 			icon_name: i,
-			icon_size: 16,
+			icon_size: 24,
 			style_class: 'system-status-icon',
 			x_expand: true,
 			y_expand: true,
@@ -318,7 +300,7 @@ const NavigationArea = new Lang.Class({
 	
 	removeApp: function(source) {
 		let id = source.app.get_id();
-		log('id : ' + id);
+		log('remove app : ' + id);
 		
 		if(!Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) {
 			log('ERREUR : pas de dossier ouvert');
@@ -346,8 +328,6 @@ const BigArea = new Lang.Class({
 	
 	_init:	function(id) {
 		this.parent(id);
-		
-		this.actor.style_class = 'invisibleArea';
 		
 		this.setPosition(10, 10);
 		Main.layoutManager.overviewGroup.add_actor(this.actor);
@@ -405,28 +385,31 @@ const FolderArea = new Lang.Class({
 	_init:		function(id, asked_x, asked_y, page) {
 		this.parent(id);
 		this.page = page;
+
+		let grid = Main.overview.viewSelector.appDisplay._views[1].view._grid;
+		this.actor.width = grid._getHItemSize();
+		this.actor.height = grid._getVItemSize();
 		
-		this.actor.style_class = 'nonDestructiveArea';
-		this.actor.width = 96;
-		this.actor.height = 96;
-		
-		this.actor.add(new St.Label({
-			text: this.id,
-			x_expand: true,
-			y_expand: true,
-			x_align: Clutter.ActorAlign.CENTER,
-			y_align: Clutter.ActorAlign.CENTER,
-		}));
-		
-//		this.actor.add(new St.Icon({
-//			icon_name: 'list-add-symbolic',
-//			icon_size: 16,
-//			style_class: 'system-status-icon',
-//			x_expand: true,
-//			y_expand: true,
-//			x_align: Clutter.ActorAlign.CENTER,
-//			y_align: Clutter.ActorAlign.CENTER,
-//		}));
+		if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('show-frame') ) {
+			this.actor.add(new St.Label({
+				text: this.id,
+				x_expand: true,
+				y_expand: true,
+				x_align: Clutter.ActorAlign.CENTER,
+				y_align: Clutter.ActorAlign.CENTER,
+			}));
+		} else {
+			this.actor.style_class = 'folderArea';
+			this.actor.add(new St.Icon({
+				icon_name: 'list-add-symbolic',
+				icon_size: 24,
+				style_class: 'system-status-icon',
+				x_expand: true,
+				y_expand: true,
+				x_align: Clutter.ActorAlign.CENTER,
+				y_align: Clutter.ActorAlign.CENTER,
+			}));
+		}
 		
 		this.setPosition(asked_x, asked_y);
 		Main.layoutManager.overviewGroup.add_actor(this.actor);
@@ -538,8 +521,8 @@ function dndInjections() {
 						//this._removeMenuTimeout(); //FIXME ??
 						Main.overview.beginItemDrag(this);
 						log('it has begun (folder)');
-						computeFolderOverlayActors();
 						updateActorsPositions();
+						computeFolderOverlayActors();
 						if (!Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) {
 							updateState('folder-in-allview');
 						}
@@ -551,6 +534,8 @@ function dndInjections() {
 						Main.overview.cancelledItemDrag(this);
 						
 						hideAll();
+						
+						Main.overview.viewSelector.appDisplay._views[1].view._redisplay(); // TODO à vérifier
 					}
 				));
 				this._draggable.connect('drag-end', Lang.bind(this,
@@ -576,10 +561,10 @@ function dndInjections() {
 		injections['_init3'] = injectToFunction(AppDisplay.AppIcon.prototype, '_init', function(){
 		
 		
-//			this._draggable = DND.makeDraggable(this.actor); //FIXME ??
+//			this._draggable = DND.makeDraggable(this.actor); //TODO ??
 			this._draggable.connect('drag-begin', Lang.bind(this,
 				function () {
-					//this._removeMenuTimeout(); //FIXME ??
+					//this._removeMenuTimeout(); //TODO ??
 					Main.overview.beginItemDrag(this);
 					log('it has begun (app)');
 					updateActorsPositions();
@@ -660,7 +645,6 @@ function updateFolderViewInterface () {
 }
 
 function updateState (state) {
-	
 	switch (state) {
 		case 'folder-in-allview':
 			deleteAction.show();
@@ -709,69 +693,80 @@ function hideAllFolders () {
 
 let previousWidth = 0;
 
+function findBorders() { // gérer différemment le cas du popup TODO FIXME
+	let y = 0;
+	let monitor = Main.layoutManager.primaryMonitor;
+	let widget = null;
+	let upper = null;
+	let lower = null;
+	
+	while (lower == null) {
+		widget = global.stage.get_actor_at_pos(Clutter.PickMode.ALL, monitor.width-1, y);
+//		if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup)
+//			log(widget);
+		if (widget instanceof St.Button || widget instanceof St.ScrollView) {
+			if (upper == null) {
+				upper = y;
+			}
+		} else {
+			if (upper != null) {
+				lower = y-15;
+			}
+		}
+		y += 5;
+	}
+	log(upper + ' ' + lower);
+	return [lower, upper];
+}
+
 function updateActorsPositions () {
 
 	let monitor = Main.layoutManager.primaryMonitor;
-	let pertinentGrid;
-	let _availWidth;
-	
-	/* The drag begin inside of a folder: */
-	if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) {
-		// previousWidth is hard to initialize but once set, it shall be used.
-		if (previousWidth == 0) {
-			pertinentGrid = Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source.view._grid;
-			_availWidth = pertinentGrid.actor.width;
-		} else {
-			_availWidth = previousWidth;
-		}
-		
-	/* The drag begin outside of a folder: */
-	} else {
-		pertinentGrid = Main.overview.viewSelector.appDisplay._views[1].view._grid; //FIXME ptdrrrrrrrr ok mais ça ne suffit pas manifestement.
-		_availWidth = pertinentGrid.actor.width;
-		previousWidth = pertinentGrid.actor.width;
-	}
-	
-	let _availHeight = //do not use the pertinentGrid here since it's a scrollable grid.
-		(Main.overview.viewSelector.appDisplay._views[1].view._grid.actor.height)
-		/
-		(Main.overview.viewSelector.appDisplay._views[1].view._grid._nPages)
-	;
+	let [bottomOfTheGrid, topOfTheGrid] = findBorders();
+	let _availHeight = bottomOfTheGrid - topOfTheGrid;
+	let _availWidth = Main.overview.viewSelector.appDisplay._views[1].view._grid.actor.width;
+	let sideMargin = (monitor.width - _availWidth) / 2;
 	
 	let xMiddle = ( monitor.x + monitor.width ) / 2;
 	let yMiddle = ( monitor.y + monitor.height ) / 2;
 	
-	let sideMargin = (monitor.width - _availWidth) / 2;
+	//---- TODO totally an object-oriented action
 	
-	let topOfTheGrid = yMiddle - (_availHeight/2);
-	let bottomOfTheGrid = yMiddle + (_availHeight/2);
+	deleteAction.setPosition( xMiddle , bottomOfTheGrid );
+	createAction.setPosition( xMiddle, Main.overview._panelGhost.height );
+	upAction.setPosition( 0, Main.overview._panelGhost.height );
+	downAction.setPosition( 0, bottomOfTheGrid );
 	
-	deleteAction.setPosition( sideMargin/2 ,  topOfTheGrid );
-	createAction.setPosition( monitor.width - sideMargin, topOfTheGrid );
-	upAction.setPosition( sideMargin, 0 );
-	downAction.setPosition( sideMargin, bottomOfTheGrid );
 	removeActionTop.setPosition( sideMargin + _availWidth * 0.1, topOfTheGrid );
 	removeActionBottom.setPosition( sideMargin + _availWidth * 0.1, bottomOfTheGrid - POPDOWN_ACTOR_HEIGHT );
 	addToTop.setPosition( sideMargin + _availWidth * 0.05, topOfTheGrid + POPDOWN_ACTOR_HEIGHT );
 	addToBottom.setPosition( sideMargin + _availWidth * 0.05, topOfTheGrid );
 	
-	deleteAction.actor.width = sideMargin/2;
-	createAction.actor.width = sideMargin/2;
-	upAction.actor.width = _availWidth;
-	downAction.actor.width = _availWidth;
+	//---- TODO totally an object-oriented action
+	
+	deleteAction.actor.width = xMiddle;
+	createAction.actor.width = xMiddle;
+	upAction.actor.width = xMiddle;
+	downAction.actor.width = xMiddle;
+	
 	removeActionTop.actor.width = _availWidth * 0.8;
 	removeActionBottom.actor.width = _availWidth * 0.8;
 	addToTop.actor.width = _availWidth * 0.9; //???
 	addToBottom.actor.width = _availWidth * 0.9;
 	
-	deleteAction.actor.height = _availHeight;
-	createAction.actor.height = _availHeight;
-	upAction.actor.height = topOfTheGrid;
+	//---- TODO totally an object-oriented action
+	
+	deleteAction.actor.height = monitor.height - bottomOfTheGrid;
+	createAction.actor.height = topOfTheGrid - Main.overview._panelGhost.height;
+	upAction.actor.height = topOfTheGrid - Main.overview._panelGhost.height;
 	downAction.actor.height = monitor.height - bottomOfTheGrid;
+	
 	removeActionTop.actor.height = POPDOWN_ACTOR_HEIGHT;
 	removeActionBottom.actor.height = POPDOWN_ACTOR_HEIGHT;
 	addToTop.actor.height = _availHeight - POPDOWN_ACTOR_HEIGHT;
 	addToBottom.actor.height = _availHeight - POPDOWN_ACTOR_HEIGHT;
+	
+	//----
 	
 	updateArrowVisibility();
 }
@@ -787,20 +782,15 @@ function computeFolderOverlayActors () {
 	destroyAllFolderAreas();
 	
 	let allAppsGrid = Main.overview.viewSelector.appDisplay._views[1].view._grid;
-	let availWidth = allAppsGrid.actor.width;
-//	let availWidth = allAppsGrid.actor.width;
 
 	let availHeightPerPage = (allAppsGrid.actor.height)/(allAppsGrid._nPages);
 
 	let parentBox = allAppsGrid.actor.get_parent().allocation;
 	let gridBox = allAppsGrid.actor.get_theme_node().get_content_box(parentBox);
-	box = allAppsGrid._grid.get_theme_node().get_content_box(gridBox);
+	let box = allAppsGrid._grid.get_theme_node().get_content_box(gridBox);
 	let children = allAppsGrid._getVisibleChildren();
-	availWidth = box.x2 - box.x1;
-	availHeight = box.y2 - box.y1;
-	
-	let x = availWidth/2;
-	let y = availHeight/2;
+	let availWidth = box.x2 - box.x1;
+	let availHeight = box.y2 - box.y1;
 	
 	let items = allAppsGrid._grid.get_n_children();
 	
@@ -808,6 +798,7 @@ function computeFolderOverlayActors () {
 	
 	let indexes = [];
 	let folders = [];
+	let x, y;
 	
 	Main.overview.viewSelector.appDisplay._views[1].view._allItems.forEach(function(icon) {
 		if (icon.actor.visible) {
@@ -832,11 +823,9 @@ function computeFolderOverlayActors () {
 		
 		[x, y] = folders[i].actor.get_position();
 		
-		x += allAppsGrid.leftPadding * 3; //FIXME this works, but for no reason
-		y += allAppsGrid.topPadding;
+		x += allAppsGrid.leftPadding * 3; //FIXME this works perfectly, but for no reason
 		
-		y = y + ((monitor.height - availHeightPerPage) / 2);
-		
+		y = y + findBorders()[1];
 		y = y - (page * availHeightPerPage);
 		
 		log('positionning the overlay of ' + folders[i].id + ' at: ' + x + ', ' + y);
@@ -849,9 +838,13 @@ function computeFolderOverlayActors () {
 //-----------
 
 function updateFoldersVisibility () {
+	let currentPage = Main.overview.viewSelector.appDisplay._views[1].view._grid.currentPage;
 	for (var i = 0; i < addActions.length; i++) {
-		let currentPage = Main.overview.viewSelector.appDisplay._views[1].view._grid.currentPage;
-		log(currentPage + 'ème page ; dossier en page ' + addActions[i].page);
+		log(currentPage + 'ème page ; dossier en page ' + addActions[i].page +
+		' ; positionné en ' + addActions[i].actor.x + ', ' + addActions[i].actor.y);
+		if (100 > addActions[i].actor.x) {	// TODO hack immonde à virer
+			addActions[i].hide();			// TODO hack immonde à virer
+		} else								// TODO hack immonde à virer
 		if ((addActions[i].page == currentPage) && (!Main.overview.viewSelector.appDisplay._views[1].view._currentPopup)) {
 			addActions[i].show();
 		} else {

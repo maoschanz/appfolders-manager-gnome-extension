@@ -1,16 +1,34 @@
-.invisibleArea
-{
-	background-color: rgba(255,255,255,0.1);
+.dropAreaLabel{
+	font-size: 24px;
 }
 
-.destructiveArea
+.framedArea
 {
-	background-color: rgba(255,50,50,0.7);
-	border-radius: 15px;
+	background-color: rgba(255,255,255,0.0);
+	border-color: rgba(255,255,255,1.0);
+	border-width: 1px;
 }
 
-.nonDestructiveArea
+.shadowedAreaTop
 {
-	background-color: rgba(50,200,200,0.7);
-	border-radius: 15px;
+	background-gradient-start: rgba(0, 0, 0, 0.7);
+	background-gradient-end: rgba(0, 0, 0, 0.0);
+	background-gradient-direction: vertical;
+}
+
+.shadowedAreaBottom
+{
+	background-gradient-start: rgba(0, 0, 0, 0.0);
+	background-gradient-end: rgba(0, 0, 0, 0.7);
+	background-gradient-direction: vertical;
+}
+
+.folderArea
+{
+	background-gradient-start: rgba(0, 0, 0, 0.4);
+	background-gradient-end: rgba(0, 0, 0, 0.0);
+	background-gradient-direction: vertical;
+	border-color: rgba(255,255,255,1.0);
+	border-radius: 4px;
+	border-width: 2px;
 }
