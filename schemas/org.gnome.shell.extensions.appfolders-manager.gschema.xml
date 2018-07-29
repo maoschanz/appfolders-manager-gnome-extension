@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist gettext-domain="appfolders-manager">
-	<schema id="org.gnome.shell.extensions.appfolders-manager" path="/org/gnome/shell/extensions/appfolders-manager/">
+  <schema id="org.gnome.shell.extensions.appfolders-manager" path="/org/gnome/shell/extensions/appfolders-manager/">
     <key type="b" name="total-deletion">
       <default>true</default>
-      <summary>complete deletion of an appfolder</summary>
+      <summary>Complete deletion of an appfolder</summary>
       <description>if a deleted appfolder should be 100% deleted (false = restauration is possible)</description>
+    </key>
+    <key type="b" name="categories">
+      <default>true</default>
+      <summary>Use categories</summary>
+      <description>If the interface for managing categories should be shown when right-clicking a folder.</description>
     </key>
     <key type="b" name="experimental">
       <default>false</default>
@@ -14,12 +19,12 @@
     <key type="b" name="dnd">
       <default>false</default>
       <summary>Use drag-and-drop</summary>
-      <description>experimental feature, wip</description>
+      <description>wip</description>
     </key>
-    <key type="b" name="categories">
-      <default>true</default>
-      <summary>Use categories</summary>
-      <description>If the interface for managing categories should be shown.</description>
+    <key type="b" name="show-frame">
+      <default>false</default>
+      <summary>Show a frame around actors</summary>
+      <description>(debug purpose)</description>
     </key>
-	</schema>
+  </schema>
 </schemalist>
