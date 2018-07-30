@@ -6,6 +6,7 @@ const St = imports.gi.St;
 const Main = imports.ui.main;
 const ModalDialog = imports.ui.modalDialog;
 const PopupMenu = imports.ui.popupMenu;
+const ShellEntry = imports.ui.shellEntry;
 
 const Gtk = imports.gi.Gtk;
 
@@ -13,10 +14,14 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Convenience = Me.imports.convenience;
 
-const ShellEntry = Me.imports.shellEntryWhichFckingWorks;
+const USING_CUSTOM_CRAP = true;
+const ShellEntry2 = Me.imports.shellEntryWhichFckingWorks;
 
 const Gettext = imports.gettext.domain('appfolders-manager');
 const _ = Gettext.gettext;
+
+//const Config = imports.misc.config;
+//const SHELL_VERSION = parseInt(Config.PACKAGE_VERSION.split(".")[1]);
 
 //-------------------------------------------------
 
@@ -121,6 +126,10 @@ var AppfolderDialog = new Lang.Class({
 				y_align: Clutter.ActorAlign.CENTER,
 			}),
 		});
+//		if (SHELL_VERSION > 19) {
+//			//TODO secondary icon SHOULD be already in old versions so wtf
+//		}
+
 		this._categoryEntryText = null; ///???
 		this._categoryEntryText = this._categoryEntry.clutter_text;
 		this._catAddButton = new St.Button ({
@@ -136,7 +145,13 @@ var AppfolderDialog = new Lang.Class({
 		this._categoryBox.add(this._categoryEntry);
 		this._categoryBox.add(this._catAddButton);
 		this.contentLayout.add(this._categoryBox, { y_align: St.Align.START });
-		ShellEntry.addContextMenu(this._categoryEntry);
+		
+		if (USING_CUSTOM_CRAP) {
+			ShellEntry2.addContextMenu(this._categoryEntry);
+			this._categoryEntry.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+		} else {
+			this.buildMenu();
+		}
 		
 		this.addCategorySubmenu = new PopupMenu.PopupSubMenuMenuItem(_("Add a category"));
 		let mainCategories = ['AudioVideo','Audio','Video','Development','Education','Game',
@@ -150,9 +165,10 @@ var AppfolderDialog = new Lang.Class({
 			}, mainCategories[i], this._categoryEntryText));
  			this.addCategorySubmenu.menu.addMenuItem(item);
 		}
-		this._categoryEntry.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 		this._categoryEntry.menu.addMenuItem(this.addCategorySubmenu);
 		this._categoryEntry.connect('secondary-icon-clicked', Lang.bind(this, this._openMenu));
+		
+		log('182 (dialog) ----------');
 		
 		this._catAddButton.connect('clicked', Lang.bind(this, this._addCategory));
 		
@@ -208,6 +224,23 @@ var AppfolderDialog = new Lang.Class({
 				this._apply();
 			}
 		}));
+	},
+	
+	buildMenu: function() {
+		this._categoryEntry.menu = new PopupMenu.PopupMenu(this._categoryEntry, 0.0, St.Side.RIGHT);
+		this._categoryEntry._menuManager = new PopupMenu.PopupMenuManager({ actor: this._categoryEntry });
+		this._categoryEntry._menuManager.addMenu(this._categoryEntry.menu);
+
+		let e = this._categoryEntry;
+		this._categoryEntry.clutter_text.connect('button-press-event', Lang.bind(null, ShellEntry._onButtonPressEvent, this._categoryEntry));
+		this._categoryEntry.connect('button-press-event', Lang.bind(null, ShellEntry._onButtonPressEvent, this._categoryEntry));
+
+		this._categoryEntry.connect('popup-menu', Lang.bind(null, ShellEntry._onPopup, this._categoryEntry));
+		this._categoryEntry.connect('destroy', function() {
+			e.menu.destroy();
+			e.menu = null;
+			e._menuManager = null;
+		});
 	},
 
 	_alreadyExists: function (folderId) {
@@ -366,7 +399,7 @@ var AppfolderDialog = new Lang.Class({
 		this._applyName();
 		this.destroy();
 		//-----------------------
-		Main.overview.viewSelector.appDisplay._views[1].view._redisplay(); //FIXME ça vomit des criticals ça
+		Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
 		if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('experimental') ) {
 			log('[AppfolderDialog v2] reload the view');
 		}
@@ -379,8 +412,13 @@ var AppfolderDialog = new Lang.Class({
 	},
 	
 	_openMenu: function () {
+		log('415 (dialog) ████████████');
 		this._categoryEntry.menu.open();
+		
+		log('422 (dialog) ████████████');
 		this.addCategorySubmenu.menu.open();
+		
+		log('425 (dialog) ████████████');
 	},
 });
 

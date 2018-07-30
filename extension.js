@@ -247,29 +247,39 @@ function removeFromFolder (app_id, folder_id) {
 
 //------------------------------------------------
 
-function deleteFolder (folder_id) { //FIXME passer par l'id
+function deleteFolder (folder_id) {
 	Meta.later_add(Meta.LaterType.BEFORE_REDRAW, Lang.bind(this, function () {
 		let tmp = [];
+		FOLDER_LIST = FOLDER_SCHEMA.get_strv('folder-children');
 		for(var j=0;j < FOLDER_LIST.length;j++){
 			if(FOLDER_LIST[j] == folder_id) {
+				log('255 no suppression de ' + folder_id);
 			} else {
 				tmp.push(FOLDER_LIST[j]);
 			}
 		}
 		
-		FOLDER_SCHEMA.set_strv('folder-children', tmp);
-		FOLDER_LIST = tmp; //??
-		
-		let folder_schema = folderSchema (folder_id);
-		
-		if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('total-deletion') ) {
-			folder_schema.reset('apps');
-			folder_schema.reset('categories');
-			folder_schema.reset('excluded-apps');
-			folder_schema.reset('name'); // générait un bug // en génère toujours, en plus volumineux mais au moins rien ne crash
-		}
+		log(tmp);
+		FOLDER_LIST = tmp;
+		FOLDER_SCHEMA.set_strv('folder-children', FOLDER_LIST);
+				
+//		if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('total-deletion') ) {
+//			let folder_schema = folderSchema (folder_id);
+//			folder_schema.reset('apps');
+//			folder_schema.reset('categories');
+//			folder_schema.reset('excluded-apps');
+//			folder_schema.reset('name'); // génère un bug volumineux
+//		}
 	}));
 	
+	// FIXME léger bug dans les logs
+	if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('total-deletion') ) {
+		let folder_schema = folderSchema (folder_id);
+		folder_schema.reset('apps');
+		folder_schema.reset('categories');
+		folder_schema.reset('excluded-apps');
+		folder_schema.reset('name');
+	}
 	return true;
 }
 
@@ -333,7 +343,7 @@ function addToFolder (app_source, folder_id) {
 	//un-exclude the application if it was excluded
 	let pastExcluded = folder_schema.get_strv('excluded-apps');
 	let presentExcluded = [];
-	for(i=0;i<pastExcluded.length;i++){
+	for(let i = 0; i < pastExcluded.length; i++){
 		if(pastExcluded[i] != id) {
 			presentExcluded.push(pastExcluded[i]);
 		}
