@@ -58,11 +58,13 @@ var AppfolderDialog = new Lang.Class({
 			x_align: St.Align.START,
 			y_align: St.Align.START
 		});
-		this.contentLayout.add(categoriesSection, {
-			x_fill: false,
-			x_align: St.Align.START,
-			y_align: St.Align.START
-		});
+		if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('categories') ) {
+			this.contentLayout.add(categoriesSection, {
+				x_fill: false,
+				x_align: St.Align.START,
+				y_align: St.Align.START
+			});
+		}
 		
 		//----------------------
 		
@@ -261,7 +263,7 @@ var AppfolderDialog = new Lang.Class({
 	},
 	
 	destroy: function () {
-		if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('experimental') ) {
+		if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('debug') ) {
 			log('[AppfolderDialog v2] destroying dialog');
 		}
 		this.parent();
@@ -343,6 +345,9 @@ var AppfolderDialog = new Lang.Class({
 		if (this._categories.indexOf(new_cat_name) != -1) {
 			return;
 		}
+		if (new_cat_name == '') {
+			return;
+		}
 		this._categories.push(new_cat_name);
 		this._categoryEntryText.set_text('');
 		this.noCatLabel.visible = false;
@@ -364,7 +369,7 @@ var AppfolderDialog = new Lang.Class({
 		this.destroy();
 		//-----------------------
 		Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
-		if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('experimental') ) {
+		if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('debug') ) {
 			log('[AppfolderDialog v2] reload the view');
 		}
 	},

@@ -142,7 +142,7 @@ Signals.addSignalMethods(FolderIconMenu.prototype);
 
 function reload() {
 	Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
-	if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('experimental') ) {
+	if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('debug') ) {
 		log('[FolderIconMenu] reload the view');
 	}
 }

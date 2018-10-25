@@ -60,7 +60,7 @@ const DroppableArea = new Lang.Class({
 		this.actor._delegate = this;
 		
 		this.lock = true;
-		this.use_frame = Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('show-frame');
+		this.use_frame = Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('debug');
 	},
 	
 	setPosition: function (x, y) {

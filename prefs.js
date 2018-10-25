@@ -39,6 +39,11 @@ const appfoldersManagerSettingsWidget = new GObject.Class({
 		let generalSection = this.add_section(_("Main settings"));
 		let categoriesSection = this.add_section(_("Categories"));
 		
+		
+		//----------------------------
+		
+		this._settings.set_boolean('debug', this._settings.get_boolean('debug'));
+		
 		//----------------------------
 		
 		let deleteAllText = _("Delete all related settings when an appfolder is deleted");
@@ -87,95 +92,36 @@ const appfoldersManagerSettingsWidget = new GObject.Class({
 		
 		//----------------------------
 		
-		let dndText = _("Drag-and-drop (work in progress)");
-		let dndSwitch = new Gtk.Switch({visible: this._settings.get_boolean('experimental')});
-		dndSwitch.set_state(true);
-		dndSwitch.set_state(this._settings.get_boolean('dnd'));
+		let menusText = _("Use the right-click menus in addition to the drag-and-drop");
+		let menusSwitch = new Gtk.Switch({visible: this._settings.get_boolean('extend-menus')});
+		menusSwitch.set_state(true);
+		menusSwitch.set_state(this._settings.get_boolean('extend-menus'));
 		
-		dndSwitch.connect('notify::active', Lang.bind(this, function(widget) {
+		menusSwitch.connect('notify::active', Lang.bind(this, function(widget) {
 			if (widget.active) {
-				this._settings.set_boolean('dnd', true);
+				this._settings.set_boolean('extend-menus', true);
 			} else {
-				this._settings.set_boolean('dnd', false);
+				this._settings.set_boolean('extend-menus', false);
 			}
 		}));
 		
-		let dndBox = new Gtk.Box({
+		let menusBox = new Gtk.Box({
 			orientation: Gtk.Orientation.HORIZONTAL,
 			spacing: 15,
 			margin: 6,
-			visible: this._settings.get_boolean('experimental')
+			visible: true,
 		});
-		dndBox.pack_start(new Gtk.Label({
-			label: dndText,
+		menusBox.pack_start(new Gtk.Label({
+			label: menusText,
 			halign: Gtk.Align.START,
-			visible: this._settings.get_boolean('experimental')
+			visible: true,
 		}), false, false, 0);
-		dndBox.pack_end(dndSwitch, false, false, 0);
+		menusBox.pack_end(menusSwitch, false, false, 0);
 		
 		//----------------------------
-		
-		let frameText = _("Show frames around actors");
-		let frameSwitch = new Gtk.Switch({visible: this._settings.get_boolean('experimental')});
-		frameSwitch.set_state(true);
-		frameSwitch.set_state(this._settings.get_boolean('show-frame'));
-		
-		frameSwitch.connect('notify::active', Lang.bind(this, function(widget) {
-			if (widget.active) {
-				this._settings.set_boolean('show-frame', true);
-			} else {
-				this._settings.set_boolean('show-frame', false);
-			}
-		}));
-		
-		let frameBox = new Gtk.Box({
-			orientation: Gtk.Orientation.HORIZONTAL,
-			spacing: 15,
-			margin: 6,
-			visible: this._settings.get_boolean('experimental')
-		});
-		frameBox.pack_start(new Gtk.Label({
-			label: frameText,
-			halign: Gtk.Align.START,
-			visible: this._settings.get_boolean('experimental')
-		}), false, false, 0);
-		frameBox.pack_end(frameSwitch, false, false, 0);
-		
-		//----------------------------
-		
-		let experimentalText = _("Debug & experimental features (not recommended)");
-		let experimentalSwitch = new Gtk.Switch();
-		experimentalSwitch.set_state(true);
-		experimentalSwitch.set_state(this._settings.get_boolean('experimental'));
-		
-		experimentalSwitch.connect('notify::active', Lang.bind(this, function(widget) {
-			if (widget.active) {
-				this._settings.set_boolean('experimental', true);
-				dndBox.visible = true;
-				frameBox.visible = true;
-			} else {
-				this._settings.set_boolean('experimental', false);
-				dndBox.visible = false;
-				frameBox.visible = false;
-			}
-		}));
-		
-		let experimentalBox = new Gtk.Box({
-			orientation: Gtk.Orientation.HORIZONTAL,
-			spacing: 15,
-			margin: 6,
-		});
-		experimentalBox.pack_start(new Gtk.Label({ label: experimentalText, halign: Gtk.Align.START }), false, false, 0);
-		experimentalBox.pack_end(experimentalSwitch, false, false, 0);
-		
-		//-------------------------
-		
-		// Since Gtk seems unable to fucking understand what "visible = false" means, the user will just not have those fucking options.
 		
 		this.add_row(deleteAllBox, generalSection);
-		this.add_row(experimentalBox, generalSection);
-		this.add_row(dndBox, generalSection);
-		this.add_row(frameBox, generalSection);
+		this.add_row(menusBox, generalSection);
 		
 		//-------------------------
 		

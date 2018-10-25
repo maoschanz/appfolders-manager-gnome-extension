@@ -119,8 +119,8 @@ function injectionInAppsMenus() {
 				
 				let shouldShow = isInFolder(id, currentFolderSchema);
 				
-				if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('experimental') ) {
-					shouldShow = true;
+				if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('debug') ) {
+					shouldShow = true; //FIXME ??? et l'exclusion ?
 				}
 				
 				if(shouldShow) {
@@ -160,48 +160,20 @@ function injectionInAppsMenus() {
 //---------------------------------------------------------------------------------------------------
 
 /* this function builds menus on appfolders when right click on them, using FolderIconMenu objects. */
-function createFolderMenus() {
+function connectEditionDialogs() {
 	
 	if (!AppDisplay.FolderIcon.injections) { //FIXME tests encore pertinents ??
-	
 		AppDisplay.FolderIcon.prototype.injections = true;
 		
-		AppDisplay.FolderIcon.prototype.popupMenu = function () {
-			this.actor.fake_release(); // qu'est-ce?
-			if (!this._menu) {
-				this._menu = new FolderIconMenu.FolderIconMenu(this);
-				this._menuManager.addMenu(this._menu);
-			}
-			this.emit('menu-state-changed', true);
-			this.actor.set_hover(true);
-			this._menu.popup();
-			this._menuManager.ignoreRelease(); // qu'est-ce?
-			return false;
-		}
-	
 		AppDisplay.FolderIcon.prototype._onButtonPress = function (actor, event) {
 			let button = event.get_button();
-			if (button == 1) {
-				if(this._menu)
-					this._menu.close();
-				//	this._menu.destroy();
-			} else if (button == 2) {
-				this.popupMenu();
-				return Clutter.EVENT_STOP;
-			} else if (button == 3) {
-				if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('experimental') ) {
-					log('ouvrir le dialogue');
-					let tmp = new Gio.Settings({
-						schema_id: 'org.gnome.desktop.app-folders.folder',
-						path: '/org/gnome/desktop/app-folders/folders/' + this.id + '/'
-					});
-					let dialog = new AppfolderDialog.AppfolderDialog(tmp, null);
-					dialog.open();
-				} else {
-					log('ne pas ouvrir le dialogue');
-					this.popupMenu();
-					return Clutter.EVENT_STOP;
-				}
+			if (button == 3) {
+				let tmp = new Gio.Settings({
+					schema_id: 'org.gnome.desktop.app-folders.folder',
+					path: '/org/gnome/desktop/app-folders/folders/' + this.id + '/'
+				});
+				let dialog = new AppfolderDialog.AppfolderDialog(tmp, null);
+				dialog.open();
 			}
 			return Clutter.EVENT_PROPAGATE;
 		}
@@ -211,8 +183,6 @@ function createFolderMenus() {
 		}
 		
 		injections['_init'] = injectToFunction(AppDisplay.FolderIcon.prototype, '_init', function(){
-			this._menu = null;
-			this._menuManager = new PopupMenu.PopupMenuManager(this);
 			this.actor.connect('button-press-event', Lang.bind(this, this._onButtonPress));
 		});
 	}
@@ -386,21 +356,14 @@ function folderSchema (folder_id) {
 //----------------------------------------------------
 
 function enable() {
-
 	FOLDER_SCHEMA = new Gio.Settings({ schema_id: 'org.gnome.desktop.app-folders' });
 	FOLDER_LIST = FOLDER_SCHEMA.get_strv('folder-children');
 
-	injectionInAppsMenus();
-	
-	if(
-		Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('experimental')
-		&&
-		Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('dnd')
-	) {
-		DragAndDrop.dndInjections();
+	connectEditionDialogs();
+	if( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('extend-menus') ) {
+		injectionInAppsMenus();
 	}
-	
-	createFolderMenus();
+	DragAndDrop.dndInjections();
 }
 
 //-------------------------------------------------

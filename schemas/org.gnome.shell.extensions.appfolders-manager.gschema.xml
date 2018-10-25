@@ -9,22 +9,17 @@
     <key type="b" name="categories">
       <default>true</default>
       <summary>Use categories</summary>
-      <description>If the interface for managing categories should be shown when right-clicking a folder.</description>
+      <description>If the interface for managing categories should be shown.</description>
     </key>
-    <key type="b" name="experimental">
+    <key type="b" name="debug">
       <default>false</default>
-      <summary>Use experimental features</summary>
-      <description>this is not supposed to be activated</description>
+      <summary>Debug key</summary>
+      <description>this is not supposed to be activated by the user</description>
     </key>
-    <key type="b" name="dnd">
-      <default>false</default>
-      <summary>Use drag-and-drop</summary>
-      <description>wip</description>
-    </key>
-    <key type="b" name="show-frame">
-      <default>false</default>
-      <summary>Show a frame around actors</summary>
-      <description>(debug purpose)</description>
+    <key type="b" name="extend-menus">
+      <default>true</default>
+      <summary>Show items in right-click menus</summary>
+      <description>The legacy interface, with submenus in the right-click menu on application icons, can be shown in addition to the default drag-and-drop behavior.</description>
     </key>
   </schema>
 </schemalist>
