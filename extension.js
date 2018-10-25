@@ -190,6 +190,7 @@ function createFolderMenus() {
 				return Clutter.EVENT_STOP;
 			} else if (button == 3) {
 				if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('experimental') ) {
+					log('ouvrir le dialogue');
 					let tmp = new Gio.Settings({
 						schema_id: 'org.gnome.desktop.app-folders.folder',
 						path: '/org/gnome/desktop/app-folders/folders/' + this.id + '/'
@@ -197,6 +198,7 @@ function createFolderMenus() {
 					let dialog = new AppfolderDialog.AppfolderDialog(tmp, null);
 					dialog.open();
 				} else {
+					log('ne pas ouvrir le dialogue');
 					this.popupMenu();
 					return Clutter.EVENT_STOP;
 				}
