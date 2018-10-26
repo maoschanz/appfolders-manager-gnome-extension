@@ -14,9 +14,6 @@ const Convenience = Me.imports.convenience;
 const Extension = Me.imports.extension;
 
 const CHANGE_PAGE_TIMEOUT = 300;
-const POPDOWN_TIMEOUT = 1000;
-const OPEN_FOLDER_TIMEOUT = 1500;
-const POPDOWN_ACTOR_HEIGHT = 122; //FIXME booooo ugly
 
 //-------------------------------------------------
 /* do not edit this section */
@@ -106,6 +103,11 @@ const FolderActionArea = new Lang.Class({
 				label = _("Create a new folder");
 				this.actor.style_class = 'shadowedAreaTop';
 			break;
+			case 'remove': //TODO
+				label = _("Remove from ???");
+//				label = (_("Remove from %s"), id).toString;
+				this.actor.style_class = 'shadowedAreaBottom';
+			break;
 			default:
 				label = 'invalid id';
 			break;
@@ -177,16 +179,8 @@ const NavigationArea = new Lang.Class({
 				i = 'pan-down-symbolic';
 				this.actor.style_class = 'shadowedAreaBottom';
 			break;
-			case 'popdown-bottom':
-				i = 'pan-start-symbolic';
-				this.actor.style_class = 'shadowedAreaBottom';
-			break;
-			case 'popdown-top':
-				i = 'pan-start-symbolic';
-				this.actor.style_class = 'shadowedAreaTop';
-			break;
 			default:
-				i = 'pan-start-symbolic';
+				i = 'dialog-error-symbolic';
 			break;
 		}
 		
@@ -219,42 +213,8 @@ const NavigationArea = new Lang.Class({
 			return DND.DragMotionResult.CONTINUE;
 		}
 		
-		/*
-			The popdowning actors behave like a FolderArea actor but
-			they have to be NavigationArea because their lifecycle
-			is the same as regular "up/down" areas' lifecycle.
-		*/
-		if ( (this.id == 'popdown-bottom') || (this.id == 'popdown-top') ){
-			if (source instanceof AppDisplay.AppIcon) {
-				this.popdown();
-				return DND.DragMotionResult.MOVE_DROP;
-			} else {
-				this.popdown();
-				return DND.DragMotionResult.CONTINUE;
-			}
-		}
-		
 		Main.overview.endItemDrag(this);
 		return DND.DragMotionResult.NO_DROP;
-	},
-	
-	popdown: function() {
-		if(this.lock && !this.timeoutSet) {
-			this._timeoutId = Mainloop.timeout_add(POPDOWN_TIMEOUT, Lang.bind(this, this.unlock));
-			this.timeoutSet = true;
-		}
-		if(!this.lock){
-			if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) { //FIXME mécanisme similaire partout ?? utile ?
-				Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown();
-			
-				this.lock = true;
-				
-				computeFolderOverlayActors(null);
-				updateActorsPositions();
-				
-				updateState('app-in-allview');
-			}
-		}
 	},
 
 	pageUp: function() {
@@ -291,81 +251,6 @@ const NavigationArea = new Lang.Class({
 	},
 
 	acceptDrop: function(source, actor, x, y, time) {
-		if ((this.id == 'popdown-top') || (this.id == 'popdown-bottom')) {
-			if (source instanceof AppDisplay.AppIcon) {
-				this.removeApp(source);
-				log('removing');
-				Main.overview.endItemDrag(this);
-				return true;
-			}
-		}
-		Main.overview.endItemDrag(this);
-		return false;
-	},
-	
-	removeApp: function(source) {
-		let id = source.app.get_id();
-		log('remove app : ' + id);
-		
-		if(!Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) {
-			log('ERREUR : pas de dossier ouvert');
-			return;
-		}
-		let _folder = Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source.id;
-		log('_folder : ' + _folder);
-		//FIXME dans le cas où c'est nul il faut supprimer de tous les dossiers mais n'exclure d'aucun,
-		//ce qui demande une autre fonction !
-		
-		if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) {
-			Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown();
-		}
-							
-		Extension.removeFromFolder(id, _folder);
-		hideAll();
-		
-		Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
-	},
-});
-
-const BigArea = new Lang.Class({
-	Name:	'BigArea',
-	Extends:	DroppableArea,
-	
-	_init:	function(id) {
-		this.parent(id);
-		
-		this.setPosition(10, 10);
-		Main.layoutManager.overviewGroup.add_actor(this.actor);
-	},
-	
-	handleDragOver: function(source, actor, x, y, time) {
-		/*
-			The popdowning actors behave like a FolderArea actor but
-			they have to be NavigationArea because their lifecycle
-			is the same as regular "up/down" areas' lifecycle.
-		*/
-		if (source instanceof AppDisplay.AppIcon) {
-			return DND.DragMotionResult.MOVE_DROP;
-		}
-		Main.overview.endItemDrag(this); //vraiment ?
-		return DND.DragMotionResult.NO_DROP;
-	},
-
-	acceptDrop: function(source, actor, x, y, time) { //FIXME recharger la vue ou au minimum les icônes des dossiers
-		if (source instanceof AppDisplay.AppIcon) {
-			let _folder = Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source.id;
-			if(_folder == undefined) {
-				Main.overview.endItemDrag(this);
-				return false;
-			}
-			if(Extension.isInFolder(source.id, _folder)) {
-				Main.overview.endItemDrag(this);
-				return false;
-			}
-			Extension.addToFolder(source, _folder);
-			Main.overview.endItemDrag(this);
-			return true;
-		}
 		Main.overview.endItemDrag(this);
 		return false;
 	},
@@ -396,7 +281,7 @@ const FolderArea = new Lang.Class({
 		this.actor.height = grid._getVItemSize();
 		
 		if (this.use_frame) {
-			this.actor.style_class = 'framedArea';
+			this.styleClass = 'framedArea';
 			this.actor.add(new St.Label({
 				text: this.id,
 				x_expand: true,
@@ -405,7 +290,7 @@ const FolderArea = new Lang.Class({
 				y_align: Clutter.ActorAlign.CENTER,
 			}));
 		} else {
-			this.actor.style_class = 'folderArea';
+			this.styleClass = 'folderArea';
 			this.actor.add(new St.Icon({
 				icon_name: 'list-add-symbolic',
 				icon_size: 24,
@@ -416,59 +301,28 @@ const FolderArea = new Lang.Class({
 				y_align: Clutter.ActorAlign.CENTER,
 			}));
 		}
+		this.resetStyle();
 		
 		this.setPosition(asked_x, asked_y);
 		Main.layoutManager.overviewGroup.add_actor(this.actor);
 	},
 	
+	resetStyle: function() {
+		this.actor.style_class = this.styleClass;
+	},
+	
 	handleDragOver: function(source, actor, x, y, time) {
 		log('_______________survol_______________');
-		if (source instanceof AppDisplay.FolderIcon) {
-			return DND.DragMotionResult.MOVE_DROP;
-		} else if (source instanceof AppDisplay.AppIcon) {
-			this.popupFolder();
+		if (source instanceof AppDisplay.AppIcon) {
+//			this.actor.style_class = 'folderAreaHovered'; //Mieux gérer ça FIXME
 			return DND.DragMotionResult.MOVE_DROP;
 		}
 		Main.overview.endItemDrag(this);
 		return DND.DragMotionResult.NO_DROP;
 	},
 	
-	popupFolder: function() {
-		if(this.lock && !this.timeoutSet) {
-			this._timeoutId = Mainloop.timeout_add(OPEN_FOLDER_TIMEOUT, Lang.bind(this, this.unlock));
-			this.timeoutSet = true;
-		}
-		if(!this.lock){
-			for(var i = 0; i < Main.overview.viewSelector.appDisplay._views[1].view.folderIcons.length; i++) {
-				if (Main.overview.viewSelector.appDisplay._views[1].view.folderIcons[i].id == this.id) {
-					Main.overview.viewSelector.appDisplay._views[1].view.folderIcons[i]._ensurePopup();
-					Main.overview.viewSelector.appDisplay._views[1].view.folderIcons[i].view.actor.vscroll.adjustment.value = 0;
-					Main.overview.viewSelector.appDisplay._views[1].view.folderIcons[i]._openSpaceForPopup();
-					break;
-				}
-			}
-			
-			hideAllFolders();
-			
-			this._timeoutId2 = Mainloop.timeout_add(500, Lang.bind(this, this.updateRemoveArrow)); //FIXME ????
-			
-			this.lock = true;
-		}
-	},
-	
-	updateRemoveArrow: function () {
-		updateFolderViewInterface();
-		Mainloop.source_remove(this._timeoutId2);
-	},
-	
 	acceptDrop: function(source, actor, x, y, time) { //FIXME recharger la vue ou au minimum les icônes des dossiers
-		if (source instanceof AppDisplay.FolderIcon) {
-			hideAll();
-			log('merging ' + this.id + ' with ' + source.id);
-			Extension.mergeFolders(this.id, source.id); //FIXME suppression intempestive ???
-			Main.overview.endItemDrag(this);
-			return true;
-		} else if (source instanceof AppDisplay.AppIcon) {
+		if (source instanceof AppDisplay.AppIcon) {
 			hideAll();
 //			if(Extension.isInFolder(source.id, this.id)) {
 //				log('app déjà ici');
@@ -482,7 +336,6 @@ const FolderArea = new Lang.Class({
 		Main.overview.endItemDrag(this);
 		return false;
 	},
-	
 });
 
 //-----------------------------------------------
@@ -491,60 +344,28 @@ let deleteAction;
 let createAction;
 let upAction;
 let downAction;
-let removeActionTop;
-let removeActionBottom;
-let addToTop;
-let addToBottom;
 let addActions = [];
-	
+
+function popdownFolder() {
+	log('346 — popdownFolder');
+	if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) { //FIXME mécanisme similaire partout ?? utile ?
+		Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown();
+		
+		computeFolderOverlayActors(null);
+		updateActorsPositions();
+		
+		updateState(true);
+	}
+}
+
+// TODO fonction globale dégueulasse pour réinitialiser le style des acteurs
+
 function dndInjections() {
 	
 	deleteAction = new FolderActionArea('delete');
 	createAction = new FolderActionArea('create');
 	upAction = new NavigationArea('up');
 	downAction = new NavigationArea('down');
-	removeActionTop = new NavigationArea('popdown-top');
-	removeActionBottom = new NavigationArea('popdown-bottom');
-	addToTop = new BigArea('popdown-top');
-	addToBottom = new BigArea('popdown-bottom');
-	
-	if (!AppDisplay.FolderIcon.injections2) {
-		AppDisplay.FolderIcon.prototype.injections2 = true;
-		if (injections['_init2']) {
-			removeInjection(AppDisplay.FolderIcon.prototype, injections, '_init2');
-			log('[À VIRER] utilisation d\'une clause de garde puissamment maudite');
-		}
-		injections['_init2'] = injectToFunction(AppDisplay.FolderIcon.prototype, '_init', function(){
-			this._draggable = DND.makeDraggable(this.actor);
-			this._draggable.connect('drag-begin', Lang.bind(this,
-				function () {
-//					this._removeMenuTimeout(); //FIXME ??
-					Main.overview.beginItemDrag(this);
-					log('it has begun (folder)');
-					updateActorsPositions();
-					computeFolderOverlayActors(this.id);
-					if (!Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) {
-						updateState('folder-in-allview');
-					}
-				}
-			));
-			this._draggable.connect('drag-cancelled', Lang.bind(this,
-				function () {
-					log('cancelled');
-					Main.overview.cancelledItemDrag(this);
-					hideAll();
-					Main.overview.viewSelector.appDisplay._views[1].view._redisplay(); // TODO à vérifier
-				}
-			));
-			this._draggable.connect('drag-end', Lang.bind(this,
-				function () {
-					log('it ended');
-					Main.overview.endItemDrag(this);
-					hideAll();
-				}
-			));
-		});
-	}
 	
 	if (!AppDisplay.AppIcon.injections2) {
 		AppDisplay.AppIcon.prototype.injections2 = true;
@@ -558,28 +379,25 @@ function dndInjections() {
 				function () {
 					this._removeMenuTimeout(); //TODO ??
 					Main.overview.beginItemDrag(this);
+					popdownFolder();
 					log('it has begun (app)');
 					updateActorsPositions();
 					computeFolderOverlayActors(null);
-					if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup){
-						updateState('app-in-folderview');
-					} else {
-						updateState('app-in-allview');
-					}
+					updateState(true);
 				}
 			));
 			this._draggable.connect('drag-cancelled', Lang.bind(this,
 				function () {
 					log('cancelled');
 					Main.overview.cancelledItemDrag(this);
-					hideAll();
+					updateState(false);
 				}
 			));
 			this._draggable.connect('drag-end', Lang.bind(this,
 				function () {
 					log('it ended');
 					Main.overview.endItemDrag(this);
-					hideAll();
+					updateState(false);
 				}
 			));
 		});
@@ -601,66 +419,14 @@ function updateArrowVisibility () {
 	}
 }
 
-function updateFolderViewInterface () {
-	if ( // The free space is upon the opened folder
-		Main.overview.viewSelector.appDisplay._views[1].view._currentPopup
-		&&
-		Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source._boxPointerArrowside == St.Side.TOP
-	) {
-		upAction.hide();
-		downAction.hide();
-		
-		removeActionTop.show();
-		removeActionBottom.hide();
-		addToBottom.hide();
-		addToTop.show();
-	} else if ( // The free space is below the opened folder
-		Main.overview.viewSelector.appDisplay._views[1].view._currentPopup
-		&&
-		Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source._boxPointerArrowside == St.Side.BOTTOM
-	) {
-		upAction.hide();
-		downAction.hide();
-		
-		removeActionTop.hide();
-		removeActionBottom.show();
-		addToBottom.show();
-		addToTop.hide();
-	} else { // No opened folder
-		removeActionTop.hide();
-		removeActionBottom.hide();
-		addToBottom.hide();
-		addToTop.hide();
+function updateState (isDragging) {
+	if (isDragging) {
+		deleteAction.hide();
+		createAction.show();
+		updateArrowVisibility();
+	} else {
+		hideAll();
 	}
-}
-
-function updateState (state) {
-	switch (state) {
-		case 'folder-in-allview':
-			deleteAction.show();
-			createAction.hide();
-			updateArrowVisibility();
-		break;
-		case 'app-in-allview':
-			removeActionTop.hide();
-			removeActionBottom.hide();
-			addToTop.hide();
-			addToBottom.hide();
-			deleteAction.hide();
-			createAction.show();
-			updateArrowVisibility();
-		break;
-		case 'app-in-folderview':
-			hideAllFolders();
-			deleteAction.hide();
-			createAction.show();
-			updateFolderViewInterface();
-		break;
-		default:
-			hideAll();
-		break;
-	}
-	log('update : ' + state);
 }
 
 function hideAll() {
@@ -668,10 +434,7 @@ function hideAll() {
 	createAction.hide();
 	upAction.hide();
 	downAction.hide();
-	removeActionTop.hide();
-	removeActionBottom.hide();
-	addToTop.hide();
-	addToBottom.hide();
+	
 	hideAllFolders();
 }
 
@@ -726,11 +489,6 @@ function updateActorsPositions () {
 	upAction.setPosition( 0, Main.overview._panelGhost.height );
 	downAction.setPosition( 0, bottomOfTheGrid );
 	
-	removeActionTop.setPosition( sideMargin + _availWidth * 0.1, topOfTheGrid );
-	removeActionBottom.setPosition( sideMargin + _availWidth * 0.1, bottomOfTheGrid - POPDOWN_ACTOR_HEIGHT );
-	addToTop.setPosition( sideMargin + _availWidth * 0.05, topOfTheGrid + POPDOWN_ACTOR_HEIGHT );
-	addToBottom.setPosition( sideMargin + _availWidth * 0.05, topOfTheGrid );
-	
 	//---- TODO totally an object-oriented action
 	
 	deleteAction.actor.width = xMiddle;
@@ -738,22 +496,12 @@ function updateActorsPositions () {
 	upAction.actor.width = xMiddle;
 	downAction.actor.width = xMiddle;
 	
-	removeActionTop.actor.width = _availWidth * 0.8;
-	removeActionBottom.actor.width = _availWidth * 0.8;
-	addToTop.actor.width = _availWidth * 0.9; //???
-	addToBottom.actor.width = _availWidth * 0.9;
-	
 	//---- TODO totally an object-oriented action
 	
 	deleteAction.actor.height = monitor.height - bottomOfTheGrid;
 	createAction.actor.height = topOfTheGrid - Main.overview._panelGhost.height;
 	upAction.actor.height = topOfTheGrid - Main.overview._panelGhost.height;
 	downAction.actor.height = monitor.height - bottomOfTheGrid;
-	
-	removeActionTop.actor.height = POPDOWN_ACTOR_HEIGHT;
-	removeActionBottom.actor.height = POPDOWN_ACTOR_HEIGHT;
-	addToTop.actor.height = _availHeight - POPDOWN_ACTOR_HEIGHT;
-	addToBottom.actor.height = _availHeight - POPDOWN_ACTOR_HEIGHT;
 	
 	//----
 	
