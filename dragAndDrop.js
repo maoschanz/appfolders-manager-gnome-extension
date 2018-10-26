@@ -1,5 +1,3 @@
-'use strict';
-
 const DND = imports.ui.dnd;
 const AppDisplay = imports.ui.appDisplay;
 const Clutter = imports.gi.Clutter;
@@ -39,6 +37,265 @@ function removeInjection(object, injection, name) {
 
 let injections=[];
 
+let OVERLAY_MANAGER;
+
+function initDND () {
+	OVERLAY_MANAGER = new OverlayManager();
+	
+	if (AppDisplay.AppIcon.injections2) {
+		log('[À VIRER] utilisation d\'une clause de garde puissamment maudite');
+	} else {
+		AppDisplay.AppIcon.prototype.injections2 = true;
+		if (injections['_init3']) {
+			removeInjection(AppDisplay.AppIcon.prototype, injections, '_init3');
+			log('[À VIRER] utilisation d\'une clause de garde puissamment maudite');
+		}
+		injections['_init3'] = injectToFunction(AppDisplay.AppIcon.prototype, '_init', function(){
+			this._draggable.connect('drag-begin', Lang.bind(this,
+				function () {
+					log('it will begin');
+					this._removeMenuTimeout(); //XXX ?
+					Main.overview.beginItemDrag(this);
+					OVERLAY_MANAGER.popdownFolder();
+					log('it has begun');
+				}
+			));
+			this._draggable.connect('drag-cancelled', Lang.bind(this,
+				function () {
+					log('cancelled');
+					Main.overview.cancelledItemDrag(this);
+					OVERLAY_MANAGER.updateState(false);
+				}
+			));
+			this._draggable.connect('drag-end', Lang.bind(this,
+				function () {
+					log('it ended');
+					Main.overview.endItemDrag(this);
+					OVERLAY_MANAGER.updateState(false);
+				}
+			));
+		});
+	}
+}
+
+//--------------------------------------------------------------
+
+const OverlayManager = new Lang.Class({
+	Name:	'OverlayManager',
+	
+	_init:	function () {
+		this.addActions = [];
+		this.removeAction = new FolderActionArea('remove');
+		this.createAction = new FolderActionArea('create');
+		
+		this.upAction = new NavigationArea('up');
+		this.downAction = new NavigationArea('down');
+	},
+
+	updateArrowVisibility: function () {
+		let grid = Main.overview.viewSelector.appDisplay._views[1].view._grid;
+		if (grid.currentPage == 0) {
+			this.upAction.setActive(false);
+		} else {
+			this.upAction.setActive(true);
+		}
+		if (grid.currentPage == grid._nPages -1) {
+			this.downAction.setActive(false);
+		} else {
+			this.downAction.setActive(true);
+		}
+		this.upAction.show();
+		this.downAction.show();
+	},
+
+	updateState: function (isDragging) {
+		if (isDragging) {
+			this.removeAction.show();
+			if (this.openedFolder == null) {
+				this.removeAction.setActive(false);
+			} else {
+				this.removeAction.setActive(true);
+			}
+			this.createAction.show();
+			this.updateArrowVisibility();
+		} else {
+			this.hideAll();
+		}
+	},
+
+	hideAll: function () {
+		this.removeAction.hide();
+		this.createAction.hide();
+		this.upAction.hide();
+		this.downAction.hide();
+		
+		this.hideAllFolders();
+	},
+
+	hideAllFolders: function () {
+		for (var i = 0; i < this.addActions.length; i++) {
+			this.addActions[i].hide();
+		}
+	},
+
+	findBorders: function () { // gérer différemment le cas du popup ? XXX
+		let y = 0;
+		let monitor = Main.layoutManager.primaryMonitor;
+		let widget = null;
+		let upper = null;
+		let lower = null;
+		
+		while (lower == null) {
+			widget = global.stage.get_actor_at_pos(Clutter.PickMode.ALL, monitor.width-1, y);
+	//		if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup)
+	//			log(widget);
+			if (widget instanceof St.Button || widget instanceof St.ScrollView) {
+				if (upper == null) {
+					upper = y;
+				}
+			} else {
+				if (upper != null) {
+					lower = y-15;
+				}
+			}
+			y += 5;
+		}
+		return [lower, upper];
+	},
+
+	updateActorsPositions: function () {
+		let monitor = Main.layoutManager.primaryMonitor;
+		let [bottomOfTheGrid, topOfTheGrid] = this.findBorders();
+		let _availHeight = bottomOfTheGrid - topOfTheGrid;
+		let _availWidth = Main.overview.viewSelector.appDisplay._views[1].view._grid.actor.width;
+		let sideMargin = (monitor.width - _availWidth) / 2;
+		
+		let xMiddle = ( monitor.x + monitor.width ) / 2;
+		let yMiddle = ( monitor.y + monitor.height ) / 2;
+		
+		// Positions of areas
+		this.removeAction.setPosition( xMiddle , bottomOfTheGrid );
+		this.createAction.setPosition( xMiddle, Main.overview._panelGhost.height );
+		this.upAction.setPosition( 0, Main.overview._panelGhost.height );
+		this.downAction.setPosition( 0, bottomOfTheGrid );
+		
+		// Sizes of areas
+		this.removeAction.setSize(xMiddle, monitor.height - bottomOfTheGrid);
+		this.createAction.setSize(xMiddle, topOfTheGrid - Main.overview._panelGhost.height);
+		this.upAction.setSize(xMiddle, topOfTheGrid - Main.overview._panelGhost.height);
+		this.downAction.setSize(xMiddle, monitor.height - bottomOfTheGrid);
+		
+		this.updateArrowVisibility();
+	},
+
+	computeFolderOverlayActors: function (movingFolderId) {
+		for (var i = 0; i < this.addActions.length; i++) {
+			this.addActions[i].actor.destroy();
+		}
+		
+		let allAppsGrid = Main.overview.viewSelector.appDisplay._views[1].view._grid;
+
+		let availHeightPerPage = (allAppsGrid.actor.height)/(allAppsGrid._nPages);
+		let parentBox = allAppsGrid.actor.get_parent().allocation;
+		let gridBox = allAppsGrid.actor.get_theme_node().get_content_box(parentBox);
+		let box = allAppsGrid._grid.get_theme_node().get_content_box(gridBox);
+		let children = allAppsGrid._getVisibleChildren();
+		let availWidth = box.x2 - box.x1;
+		let availHeight = box.y2 - box.y1;
+		
+		let items = allAppsGrid._grid.get_n_children();
+		
+		let nItems = 0;
+		let indexes = [];
+		let folders = [];
+		let previous = [];
+		let x, y;
+		let decrementLimit = null;
+		let previousIcon = null;
+		
+		Main.overview.viewSelector.appDisplay._views[1].view._allItems.forEach(function(icon) {
+			if (icon.actor.visible) {
+				if ((icon instanceof AppDisplay.FolderIcon) && (icon.id == movingFolderId)) {
+					decrementLimit = indexes.length;
+				} else if (icon instanceof AppDisplay.FolderIcon) {
+					indexes.push(nItems);
+					folders.push(icon);
+					previous.push(previousIcon);
+				}
+				nItems++;
+				previousIcon = icon;
+			}
+		});
+		
+		let monitor = Main.layoutManager.primaryMonitor;
+		let rowsPerPage = allAppsGrid._rowsPerPage;
+		let [nColumns, usedWidth] = allAppsGrid._computeLayout(availWidth);
+		let xMiddle = ( monitor.x + monitor.width ) / 2;
+		let yMiddle = ( monitor.y + monitor.height ) / 2;
+		
+		for (var i = 0; i < indexes.length; i++) {
+			let inPageIndex = indexes[i] % allAppsGrid._childrenPerPage;
+			let page = Math.floor(indexes[i] / allAppsGrid._childrenPerPage);
+		//	log('Le dossier ' + folders[i].id + ' est en ' + inPageIndex + 'ème position sur la ' + page + 'ème page.');
+			
+			if ((decrementLimit == null) || (i < decrementLimit)) {
+				[x, y] = folders[i].actor.get_position();
+			} else {
+				[x, y] = previous[i].actor.get_position();
+			}
+			
+			x += allAppsGrid.leftPadding * 3; //XXX this works perfectly, but for no reason
+			
+			y = y + this.findBorders()[1];
+			y = y - (page * availHeightPerPage);
+			
+		//	log('positionning the overlay of ' + folders[i].id + ' at: ' + x + ', ' + y);
+			this.addActions[i] = new FolderArea(folders[i].id, x, y, page);
+		}
+
+		this.updateFoldersVisibility();
+	},
+
+	updateFoldersVisibility: function () {
+		let currentPage = Main.overview.viewSelector.appDisplay._views[1].view._grid.currentPage;
+		for (var i = 0; i < this.addActions.length; i++) {
+			log(currentPage + 'ème page ; dossier en page ' + this.addActions[i].page +
+			' ; positionné en ' + this.addActions[i].actor.x + ', ' + this.addActions[i].actor.y);
+			if (100 > this.addActions[i].actor.x) {	// TODO hack immonde à virer
+				this.addActions[i].hide();			// TODO hack immonde à virer
+			} else								// TODO hack immonde à virer
+			if ((this.addActions[i].page == currentPage) && (!Main.overview.viewSelector.appDisplay._views[1].view._currentPopup)) {
+				this.addActions[i].show();
+			} else {
+				this.addActions[i].hide();
+			}
+		}
+	},
+
+	popdownFolder: function () {
+		if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) {
+			this.openedFolder = Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source.id;
+			Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown();
+		} else {
+			this.openedFolder = null;
+		}
+		this.computeFolderOverlayActors(null);
+		this.updateActorsPositions();
+		this.updateState(true);
+	},
+	
+	goToPage: function (nb) {
+		Main.overview.viewSelector.appDisplay._views[1].view.goToPage( nb );
+		this.updateArrowVisibility();
+		this.hideAllFolders();
+		this.updateFoldersVisibility(); //load folders of the new page
+	},
+
+	destroy: function () {
+		log('TODO : destroy'); //TODO
+	},
+});
+
 //--------------------------------------------------------------
 
 const DroppableArea = new Lang.Class({
@@ -47,6 +304,8 @@ const DroppableArea = new Lang.Class({
 	
 	_init:		function (id) {
 		this.id = id;
+		
+		this.styleClass = 'folderArea';
 		
 		this.actor = new St.BoxLayout ({
 			width: 10,
@@ -68,6 +327,11 @@ const DroppableArea = new Lang.Class({
 		);
 	},
 	
+	setSize:	function (w, h) {
+		this.actor.width = w;
+		this.actor.height = h;
+	},
+	
 	hide:		function () {
 		this.actor.visible = false;
 		this.lock = true;
@@ -77,11 +341,13 @@ const DroppableArea = new Lang.Class({
 		this.actor.visible = true;
 	},
 	
-	unlock: function() {
-		this.lock = false;
-		this.timeoutSet = false;
-		log('unlock');
-		Mainloop.source_remove(this._timeoutId);
+	setActive:	function (active) {
+		this._active = active;
+		if (this._active) {
+			this.actor.style_class = this.styleClass;
+		} else {
+			this.actor.style_class = 'insensitiveArea';
+		}
 	},
 });
 
@@ -95,69 +361,82 @@ const FolderActionArea = new Lang.Class({
 		let x, y, label;
 		
 		switch (this.id) {
-			case 'delete':
-				label = _("Delete this folder");
-				this.actor.style_class = 'shadowedAreaBottom';
-			break;
 			case 'create':
 				label = _("Create a new folder");
-				this.actor.style_class = 'shadowedAreaTop';
+				this.styleClass = 'shadowedAreaTop';
 			break;
-			case 'remove': //TODO
-				label = _("Remove from ???");
-//				label = (_("Remove from %s"), id).toString;
-				this.actor.style_class = 'shadowedAreaBottom';
+			case 'remove':
+				label = '';
+				this.styleClass = 'shadowedAreaBottom';
 			break;
 			default:
 				label = 'invalid id';
 			break;
 		}
-		
 		if (this.use_frame) {
-			this.actor.style_class = 'framedArea';
+			this.styleClass = 'framedArea';
 		}
+		this.actor.style_class = this.styleClass;
 		
-		this.actor.add(new St.Label({
+		this.label = new St.Label({
 			text: label,
 			style_class: 'dropAreaLabel',
 			x_expand: true,
 			y_expand: true,
 			x_align: Clutter.ActorAlign.CENTER,
 			y_align: Clutter.ActorAlign.CENTER,
-		}));
+		});
+		this.actor.add(this.label);
 		
 		this.setPosition(10, 10);
 		Main.layoutManager.overviewGroup.add_actor(this.actor);
 	},
 	
-	handleDragOver: function(source, actor, x, y, time) {		
-		if (source instanceof AppDisplay.AppIcon) {
-			return DND.DragMotionResult.MOVE_DROP;
-		} else if ((source instanceof AppDisplay.FolderIcon) && (this.id == 'delete')) {
+	getRemoveLabel: function () {
+		let label = _("Remove from ");
+		if (OVERLAY_MANAGER.openedFolder == null) {
+			label += '…';
+		} else {
+			label += OVERLAY_MANAGER.openedFolder;
+		}
+		return label;
+	},
+	
+	setActive: function (active) {
+		this.parent(active);
+		if (this.id == 'remove') {
+			this.label.text = this.getRemoveLabel();
+		}
+	},
+	
+	handleDragOver: function (source, actor, x, y, time) {
+		if (source instanceof AppDisplay.AppIcon && this._active) {
 			return DND.DragMotionResult.MOVE_DROP;
 		}
 		Main.overview.endItemDrag(this);
 		return DND.DragMotionResult.NO_DROP;
 	},
 	
-	acceptDrop: function(source, actor, x, y, time) {		
-		if ((source instanceof AppDisplay.FolderIcon) && (this.id == 'delete')) {
-			this.deleteFolder(source);
-			Main.overview.endItemDrag(this);
-			return true;
-		} else if ((source instanceof AppDisplay.AppIcon) && (this.id == 'create')) {
+	acceptDrop: function (source, actor, x, y, time) {
+		if ((source instanceof AppDisplay.AppIcon) && (this.id == 'create')) {
 			Extension.createNewFolder(source);
 			Main.overview.endItemDrag(this);
 			return true;
 		}
-		hideAll();
+		if ((source instanceof AppDisplay.AppIcon) && (this.id == 'remove')) {
+			this.removeApp(source);
+			Main.overview.endItemDrag(this);
+			return true;
+		}
 		Main.overview.endItemDrag(this);
 		return false;
 	},
 	
-	deleteFolder: function(source) {
-		Extension.deleteFolder(source.id);
-		hideAll();
+	removeApp: function(source) {
+		let id = source.app.get_id();
+		Extension.removeFromFolder(id, OVERLAY_MANAGER.openedFolder);
+		OVERLAY_MANAGER.updateState(false);
+		Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
 	},
 	
 });
@@ -173,16 +452,20 @@ const NavigationArea = new Lang.Class({
 		switch (this.id) {
 			case 'up':
 				i = 'pan-up-symbolic';
-				this.actor.style_class = 'shadowedAreaTop';
+				this.styleClass = 'shadowedAreaTop';
 			break;
 			case 'down':
 				i = 'pan-down-symbolic';
-				this.actor.style_class = 'shadowedAreaBottom';
+				this.styleClass = 'shadowedAreaBottom';
 			break;
 			default:
 				i = 'dialog-error-symbolic';
 			break;
 		}
+		if (this.use_frame) {
+			this.styleClass = 'framedArea';
+		}
+		this.actor.style_class = this.styleClass;
 		
 		if (this.use_frame) {
 			this.actor.style_class = 'framedArea';
@@ -203,12 +486,12 @@ const NavigationArea = new Lang.Class({
 	},
 	
 	handleDragOver: function(source, actor, x, y, time) {
-		if (this.id == 'up') {
+		if (this.id == 'up' && this._active) {
 			this.pageUp();
 			return DND.DragMotionResult.CONTINUE;
 		}
 		
-		if (this.id == 'down') {
+		if (this.id == 'down' && this._active) {
 			this.pageDown();
 			return DND.DragMotionResult.CONTINUE;
 		}
@@ -223,14 +506,9 @@ const NavigationArea = new Lang.Class({
 			this.timeoutSet = true;
 		}
 		if(!this.lock) {
-			var currentPage = Main.overview.viewSelector.appDisplay._views[1].view._grid.currentPage;
-			Main.overview.viewSelector.appDisplay._views[1].view.goToPage( currentPage - 1 );
-			
-			updateArrowVisibility();
-			
+			let currentPage = Main.overview.viewSelector.appDisplay._views[1].view._grid.currentPage;
 			this.lock = true;
-			hideAllFolders();
-			updateFoldersVisibility(); //load folders of the new page
+			OVERLAY_MANAGER.goToPage(currentPage - 1);
 		}
 	},
 	
@@ -240,19 +518,21 @@ const NavigationArea = new Lang.Class({
 			this.timeoutSet = true;
 		}
 		if(!this.lock) {
-			var currentPage = Main.overview.viewSelector.appDisplay._views[1].view._grid.currentPage;
-			Main.overview.viewSelector.appDisplay._views[1].view.goToPage( currentPage + 1 );
-			
-			updateArrowVisibility();
+			let currentPage = Main.overview.viewSelector.appDisplay._views[1].view._grid.currentPage;
 			this.lock = true;
-			hideAllFolders();
-			updateFoldersVisibility();//load folders of the new page
+			OVERLAY_MANAGER.goToPage(currentPage + 1);
 		}
 	},
 
 	acceptDrop: function(source, actor, x, y, time) {
 		Main.overview.endItemDrag(this);
 		return false;
+	},
+	
+	unlock:		function() {
+		this.lock = false;
+		this.timeoutSet = false;
+		Mainloop.source_remove(this._timeoutId);
 	},
 });
 
@@ -301,20 +581,17 @@ const FolderArea = new Lang.Class({
 				y_align: Clutter.ActorAlign.CENTER,
 			}));
 		}
-		this.resetStyle();
+		if (this.use_frame) {
+			this.styleClass = 'framedArea';
+		}
+		this.actor.style_class = this.styleClass;
 		
 		this.setPosition(asked_x, asked_y);
 		Main.layoutManager.overviewGroup.add_actor(this.actor);
 	},
 	
-	resetStyle: function() {
-		this.actor.style_class = this.styleClass;
-	},
-	
 	handleDragOver: function(source, actor, x, y, time) {
-		log('_______________survol_______________');
 		if (source instanceof AppDisplay.AppIcon) {
-//			this.actor.style_class = 'folderAreaHovered'; //Mieux gérer ça FIXME
 			return DND.DragMotionResult.MOVE_DROP;
 		}
 		Main.overview.endItemDrag(this);
@@ -323,7 +600,6 @@ const FolderArea = new Lang.Class({
 	
 	acceptDrop: function(source, actor, x, y, time) { //FIXME recharger la vue ou au minimum les icônes des dossiers
 		if (source instanceof AppDisplay.AppIcon) {
-			hideAll();
 //			if(Extension.isInFolder(source.id, this.id)) {
 //				log('app déjà ici');
 //				Main.overview.endItemDrag(this);
@@ -340,264 +616,5 @@ const FolderArea = new Lang.Class({
 
 //-----------------------------------------------
 
-let deleteAction;
-let createAction;
-let upAction;
-let downAction;
-let addActions = [];
-
-function popdownFolder() {
-	log('346 — popdownFolder');
-	if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) { //FIXME mécanisme similaire partout ?? utile ?
-		Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown();
-		
-		computeFolderOverlayActors(null);
-		updateActorsPositions();
-		
-		updateState(true);
-	}
-}
-
-// TODO fonction globale dégueulasse pour réinitialiser le style des acteurs
-
-function dndInjections() {
-	
-	deleteAction = new FolderActionArea('delete');
-	createAction = new FolderActionArea('create');
-	upAction = new NavigationArea('up');
-	downAction = new NavigationArea('down');
-	
-	if (!AppDisplay.AppIcon.injections2) {
-		AppDisplay.AppIcon.prototype.injections2 = true;
-		if (injections['_init3']) {
-			removeInjection(AppDisplay.AppIcon.prototype, injections, '_init3');
-			log('[À VIRER] utilisation d\'une clause de garde puissamment maudite');
-		}
-		injections['_init3'] = injectToFunction(AppDisplay.AppIcon.prototype, '_init', function(){
-//			this._draggable = DND.makeDraggable(this.actor); //TODO ??
-			this._draggable.connect('drag-begin', Lang.bind(this,
-				function () {
-					this._removeMenuTimeout(); //TODO ??
-					Main.overview.beginItemDrag(this);
-					popdownFolder();
-					log('it has begun (app)');
-					updateActorsPositions();
-					computeFolderOverlayActors(null);
-					updateState(true);
-				}
-			));
-			this._draggable.connect('drag-cancelled', Lang.bind(this,
-				function () {
-					log('cancelled');
-					Main.overview.cancelledItemDrag(this);
-					updateState(false);
-				}
-			));
-			this._draggable.connect('drag-end', Lang.bind(this,
-				function () {
-					log('it ended');
-					Main.overview.endItemDrag(this);
-					updateState(false);
-				}
-			));
-		});
-	}
-}
-
-//---------------------------------------------
-
-function updateArrowVisibility () {
-	if (Main.overview.viewSelector.appDisplay._views[1].view._grid.currentPage == 0) {
-		upAction.hide();
-	} else {
-		upAction.show();
-	}
-	if (Main.overview.viewSelector.appDisplay._views[1].view._grid.currentPage == Main.overview.viewSelector.appDisplay._views[1].view._grid._nPages -1) {
-		downAction.hide();
-	} else {
-		downAction.show();
-	}
-}
-
-function updateState (isDragging) {
-	if (isDragging) {
-		deleteAction.hide();
-		createAction.show();
-		updateArrowVisibility();
-	} else {
-		hideAll();
-	}
-}
-
-function hideAll() {
-	deleteAction.hide();
-	createAction.hide();
-	upAction.hide();
-	downAction.hide();
-	
-	hideAllFolders();
-}
-
-function hideAllFolders () {
-	for (var i = 0; i < addActions.length; i++) {
-		addActions[i].hide();
-	}
-}
-
-let previousWidth = 0;
-
-function findBorders() { // gérer différemment le cas du popup ? TODO FIXME
-	let y = 0;
-	let monitor = Main.layoutManager.primaryMonitor;
-	let widget = null;
-	let upper = null;
-	let lower = null;
-	
-	while (lower == null) {
-		widget = global.stage.get_actor_at_pos(Clutter.PickMode.ALL, monitor.width-1, y);
-//		if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup)
-//			log(widget);
-		if (widget instanceof St.Button || widget instanceof St.ScrollView) {
-			if (upper == null) {
-				upper = y;
-			}
-		} else {
-			if (upper != null) {
-				lower = y-15;
-			}
-		}
-		y += 5;
-	}
-	return [lower, upper];
-}
-
-function updateActorsPositions () {
-
-	let monitor = Main.layoutManager.primaryMonitor;
-	let [bottomOfTheGrid, topOfTheGrid] = findBorders();
-	let _availHeight = bottomOfTheGrid - topOfTheGrid;
-	let _availWidth = Main.overview.viewSelector.appDisplay._views[1].view._grid.actor.width;
-	let sideMargin = (monitor.width - _availWidth) / 2;
-	
-	let xMiddle = ( monitor.x + monitor.width ) / 2;
-	let yMiddle = ( monitor.y + monitor.height ) / 2;
-	
-	//---- TODO totally an object-oriented action
-	
-	deleteAction.setPosition( xMiddle , bottomOfTheGrid );
-	createAction.setPosition( xMiddle, Main.overview._panelGhost.height );
-	upAction.setPosition( 0, Main.overview._panelGhost.height );
-	downAction.setPosition( 0, bottomOfTheGrid );
-	
-	//---- TODO totally an object-oriented action
-	
-	deleteAction.actor.width = xMiddle;
-	createAction.actor.width = xMiddle;
-	upAction.actor.width = xMiddle;
-	downAction.actor.width = xMiddle;
-	
-	//---- TODO totally an object-oriented action
-	
-	deleteAction.actor.height = monitor.height - bottomOfTheGrid;
-	createAction.actor.height = topOfTheGrid - Main.overview._panelGhost.height;
-	upAction.actor.height = topOfTheGrid - Main.overview._panelGhost.height;
-	downAction.actor.height = monitor.height - bottomOfTheGrid;
-	
-	//----
-	
-	updateArrowVisibility();
-}
-
-function destroyAllFolderAreas () {
-	//TODO FIXME déconnecter de force ?
-	for (var i = 0; i < addActions.length; i++) {
-		addActions[i].actor.destroy();
-	}
-}
-
-function computeFolderOverlayActors (movingFolderId) {
-// TODO ne pas afficher movingFolderId et décaler de -1 ceux qui suivent
-	destroyAllFolderAreas();
-	
-	let allAppsGrid = Main.overview.viewSelector.appDisplay._views[1].view._grid;
-
-	let availHeightPerPage = (allAppsGrid.actor.height)/(allAppsGrid._nPages);
-	let parentBox = allAppsGrid.actor.get_parent().allocation;
-	let gridBox = allAppsGrid.actor.get_theme_node().get_content_box(parentBox);
-	let box = allAppsGrid._grid.get_theme_node().get_content_box(gridBox);
-	let children = allAppsGrid._getVisibleChildren();
-	let availWidth = box.x2 - box.x1;
-	let availHeight = box.y2 - box.y1;
-	
-	let items = allAppsGrid._grid.get_n_children();
-	
-	let nItems = 0;
-	let indexes = [];
-	let folders = [];
-	let previous = [];
-	let x, y;
-	let decrementLimit = null;
-	let previousIcon = null;
-	
-	Main.overview.viewSelector.appDisplay._views[1].view._allItems.forEach(function(icon) {
-		if (icon.actor.visible) {
-			if ((icon instanceof AppDisplay.FolderIcon) && (icon.id == movingFolderId)) {
-				decrementLimit = indexes.length;
-			} else if (icon instanceof AppDisplay.FolderIcon) {
-				indexes.push(nItems);
-				folders.push(icon);
-				previous.push(previousIcon);
-			}
-			nItems++;
-			previousIcon = icon;
-		}
-	});
-	
-	let monitor = Main.layoutManager.primaryMonitor;
-	let rowsPerPage = allAppsGrid._rowsPerPage;
-	let [nColumns, usedWidth] = allAppsGrid._computeLayout(availWidth);
-	let xMiddle = ( monitor.x + monitor.width ) / 2;
-	let yMiddle = ( monitor.y + monitor.height ) / 2;
-	
-	for (var i = 0; i < indexes.length; i++) {
-		let inPageIndex = indexes[i] % allAppsGrid._childrenPerPage;
-		let page = Math.floor(indexes[i] / allAppsGrid._childrenPerPage);
-	//	log('Le dossier ' + folders[i].id + ' est en ' + inPageIndex + 'ème position sur la ' + page + 'ème page.');
-		
-		if ((decrementLimit == null) || (i < decrementLimit)) {
-			[x, y] = folders[i].actor.get_position();
-		} else {
-			[x, y] = previous[i].actor.get_position();
-		}
-		
-		x += allAppsGrid.leftPadding * 3; //FIXME this works perfectly, but for no reason
-		
-		y = y + findBorders()[1];
-		y = y - (page * availHeightPerPage);
-		
-	//	log('positionning the overlay of ' + folders[i].id + ' at: ' + x + ', ' + y);
-		addActions[i] = new FolderArea(folders[i].id, x, y, page);
-	}
-
-	updateFoldersVisibility();
-}
-
-//-----------
-
-function updateFoldersVisibility () {
-	let currentPage = Main.overview.viewSelector.appDisplay._views[1].view._grid.currentPage;
-	for (var i = 0; i < addActions.length; i++) {
-		log(currentPage + 'ème page ; dossier en page ' + addActions[i].page +
-		' ; positionné en ' + addActions[i].actor.x + ', ' + addActions[i].actor.y);
-		if (100 > addActions[i].actor.x) {	// TODO hack immonde à virer
-			addActions[i].hide();			// TODO hack immonde à virer
-		} else								// TODO hack immonde à virer
-		if ((addActions[i].page == currentPage) && (!Main.overview.viewSelector.appDisplay._views[1].view._currentPopup)) {
-			addActions[i].show();
-		} else {
-			addActions[i].hide();
-		}
-	}
-}
 
 

@@ -41,9 +41,10 @@ var AppfolderDialog = new Lang.Class({
 	Name: 'AppfolderDialog',
 	Extends: ModalDialog.ModalDialog,
 
-	_init: function(folder, app) {
+	_init: function(folder, app, id) {
 		this._folder = folder;
 		this._app = app;
+		this._id = id;
 		this.parent({ destroyOnClose: true });
 		
 		FOLDER_SCHEMA = new Gio.Settings({ schema_id: 'org.gnome.desktop.app-folders' });
@@ -382,7 +383,7 @@ var AppfolderDialog = new Lang.Class({
 	
 	_deleteFolder: function () {
 		if (this._folder != null) {
-			Extension.deleteFolder(this._folder);
+			Extension.deleteFolder(this._id);
 		}
 		this.destroy();
 	},

@@ -172,7 +172,7 @@ function connectEditionDialogs() {
 					schema_id: 'org.gnome.desktop.app-folders.folder',
 					path: '/org/gnome/desktop/app-folders/folders/' + this.id + '/'
 				});
-				let dialog = new AppfolderDialog.AppfolderDialog(tmp, null);
+				let dialog = new AppfolderDialog.AppfolderDialog(tmp, null, this.id);
 				dialog.open();
 			}
 			return Clutter.EVENT_PROPAGATE;
@@ -352,7 +352,7 @@ function folderSchema (folder_id) {
 	});
 	return a;
 }
-		
+
 //----------------------------------------------------
 
 function enable() {
@@ -363,7 +363,7 @@ function enable() {
 	if( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('extend-menus') ) {
 		injectionInAppsMenus();
 	}
-	DragAndDrop.dndInjections();
+	DragAndDrop.initDND();
 }
 
 //-------------------------------------------------
@@ -375,6 +375,7 @@ function disable() {
 	
 	removeInjection(AppDisplay.AppIconMenu.prototype, injections, '_redisplay');
 	removeInjection(AppDisplay.FolderIcon.prototype, injections, '_init');
+	// TODO !!!
 }
 
 //-------------------------------------------------
