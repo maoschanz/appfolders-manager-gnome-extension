@@ -188,6 +188,7 @@ var AppfolderDialog = new Lang.Class({
 		let catSelectLabel = new St.Label({
 			text: _("Select a category…"),
 			x_align: Clutter.ActorAlign.START,
+			y_align: Clutter.ActorAlign.CENTER,
 			x_expand: true,
 		});
 		let catSelectIcon = new St.Icon({
@@ -215,7 +216,7 @@ var AppfolderDialog = new Lang.Class({
 			y_fill: true,
 		});
 		// very stupid way to add a menu
-		new SelectCategoryButton(this._catSelectButton, this);
+		this._catMenu = new SelectCategoryButton(this._catSelectButton, this);
 		
 		addCategoryBox.add(this._catSelectButton, { y_align: St.Align.CENTER });
 		addCategoryBox.add(this._categoryEntry, { y_align: St.Align.START });
@@ -267,6 +268,7 @@ var AppfolderDialog = new Lang.Class({
 		if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('debug') ) {
 			log('[AppfolderDialog v2] destroying dialog');
 		}
+		// TODO ?
 		this.parent();
 	},
 	
@@ -298,7 +300,6 @@ var AppfolderDialog = new Lang.Class({
 		let folderId = this._folderId(this._nameEntryText.get_text());
 
 		FOLDER_LIST.push(folderId);
-		
 		FOLDER_SCHEMA.set_strv('folder-children', FOLDER_LIST);
 		
 		this._folder = new Gio.Settings({
@@ -442,16 +443,10 @@ const SelectCategoryMenu = new Lang.Class({
 		this._source = source;
 		this._dialog = dialog;
 		this.actor.add_style_class_name('app-well-menu');
+		this._source.actor.connect('destroy', Lang.bind(this, this.destroy));
 
 		// We want to keep the item hovered while the menu is up
 		this.blockSourceEvents = true;
-
-		// Chain our visibility and lifecycle to that of the source
-		source.actor.connect('notify::mapped', Lang.bind(this, function () {
-			if (!source.actor.mapped)
-				this.close();
-		}));
-		source.actor.connect('destroy', Lang.bind(this, this.destroy));
 
 		Main.uiGroup.add_actor(this.actor);
 	},
@@ -484,7 +479,7 @@ const AppCategoryBox = new Lang.Class({
 	Name: 'AppCategoryBox',
 	Extends: St.BoxLayout,
 
-	_init: function(dialog, i) {
+	_init: function (dialog, i) {
 		this.parent({
 			vertical: false,
 			style: 'background-color: rgba(100, 100, 100, 0.3); border-radius: 3px; margin: 3px; padding: 2px; padding-left: 6px;',
@@ -500,7 +495,7 @@ const AppCategoryBox = new Lang.Class({
 		this.add_actor(new St.BoxLayout({
 			x_expand: true
 		}));
-		let aButton = new St.Button({
+		this.deleteButton = new St.Button({
 			x_expand: false,
 			y_expand: true,
 //			style_class: '',
@@ -518,17 +513,22 @@ const AppCategoryBox = new Lang.Class({
 				x_align: Clutter.ActorAlign.CENTER,
 			}),
 		});
-		this.add_actor(aButton);
+		this.add_actor(this.deleteButton);
 		
-		aButton.connect('clicked', Lang.bind(this, this.removeFromList));
+		this.deleteButton.connect('clicked', Lang.bind(this, this.removeFromList));
 	},
 	
-	removeFromList: function() {
+	removeFromList: function () {
 		this._dialog._categories.splice(this._dialog._categories.indexOf(this.catName), 1);
 		if (this._dialog._categories.length == 0) {
 			this._dialog.noCatLabel.visible = true;
 		}
 		this.destroy();
+	},
+	
+	destroy:	function () {
+		this.deleteButton.destroy();
+		this.parent();
 	},
 });
 

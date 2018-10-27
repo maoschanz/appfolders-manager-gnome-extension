@@ -1,3 +1,4 @@
+//extension.js
 
 const Clutter = imports.gi.Clutter;
 const Gio = imports.gi.Gio;
@@ -68,7 +69,6 @@ function injectionInAppsMenus() {
 			
 			let newAppFolder = new PopupMenu.PopupMenuItem('+ ' + _("New AppFolder"));
 			newAppFolder.connect('activate', Lang.bind(this, function() {
-
 				FolderIconMenu.popdownAll(); //FIXME
 				//Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown(); //??
 				
@@ -90,12 +90,10 @@ function injectionInAppsMenus() {
 				
 				if(shouldShow) {
 					item.connect('activate', Lang.bind(this, function() {
-						
 						FolderIconMenu.popdownAll(); //FIXME
 						//Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown(); //??
 						
 						addToFolder(this._source, _folder);
-						
 						Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
 					}));
 					addto.menu.addMenuItem(item);
@@ -128,11 +126,13 @@ function injectionInAppsMenus() {
 						
 						that._source._menuManager._grabHelper.ungrab({ actor: that.actor });
 						
+						// XXX incorrect pop ?
+						
 						// We can't popdown the folder immediatly because the AppDisplay.AppFolderPopup.popdown()
 						// method tries to ungrab the global focus from the folder's popup actor, which isn't
 						// having the focus since the menu is still open. Menus' animation last ~0.25s so we
 						// will wait 0.30s before doing anything.
-//						let a = Mainloop.timeout_add(300, Lang.bind(this, function() {
+						let a = Mainloop.timeout_add(300, Lang.bind(this, function() { //
 							if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) {
 								log('true');
 								Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown();
@@ -143,8 +143,8 @@ function injectionInAppsMenus() {
 							removeFromFolder(id, currentFolderSchema);
 
 							Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
-//							Mainloop.source_remove(a);
-//						}));
+							Mainloop.source_remove(a); //
+						})); //
 					}, this));
 					removeFrom.menu.addMenuItem(item);
 					shouldShow2 = true;
@@ -162,7 +162,7 @@ function injectionInAppsMenus() {
 /* this function builds menus on appfolders when right click on them, using FolderIconMenu objects. */
 function connectEditionDialogs() {
 	
-	if (!AppDisplay.FolderIcon.injections) { //FIXME tests encore pertinents ??
+	if (!AppDisplay.FolderIcon.injections) {
 		AppDisplay.FolderIcon.prototype.injections = true;
 		
 		AppDisplay.FolderIcon.prototype._onButtonPress = function (actor, event) {
@@ -187,7 +187,6 @@ function connectEditionDialogs() {
 		});
 	}
 }
-
 
 //------------------------------------------------
 //------------------- Generic --------------------
@@ -224,34 +223,32 @@ function deleteFolder (folder_id) {
 		let tmp = [];
 		FOLDER_LIST = FOLDER_SCHEMA.get_strv('folder-children');
 		for(var j=0;j < FOLDER_LIST.length;j++){
-			if(FOLDER_LIST[j] == folder_id) {
-				log('255 no suppression de ' + folder_id);
-			} else {
+			if(FOLDER_LIST[j] != folder_id) {
 				tmp.push(FOLDER_LIST[j]);
 			}
 		}
 		
-		log(tmp);
 		FOLDER_LIST = tmp;
 		FOLDER_SCHEMA.set_strv('folder-children', FOLDER_LIST);
-				
-//		if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('total-deletion') ) {
-//			let folder_schema = folderSchema (folder_id);
-//			folder_schema.reset('apps');
-//			folder_schema.reset('categories');
-//			folder_schema.reset('excluded-apps');
-//			folder_schema.reset('name'); // génère un bug volumineux
-//		}
+		
+		// ?? XXX
+		if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('total-deletion') ) {
+			let folder_schema = folderSchema (folder_id);
+			folder_schema.reset('apps');
+			folder_schema.reset('categories');
+			folder_schema.reset('excluded-apps');
+			folder_schema.reset('name'); // génère un bug volumineux ?
+		}
 	}));
 	
 	// FIXME léger bug dans les logs
-	if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('total-deletion') ) {
-		let folder_schema = folderSchema (folder_id);
-		folder_schema.reset('apps');
-		folder_schema.reset('categories');
-		folder_schema.reset('excluded-apps');
-		folder_schema.reset('name');
-	}
+//	if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('total-deletion') ) {
+//		let folder_schema = folderSchema (folder_id);
+//		folder_schema.reset('apps');
+//		folder_schema.reset('categories');
+//		folder_schema.reset('excluded-apps');
+//		folder_schema.reset('name');
+//	}
 	return true;
 }
 
@@ -285,7 +282,7 @@ function mergeFolders (folder_staying_id, folder_dying_id) {
 		if(presentContent.indexOf(newerContent[i]) == -1) {
 //		if(!isInFolder(newerContent[i], folder_staying_id)) {
 			presentContent.push(newerContent[i]);
-			//FIXME utiliser addToFolder malgré ses paramètres chiants
+			//TODO utiliser addToFolder malgré ses paramètres chiants
 		}
 	}
 	folder_staying_schema.set_strv('apps', presentContent);
@@ -332,6 +329,7 @@ function addToFolder (app_source, folder_id) {
 //------------------------------------------------
 
 function isInFolder (app_id, folder_id) {
+	// TODO et par rapport aux catégories ?
 	let folder_schema = folderSchema (folder_id);
 	let isIn = false;
 	let content_ = folder_schema.get_strv('apps');
@@ -354,6 +352,7 @@ function folderSchema (folder_id) {
 }
 
 //----------------------------------------------------
+//----------------------------------------------------
 
 function enable() {
 	FOLDER_SCHEMA = new Gio.Settings({ schema_id: 'org.gnome.desktop.app-folders' });
@@ -369,13 +368,13 @@ function enable() {
 //-------------------------------------------------
 
 function disable() {
-	
 	AppDisplay.FolderIcon.prototype._onButtonPress = null;//undefined;
 	AppDisplay.FolderIcon.prototype.popupMenu = null;//undefined;
 	
 	removeInjection(AppDisplay.AppIconMenu.prototype, injections, '_redisplay');
 	removeInjection(AppDisplay.FolderIcon.prototype, injections, '_init');
-	// TODO !!!
+	removeInjection(AppDisplay.AppIcon.prototype, injections, '_init2');
+	DragAndDrop.OVERLAY_MANAGER.destroy();
 }
 
 //-------------------------------------------------

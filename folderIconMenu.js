@@ -1,3 +1,5 @@
+//folderIconMenu.js
+
 const Clutter = imports.gi.Clutter;
 const Gio = imports.gi.Gio;
 const Lang = imports.lang;
@@ -149,7 +151,7 @@ function reload() {
 
 //-------------------------------------------------
 
-function popdownAll() {	
+function popdownAll() {
 	// FIXME c'est de la merde car ça envoie le signal mais n'ungrab rien
 	Main.overview.viewSelector.appDisplay._views[1].view.emit('open-state-changed', false);
 	
