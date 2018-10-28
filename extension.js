@@ -15,7 +15,6 @@ const Me = ExtensionUtils.getCurrentExtension();
 const Convenience = Me.imports.convenience;
 
 const AppfolderDialog = Me.imports.appfolderDialog;
-const FolderIconMenu = Me.imports.folderIconMenu;
 const DragAndDrop = Me.imports.dragAndDrop;
 
 const Gettext = imports.gettext.domain('appfolders-manager');
@@ -23,7 +22,7 @@ const _ = Gettext.gettext;
 
 const Mainloop = imports.mainloop; //FIXME
 
-//-------------------------------------------------
+//------------------------------------------------
 
 let FOLDER_SCHEMA;
 let FOLDER_LIST;
@@ -32,7 +31,7 @@ function init() {
 	Convenience.initTranslations();
 }
 
-//-------------------------------------------------
+//------------------------------------------------
 /* do not edit this section */
 
 function injectToFunction(parent, name, func) {
@@ -56,7 +55,7 @@ function removeInjection(object, injection, name) {
 
 let injections=[];
 
-//--------------------------------------------------------------
+//------------------------------------------------
 
 /* this function injects items (1 or 2 submenus) in AppIconMenu's _redisplay method. */
 function injectionInAppsMenus() {
@@ -68,54 +67,64 @@ function injectionInAppsMenus() {
 			let addto = new PopupMenu.PopupSubMenuMenuItem(_("Add to"));
 			
 			let newAppFolder = new PopupMenu.PopupMenuItem('+ ' + _("New AppFolder"));
-			newAppFolder.connect('activate', Lang.bind(this, function() {
-				FolderIconMenu.popdownAll(); //FIXME
-				//Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown(); //??
-				
-				createNewFolder(this._source);
-			}));
+			newAppFolder.connect('activate', Lang.bind(this, function(aa, bb, that) {
+				that._source._menuManager._grabHelper.ungrab({ actor: that.actor });
+				// XXX broken scrolling ??
+				// We can't popdown the folder immediatly because the AppDisplay.AppFolderPopup.popdown()
+				// method tries to ungrab the global focus from the folder's popup actor, which isn't
+				// having the focus since the menu is still open. Menus' animation last ~0.25s so we
+				// will wait 0.30s before doing anything.
+				let a = Mainloop.timeout_add(300, Lang.bind(this, function() {
+					if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) {
+						Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown();
+					}
+					createNewFolder(this._source);
+					Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
+					Mainloop.source_remove(a);
+				}));
+			}, this));
 			addto.menu.addMenuItem(newAppFolder);
 			
 			FOLDER_LIST = FOLDER_SCHEMA.get_strv('folder-children');
 			
 			for (var i = 0 ; i < FOLDER_LIST.length ; i++) {
 				let _folder = FOLDER_LIST[i];
-				let _tmp = new Gio.Settings({
-					schema_id: 'org.gnome.desktop.app-folders.folder',
-					path: '/org/gnome/desktop/app-folders/folders/' + _folder + '/'
-				});
-				
-				let shouldShow = !isInFolder( this._source.app.get_id(), _tmp );
-				let item = new PopupMenu.PopupMenuItem( AppDisplay._getFolderName( _tmp ) );
-				
+				let shouldShow = !isInFolder( this._source.app.get_id(), _folder );
+				let iFolderSchema = folderSchema(_folder);
+				let item = new PopupMenu.PopupMenuItem( AppDisplay._getFolderName(iFolderSchema) );
+				if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('debug') ) {
+					shouldShow = true; //FIXME ??? et l'exclusion ?
+				}
 				if(shouldShow) {
-					item.connect('activate', Lang.bind(this, function() {
-						FolderIconMenu.popdownAll(); //FIXME
-						//Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown(); //??
-						
-						addToFolder(this._source, _folder);
-						Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
-					}));
+					item.connect('activate', Lang.bind(this, function(aa, bb, that) {
+						that._source._menuManager._grabHelper.ungrab({ actor: that.actor });
+						// XXX broken scrolling ??
+						// We can't popdown the folder immediatly because the AppDisplay.AppFolderPopup.popdown()
+						// method tries to ungrab the global focus from the folder's popup actor, which isn't
+						// having the focus since the menu is still open. Menus' animation last ~0.25s so we
+						// will wait 0.30s before doing anything.
+						let a = Mainloop.timeout_add(300, Lang.bind(this, function() {
+							if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) {
+								Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown();
+							}
+							addToFolder(this._source, _folder);
+							Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
+							Mainloop.source_remove(a);
+						}));
+					}, this));
 					addto.menu.addMenuItem(item);
 				}
 			}
 			this.addMenuItem(addto);
 			
-			let removeFrom = new PopupMenu.PopupSubMenuMenuItem(_("Remove from"));
+			let removeFrom = new PopupMenu.PopupSubMenuMenuItem(_("Remove from "));
 			let shouldShow2 = false;
 			for (var i = 0 ; i < FOLDER_LIST.length ; i++) {
 				let _folder = FOLDER_LIST[i];
-				
-				let id = this._source.app.get_id();
-				
-				let currentFolderSchema = new Gio.Settings({
-					schema_id: 'org.gnome.desktop.app-folders.folder',
-					path: '/org/gnome/desktop/app-folders/folders/' + _folder + '/'
-				});
-				
-				let item = new PopupMenu.PopupMenuItem( AppDisplay._getFolderName( currentFolderSchema ) );
-				
-				let shouldShow = isInFolder(id, currentFolderSchema);
+				let appId = this._source.app.get_id();
+				let shouldShow = isInFolder(appId, _folder);
+				let iFolderSchema = folderSchema(_folder);
+				let item = new PopupMenu.PopupMenuItem( AppDisplay._getFolderName(iFolderSchema) );
 				
 				if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('debug') ) {
 					shouldShow = true; //FIXME ??? et l'exclusion ?
@@ -123,28 +132,20 @@ function injectionInAppsMenus() {
 				
 				if(shouldShow) {
 					item.connect('activate', Lang.bind(this, function(aa, bb, that) {
-						
 						that._source._menuManager._grabHelper.ungrab({ actor: that.actor });
-						
-						// XXX incorrect pop ?
-						
+						// XXX broken scrolling ??
 						// We can't popdown the folder immediatly because the AppDisplay.AppFolderPopup.popdown()
 						// method tries to ungrab the global focus from the folder's popup actor, which isn't
 						// having the focus since the menu is still open. Menus' animation last ~0.25s so we
 						// will wait 0.30s before doing anything.
 						let a = Mainloop.timeout_add(300, Lang.bind(this, function() { //
 							if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) {
-								log('true');
 								Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown();
-							} else {
-								log('false');
 							}
-
-							removeFromFolder(id, currentFolderSchema);
-
+							removeFromFolder(appId, _folder);
 							Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
-							Mainloop.source_remove(a); //
-						})); //
+							Mainloop.source_remove(a);
+						}));
 					}, this));
 					removeFrom.menu.addMenuItem(item);
 					shouldShow2 = true;
@@ -157,9 +158,11 @@ function injectionInAppsMenus() {
 	});
 }
 
-//---------------------------------------------------------------------------------------------------
+//------------------------------------------------
 
-/* this function builds menus on appfolders when right click on them, using FolderIconMenu objects. */
+/* this function connects the right-click on an appfolder to the construction of
+ * the dialog allowing to edit (name/categories) or delete the folder
+ */
 function connectEditionDialogs() {
 	
 	if (!AppDisplay.FolderIcon.injections) {
@@ -286,9 +289,7 @@ function mergeFolders (folder_staying_id, folder_dying_id) {
 		}
 	}
 	folder_staying_schema.set_strv('apps', presentContent);
-	
 	deleteFolder(folder_dying_id);
-	
 	return true;
 }
 
@@ -329,7 +330,6 @@ function addToFolder (app_source, folder_id) {
 //------------------------------------------------
 
 function isInFolder (app_id, folder_id) {
-	// TODO et par rapport aux catégories ?
 	let folder_schema = folderSchema (folder_id);
 	let isIn = false;
 	let content_ = folder_schema.get_strv('apps');
@@ -341,7 +341,7 @@ function isInFolder (app_id, folder_id) {
 	return isIn;
 }
 
-//--------------------------------------------------
+//------------------------------------------------
 
 function folderSchema (folder_id) {
 	let a = new Gio.Settings({
@@ -351,8 +351,8 @@ function folderSchema (folder_id) {
 	return a;
 }
 
-//----------------------------------------------------
-//----------------------------------------------------
+//------------------------------------------------
+//------------------------------------------------
 
 function enable() {
 	FOLDER_SCHEMA = new Gio.Settings({ schema_id: 'org.gnome.desktop.app-folders' });
@@ -365,7 +365,7 @@ function enable() {
 	DragAndDrop.initDND();
 }
 
-//-------------------------------------------------
+//------------------------------------------------
 
 function disable() {
 	AppDisplay.FolderIcon.prototype._onButtonPress = null;//undefined;
@@ -377,4 +377,4 @@ function disable() {
 	DragAndDrop.OVERLAY_MANAGER.destroy();
 }
 
-//-------------------------------------------------
+//------------------------------------------------

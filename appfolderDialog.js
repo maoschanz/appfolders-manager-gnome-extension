@@ -46,13 +46,13 @@ var AppfolderDialog = new Lang.Class({
 		this._app = app;
 		this._id = id;
 		this.parent({ destroyOnClose: true });
-		
+
 		FOLDER_SCHEMA = new Gio.Settings({ schema_id: 'org.gnome.desktop.app-folders' });
 		FOLDER_LIST = FOLDER_SCHEMA.get_strv('folder-children');
-		
+
 		let nameSection = this._buildNameSection();
 		let categoriesSection = this._buildCategoriesSection();
-		
+
 		this.contentLayout.style = 'spacing: 20px';
 		this.contentLayout.add(nameSection, {
 			x_fill: false,
@@ -66,15 +66,15 @@ var AppfolderDialog = new Lang.Class({
 				y_align: St.Align.START
 			});
 		}
-		
+
 		//----------------------
-		
+
 		if (this._folder == null) {
 			this.setButtons([
 				{ action: Lang.bind(this, this.destroy),
 				label: _("Cancel"),
 				key: Clutter.Escape },
-				
+	
 				{ action: Lang.bind(this, this._apply),
 				label: _("Apply"),
 				key: Clutter.Return }
@@ -84,57 +84,57 @@ var AppfolderDialog = new Lang.Class({
 				{ action: Lang.bind(this, this.destroy),
 				label: _("Cancel"),
 				key: Clutter.Escape },
-				
+	
 				{ action: Lang.bind(this, this._deleteFolder),
 				label: _("Delete"),
 				key: Clutter.Delete },
-				
+	
 				{ action: Lang.bind(this, this._apply),
 				label: _("Apply"),
 				key: Clutter.Return }
 			]);
 		}
-		
+
 		this._nameEntryText.connect('key-press-event', Lang.bind(this, function(o, e) {
 			let symbol = e.get_key_symbol();
-			
+
 			if (symbol == Clutter.Return || symbol == Clutter.KP_Enter) {
 				this.popModal();
 				this._apply();
 			}
 		}));
 	},
-	
+
 	_buildNameSection: function () {
 		let nameSection = new St.BoxLayout({
 			style: 'spacing: 5px;',
 			vertical: true,
 			x_expand: true,
 		});
-		
+
 		let nameLabel = new St.Label({
 			text: _("Folder's name:"),
 			style: 'font-weight: bold;',
 		});
 		nameSection.add(nameLabel, { y_align: St.Align.START });
-		
+
 		this._nameEntry = new St.Entry({
 			x_expand: true,
 		});
 		this._nameEntryText = null; ///???
 		this._nameEntryText = this._nameEntry.clutter_text;
-		
+
 		nameSection.add(this._nameEntry, { y_align: St.Align.START });
 		ShellEntry.addContextMenu(this._nameEntry);
 		this.setInitialKeyFocus(this._nameEntryText);
-		
+
 		if (this._folder != null) {
 			this._nameEntryText.set_text(this._folder.get_string('name'));
 		}
-		
+
 		return nameSection;
 	},
-	
+
 	_buildCategoriesSection: function () {
 		let categoriesSection = new St.BoxLayout({
 			style: 'spacing: 5px;',
@@ -143,7 +143,7 @@ var AppfolderDialog = new Lang.Class({
 			natural_width_set: true,
 			natural_width: 350,
 		});
-		
+
 		let categoriesLabel = new St.Label({
 			text: _("Categories:"),
 			style: 'font-weight: bold;',
@@ -153,20 +153,20 @@ var AppfolderDialog = new Lang.Class({
 			x_align: St.Align.START,
 			y_align: St.Align.START,
 		});
-		
+
 		let categoriesBox = new St.BoxLayout({
 			style: 'spacing: 5px;',
 			vertical: false,
 			x_expand: true,
 		});
-		
+
 		// at the left, how to add categories
 		let addCategoryBox = new St.BoxLayout({
 			style: 'spacing: 5px;',
 			vertical: true,
 			x_expand: true,
 		});
-		
+
 		this._categoryEntry = new St.Entry({
 			can_focus: true,
 			x_expand: true,
@@ -180,7 +180,7 @@ var AppfolderDialog = new Lang.Class({
 		});
 		ShellEntry.addContextMenu(this._categoryEntry, null);
 		this._categoryEntry.connect('secondary-icon-clicked', Lang.bind(this,  this._addCategory));
-		
+
 		let catSelectBox = new St.BoxLayout({
 			vertical: false,
 			x_expand: true,
@@ -217,7 +217,7 @@ var AppfolderDialog = new Lang.Class({
 		});
 		// very stupid way to add a menu
 		this._catMenu = new SelectCategoryButton(this._catSelectButton, this);
-		
+
 		addCategoryBox.add(this._catSelectButton, { y_align: St.Align.CENTER });
 		addCategoryBox.add(this._categoryEntry, { y_align: St.Align.START });
 		categoriesBox.add(addCategoryBox, {
@@ -225,7 +225,7 @@ var AppfolderDialog = new Lang.Class({
 			x_align: St.Align.START,
 			y_align: St.Align.START,
 		});
-		
+
 		// at the right, a list of categories
 		this.listContainer = new St.BoxLayout({
 			vertical: true,
@@ -238,20 +238,20 @@ var AppfolderDialog = new Lang.Class({
 			x_align: St.Align.END,
 			y_align: St.Align.START,
 		});
-		
+
 		categoriesSection.add(categoriesBox, {
 			x_fill: true,
 			x_align: St.Align.START,
 			y_align: St.Align.START,
 		});
-		
+
 		// Load categories is necessary even if no this._folder,
 		// because it initializes the value of this._categories
 		this._loadCategories();
-		
+
 		return categoriesSection;
 	},
-	
+
 	//---------------------------
 
 	_alreadyExists: function (folderId) {
@@ -263,7 +263,7 @@ var AppfolderDialog = new Lang.Class({
 		}
 		return false;
 	},
-	
+
 	destroy: function () {
 		if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('debug') ) {
 			log('[AppfolderDialog v2] destroying dialog');
@@ -271,9 +271,9 @@ var AppfolderDialog = new Lang.Class({
 		// TODO ?
 		this.parent();
 	},
-	
+
 	//---------------------------------------
-	
+
 	_folderId : function (newName) {
 		let tmp0 = newName.split(" ");
 		let folderId = "";
@@ -301,17 +301,17 @@ var AppfolderDialog = new Lang.Class({
 
 		FOLDER_LIST.push(folderId);
 		FOLDER_SCHEMA.set_strv('folder-children', FOLDER_LIST);
-		
+
 		this._folder = new Gio.Settings({
 			schema_id: 'org.gnome.desktop.app-folders.folder',
 			path: '/org/gnome/desktop/app-folders/folders/' + folderId + '/'
 		});
 //		this._folder.set_string('name', this._nameEntryText.get_text()); //superflu
 	//	est-il nécessaire d'initialiser la clé apps à [] ??
-		
+
 		this._addToFolder();
 	},
-	
+
 	_applyName: function () {
 		let newName = this._nameEntryText.get_text();
 		this._folder.set_string('name', newName); // génère un bug ?
@@ -334,12 +334,12 @@ var AppfolderDialog = new Lang.Class({
 			this._addCategoryBox(i);
 		}
 	},
-	
+
 	_addCategoryBox: function(i) {
 		let aCategory = new AppCategoryBox(this, i);
 		this.listContainer.add_actor(aCategory);
 	},
-	
+
 	_addCategory: function(entry, new_cat_name) {
 		if (new_cat_name == null) {
 			new_cat_name = this._categoryEntryText.get_text();
@@ -355,12 +355,12 @@ var AppfolderDialog = new Lang.Class({
 		this.noCatLabel.visible = false;
 		this._addCategoryBox(this._categories.length-1);
 	},
-	
+
 	_applyCategories: function () {
 		this._folder.set_strv('categories', this._categories);
 		return Clutter.EVENT_STOP;
 	},
-	
+
 	_apply: function() {
 		if (this._app != null) {
 			this._create();
@@ -375,13 +375,13 @@ var AppfolderDialog = new Lang.Class({
 			log('[AppfolderDialog v2] reload the view');
 		}
 	},
-	
+
 	_addToFolder: function() {
 		let content = this._folder.get_strv('apps');
 		content.push(this._app);
 		this._folder.set_strv('apps', content);
 	},
-	
+
 	_deleteFolder: function () {
 		if (this._folder != null) {
 			Extension.deleteFolder(this._id);
@@ -394,7 +394,7 @@ var AppfolderDialog = new Lang.Class({
 
 var SelectCategoryButton = new Lang.Class({
 	Name: 'SelectCategoryButton',
-	
+
 	_init: function(bouton, dialog){
 		this.actor = bouton;
 		this._dialog = dialog;
@@ -402,12 +402,12 @@ var SelectCategoryButton = new Lang.Class({
 		this._menu = null;
 		this._menuManager = new PopupMenu.PopupMenuManager(this);
 	},
-	
+
 	_onMenuPoppedDown: function() {
 		this.actor.sync_hover();
 		this.emit('menu-state-changed', false);
 	},
-	
+
 	popupMenu: function() {
 		this.actor.fake_release();
 		if (!this._menu) {
@@ -424,7 +424,7 @@ var SelectCategoryButton = new Lang.Class({
 		this._menuManager.ignoreRelease();
 		return false;
 	},
-	
+
 	_onButtonPress: function(actor, event) {
 		this.popupMenu();
 		return Clutter.EVENT_STOP;
@@ -455,7 +455,7 @@ const SelectCategoryMenu = new Lang.Class({
 		this.removeAll();
 		let mainCategories = ['AudioVideo','Audio','Video','Development','Education','Game',
 			'Graphics','Network','Office','Science','Settings','System','Utility'];
-			
+
 		for (var i = 0; i < mainCategories.length; i++) {
 			let labelItem = mainCategories[i] ;
 			let item = new PopupMenu.PopupMenuItem( labelItem );
@@ -486,7 +486,7 @@ const AppCategoryBox = new Lang.Class({
 		});
 		this._dialog = dialog;
 		this.catName = this._dialog._categories[i];
-		
+
 		this.add_actor(new St.Label({
 			text: this.catName,
 			y_align: Clutter.ActorAlign.CENTER,
@@ -514,10 +514,10 @@ const AppCategoryBox = new Lang.Class({
 			}),
 		});
 		this.add_actor(this.deleteButton);
-		
+
 		this.deleteButton.connect('clicked', Lang.bind(this, this.removeFromList));
 	},
-	
+
 	removeFromList: function () {
 		this._dialog._categories.splice(this._dialog._categories.indexOf(this.catName), 1);
 		if (this._dialog._categories.length == 0) {
@@ -525,7 +525,7 @@ const AppCategoryBox = new Lang.Class({
 		}
 		this.destroy();
 	},
-	
+
 	destroy:	function () {
 		this.deleteButton.destroy();
 		this.parent();

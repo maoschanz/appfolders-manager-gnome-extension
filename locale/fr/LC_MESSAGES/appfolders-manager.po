@@ -13,11 +13,35 @@ msgstr ""
 "Last-Translator: \n"
 "Language: fr\n"
 
-msgid "Enter a name"
-msgstr "Entrez un nom"
-
 msgid "Cancel"
 msgstr "Annuler"
+
+msgid "Delete"
+msgstr "Supprimer"
+
+msgid "Apply"
+msgstr "Appliquer"
+
+msgid "Folder's name:"
+msgstr "Nom du dossier :"
+
+msgid "Categories:"
+msgstr "Catégories :"
+
+msgid "Other category?"
+msgstr "Autre catégorie ?"
+
+msgid "Select a category…"
+msgstr "Choisir une catégorie…"
+
+msgid "No category"
+msgstr "Aucune catégorie"
+
+msgid "Create a new folder"
+msgstr "Créer un nouveau dossier"
+
+msgid "Remove from "
+msgstr "Retirer de "
 
 msgid "Add to"
 msgstr "Ajouter à"
@@ -28,9 +52,6 @@ msgstr "Nouvel AppFolder"
 msgid "Remove from"
 msgstr "Retirer de"
 
-msgid "Delete AppFolder"
-msgstr "Supprimer un AppFolder"
-
 msgid "Modifications will be effective after reloading the extension."
 msgstr "Les modifications prendront effet après avoir rechargé l'extension"
 
@@ -40,32 +61,8 @@ msgstr "Nombre maximal de colonnes :"
 msgid "Delete all related settings when an appfolder is deleted"
 msgstr "Supprimer tous les réglages relatifs à un appfolder lors de sa suppression"
 
-msgid "Delete"
-msgstr "Supprimer"
-
-msgid "Rename"
-msgstr "Renommer"
-
 msgid "This appfolder already exists."
 msgstr "Cet appfolder existe déjà"
-
-msgid "Create"
-msgstr "Créer"
-
-msgid "Remove a category"
-msgstr "Retirer une catégorie"
-
-msgid "Additional categories"
-msgstr "Catégories supplémentaires"
-
-msgid "Add a category"
-msgstr "Ajouter une catégorie"
-
-msgid "Add"
-msgstr "Ajouter"
-
-msgid "Enter the name of a category"
-msgstr "Entrez le nom d'une catégorie"
 
 msgid "More informations about \"additional categories\""
 msgstr "Plus d'informations à propos des \"catégories supplémentaires\""
