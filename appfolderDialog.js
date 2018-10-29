@@ -110,6 +110,8 @@ var AppfolderDialog = new Lang.Class({
 			style: 'spacing: 5px;',
 			vertical: true,
 			x_expand: true,
+			natural_width_set: true,
+			natural_width: 350,
 		});
 
 		let nameLabel = new St.Label({

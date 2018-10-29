@@ -3,7 +3,6 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
@@ -17,72 +16,64 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: extension.js:133
 msgid "Cancel"
 msgstr ""
 
-#: extension.js:175
-msgid "This appfolder already exists."
-msgstr ""
-
-#: extension.js:302
-msgid "Add a category"
-msgstr ""
-
-#: extension.js:326
-msgid "Additional categories"
-msgstr ""
-
-#: extension.js:329
-msgid "Enter the name of a category"
-msgstr ""
-
-#: extension.js:329
-msgid "Add"
-msgstr ""
-
-#: extension.js:342
-msgid "Remove a category"
-msgstr ""
-
-#: extension.js:366 extension.js:368
-msgid "Rename"
-msgstr ""
-
-#: extension.js:368 extension.js:437
-msgid "Enter a name"
-msgstr ""
-
-#: extension.js:373
 msgid "Delete"
 msgstr ""
 
-#: extension.js:431
+msgid "Apply"
+msgstr ""
+
+msgid "Folder's name:"
+msgstr ""
+
+msgid "Categories:"
+msgstr ""
+
+msgid "Other category?"
+msgstr ""
+
+msgid "Select a category…"
+msgstr ""
+
+msgid "No category"
+msgstr ""
+
+msgid "Create a new folder"
+msgstr ""
+
+msgid "Remove from "
+msgstr ""
+
 msgid "Add to"
 msgstr ""
 
-#: extension.js:433
 msgid "New AppFolder"
 msgstr ""
 
-#: extension.js:437
-msgid "Create"
-msgstr ""
-
-#: extension.js:463
 msgid "Remove from"
 msgstr ""
 
-#: prefs.js:33
 msgid "Modifications will be effective after reloading the extension."
 msgstr ""
 
-#: prefs.js:40
+msgid "Main settings"
+msgstr ""
+
+msgid "Categories"
+msgstr ""
+
+msgid "Use categories"
+msgstr ""
+
+msgid "Use the right-click menus in addition to the drag-and-drop"
+msgstr ""
+
 msgid "Delete all related settings when an appfolder is deleted"
 msgstr ""
 
-#: prefs.js:56
-msgid "Experimental features (not recommended)"
+msgid "This appfolder already exists."
 msgstr ""
 
 msgid "More informations about \"additional categories\""
@@ -96,4 +87,7 @@ msgstr ""
 
 msgid "This extension can be deactivated once your applications are organized as wished."
 msgstr ""
+
+
+
 

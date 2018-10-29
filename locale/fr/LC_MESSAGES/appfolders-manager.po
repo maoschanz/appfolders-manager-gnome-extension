@@ -55,8 +55,17 @@ msgstr "Retirer de"
 msgid "Modifications will be effective after reloading the extension."
 msgstr "Les modifications prendront effet après avoir rechargé l'extension"
 
-msgid "Maximum number of columns :"
-msgstr "Nombre maximal de colonnes :"
+msgid "Main settings"
+msgstr "Réglages principaux"
+
+msgid "Categories"
+msgstr "Catégories"
+
+msgid "Use categories"
+msgstr "Utiliser des catégories"
+
+msgid "Use the right-click menus in addition to the drag-and-drop"
+msgstr "Utiliser le menu du clic-droit en complément du glisser-déposer"
 
 msgid "Delete all related settings when an appfolder is deleted"
 msgstr "Supprimer tous les réglages relatifs à un appfolder lors de sa suppression"

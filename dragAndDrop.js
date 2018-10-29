@@ -223,7 +223,10 @@ const OverlayManager = new Lang.Class({
 				[x, y] = previous[i].actor.get_position();
 			}
 	
-			x += allAppsGrid.leftPadding * 3; //XXX this works perfectly, but for no reason
+			// FIXME FIXME FIXME
+//			x += allAppsGrid.leftPadding * 3; //XXX this almost works, but for no reason
+			x += allAppsGrid.leftPadding + allAppsGrid._getSpacing() * 2; //XXX this works too, but why ?
+			// FIXME FIXME FIXME
 	
 			y = y + this.findBorders()[1];
 			y = y - (page * availHeightPerPage);
