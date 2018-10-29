@@ -224,8 +224,36 @@ const OverlayManager = new Lang.Class({
 			}
 	
 			// FIXME FIXME FIXME
-//			x += allAppsGrid.leftPadding * 3; //XXX this almost works, but for no reason
-			x += allAppsGrid.leftPadding + allAppsGrid._getSpacing() * 2; //XXX this works too, but why ?
+			log('x = ' + x);
+			log(x + allAppsGrid.leftPadding * 3);
+			log(x + allAppsGrid.leftPadding + allAppsGrid._getSpacing() * 2);
+			log('_getSpacing = ' + allAppsGrid._getSpacing());
+			log('leftPadding = ' + allAppsGrid.leftPadding);
+			
+			
+			let box = allAppsGrid._grid.get_theme_node().get_content_box(gridBox);
+			let availWidth = Main.overview.viewSelector.appDisplay._views[1].view._grid.actor.width;
+			log('availWidth = ' + availWidth);
+			let [nColumns, usedWidth] = allAppsGrid._computeLayout(availWidth);
+			log('usedWidth = ' + usedWidth);
+			log(usedWidth/nColumns);
+			log(4*usedWidth/nColumns);
+			log(3*usedWidth/nColumns);
+			log('');
+			log('actor.x = ' + allAppsGrid.actor.x); // osef, vaut zéro
+//			let aaa = x + 85;
+//			let aaa = ;
+			let aaa = x + allAppsGrid.actor.x + allAppsGrid.leftPadding + allAppsGrid._getSpacing();
+//			let aaa = x + allAppsGrid.leftPadding + allAppsGrid._getSpacing()/2; // pas assez sur mon écran
+//			let aaa = x + allAppsGrid.leftPadding + allAppsGrid._getSpacing(); // trop sur l'écran de tom
+			log('aaa = ' + aaa);
+			log('');
+			log('-------');
+			log('');
+			
+			x = aaa;
+			
+			
 			// FIXME FIXME FIXME
 	
 			y = y + this.findBorders()[1];
