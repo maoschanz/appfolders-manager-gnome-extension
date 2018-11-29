@@ -13,7 +13,7 @@ const Me = ExtensionUtils.getCurrentExtension();
 const Convenience = Me.imports.convenience;
 const Extension = Me.imports.extension;
 
-const CHANGE_PAGE_TIMEOUT = 300;
+const CHANGE_PAGE_TIMEOUT = 400;
 
 //-------------------------------------------------
 /* do not edit this section */
@@ -48,7 +48,7 @@ function initDND () {
 
 	injections['_init2'] = injectToFunction(AppDisplay.AppIcon.prototype, '_init', function(){
 		this._draggable.connect('drag-begin', Lang.bind(this,
-			function () { //TODO optimization ??
+			function () {
 				this._removeMenuTimeout(); // why ?
 				Main.overview.beginItemDrag(this);
 				OVERLAY_MANAGER.on_drag_begin();
@@ -57,7 +57,7 @@ function initDND () {
 		this._draggable.connect('drag-cancelled', Lang.bind(this,
 			function () {
 				Main.overview.cancelledItemDrag(this);
-				OVERLAY_MANAGER.on_drag_end();
+				OVERLAY_MANAGER.on_drag_cancelled();
 			}
 		));
 		this._draggable.connect('drag-end', Lang.bind(this,
@@ -84,15 +84,21 @@ const OverlayManager = new Lang.Class({
 		this.next_drag_should_recompute = true;
 		this.current_width = 0;
 	},
-	
+
 	on_drag_begin:	function () {
 		this.ensurePopdowned();
 		this.ensureFolderOverlayActors();
 		this.updateFoldersVisibility();
 		this.updateState(true);
 	},
-	
+
 	on_drag_end:	function () {
+		// force to compute new positions if a drop occurs
+		this.next_drag_should_recompute = true;
+		this.updateState(false);
+	},
+
+	on_drag_cancelled:	function () {
 		this.updateState(false);
 	},
 
@@ -188,7 +194,7 @@ const OverlayManager = new Lang.Class({
 
 		this.updateArrowVisibility();
 	},
-	
+
 	ensureFolderOverlayActors:	function () {
 		// A folder was opened, and just closed.
 		if (this.openedFolder != null) {
@@ -197,7 +203,7 @@ const OverlayManager = new Lang.Class({
 			this.next_drag_should_recompute = true;
 			return;
 		}
-		
+
 		// The grid "moved" or the whole shit needs forced updating
 		let allAppsGrid = Main.overview.viewSelector.appDisplay._views[1].view._grid;
 		let new_width = allAppsGrid.actor.allocation.get_width();
@@ -212,7 +218,6 @@ const OverlayManager = new Lang.Class({
 		let monitor = Main.layoutManager.primaryMonitor;
 		let xMiddle = ( monitor.x + monitor.width ) / 2;
 		let yMiddle = ( monitor.y + monitor.height ) / 2;
-		
 		let allAppsGrid = Main.overview.viewSelector.appDisplay._views[1].view._grid;
 
 		let nItems = 0;
@@ -242,17 +247,16 @@ const OverlayManager = new Lang.Class({
 		for (var i = 0; i < this.addActions.length; i++) {
 			this.addActions[i].actor.destroy();
 		}
-		
+
 		for (var i = 0; i < indexes.length; i++) {
 			let inPageIndex = indexes[i] % allAppsGrid._childrenPerPage;
 			let page = Math.floor(indexes[i] / allAppsGrid._childrenPerPage);
-	
 			if ((decrementLimit == null) || (i < decrementLimit)) {
 				[x, y] = folders[i].actor.get_position();
 			} else {
 				[x, y] = previous[i].actor.get_position();
 			}
-			
+
 			// Invalid coords (example: when dragging out of the folder) should
 			// not produce a visible overlay, a negative page number is an easy
 			// way to be sure it stays hidden.
@@ -262,7 +266,7 @@ const OverlayManager = new Lang.Class({
 			x = Math.floor(x + x_correction);
 			y = y + this.findBorders()[1];
 			y = y - (page * availHeightPerPage);
-	
+
 			this.addActions[i] = new FolderArea(folders[i].id, x, y, page);
 		}
 	},
