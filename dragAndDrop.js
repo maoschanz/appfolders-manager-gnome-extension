@@ -48,22 +48,22 @@ function initDND () {
 
 	injections['_init2'] = injectToFunction(AppDisplay.AppIcon.prototype, '_init', function(){
 		this._draggable.connect('drag-begin', Lang.bind(this,
-			function () { //TODO optimization
+			function () { //TODO optimization ??
 				this._removeMenuTimeout(); // why ?
 				Main.overview.beginItemDrag(this);
-				OVERLAY_MANAGER.popdownFolder();
+				OVERLAY_MANAGER.on_drag_begin();
 			}
 		));
 		this._draggable.connect('drag-cancelled', Lang.bind(this,
 			function () {
 				Main.overview.cancelledItemDrag(this);
-				OVERLAY_MANAGER.updateState(false);
+				OVERLAY_MANAGER.on_drag_end();
 			}
 		));
 		this._draggable.connect('drag-end', Lang.bind(this,
 			function () {
 				Main.overview.endItemDrag(this);
-				OVERLAY_MANAGER.updateState(false);
+				OVERLAY_MANAGER.on_drag_end();
 			}
 		));
 	});
@@ -80,6 +80,20 @@ const OverlayManager = new Lang.Class({
 		this.createAction = new FolderActionArea('create');
 		this.upAction = new NavigationArea('up');
 		this.downAction = new NavigationArea('down');
+		
+		this.next_drag_should_recompute = true;
+		this.current_width = 0;
+	},
+	
+	on_drag_begin:	function () {
+		this.ensurePopdowned();
+		this.ensureFolderOverlayActors();
+		this.updateFoldersVisibility();
+		this.updateState(true);
+	},
+	
+	on_drag_end:	function () {
+		this.updateState(false);
 	},
 
 	updateArrowVisibility:	function () {
@@ -174,18 +188,32 @@ const OverlayManager = new Lang.Class({
 
 		this.updateArrowVisibility();
 	},
-
-	computeFolderOverlayActors:	function (movingFolderId) {
-		for (var i = 0; i < this.addActions.length; i++) {
-			this.addActions[i].actor.destroy();
+	
+	ensureFolderOverlayActors:	function () {
+		// A folder was opened, and just closed.
+		if (this.openedFolder != null) {
+			this.computeFolderOverlayActors();
+			this.updateActorsPositions();
+			this.next_drag_should_recompute = true;
+			return;
 		}
-
+		
+		// The grid "moved" or the whole shit needs forced updating
 		let allAppsGrid = Main.overview.viewSelector.appDisplay._views[1].view._grid;
+		let new_width = allAppsGrid._grid.allocation.get_width();
+		if (new_width != this.current_width || this.next_drag_should_recompute) {
+			this.next_drag_should_recompute = false;
+			this.computeFolderOverlayActors();
+			this.updateActorsPositions();
+		}
+	},
 
-		let availHeightPerPage = (allAppsGrid.actor.height)/(allAppsGrid._nPages);
-		let parentBox = allAppsGrid.actor.get_parent().allocation;
-		let gridBox = allAppsGrid.actor.get_theme_node().get_content_box(parentBox);
-		let items = allAppsGrid._grid.get_n_children();
+	computeFolderOverlayActors:	function () {
+		let monitor = Main.layoutManager.primaryMonitor;
+		let xMiddle = ( monitor.x + monitor.width ) / 2;
+		let yMiddle = ( monitor.y + monitor.height ) / 2;
+		
+		let allAppsGrid = Main.overview.viewSelector.appDisplay._views[1].view._grid;
 
 		let nItems = 0;
 		let indexes = [];
@@ -197,9 +225,7 @@ const OverlayManager = new Lang.Class({
 
 		Main.overview.viewSelector.appDisplay._views[1].view._allItems.forEach(function(icon) {
 			if (icon.actor.visible) {
-				if ((icon instanceof AppDisplay.FolderIcon) && (icon.id == movingFolderId)) {
-					decrementLimit = indexes.length;
-				} else if (icon instanceof AppDisplay.FolderIcon) {
+				if (icon instanceof AppDisplay.FolderIcon) {
 					indexes.push(nItems);
 					folders.push(icon);
 					previous.push(previousIcon);
@@ -209,10 +235,14 @@ const OverlayManager = new Lang.Class({
 			}
 		});
 
-		let monitor = Main.layoutManager.primaryMonitor;
-		let xMiddle = ( monitor.x + monitor.width ) / 2;
-		let yMiddle = ( monitor.y + monitor.height ) / 2;
-
+		this.current_width = allAppsGrid._grid.allocation.get_width();
+		let x_correction = (monitor.width - this.current_width)/2;
+		let availHeightPerPage = (allAppsGrid.actor.height)/(allAppsGrid._nPages);
+		
+		for (var i = 0; i < this.addActions.length; i++) {
+			this.addActions[i].actor.destroy();
+		}
+		
 		for (var i = 0; i < indexes.length; i++) {
 			let inPageIndex = indexes[i] % allAppsGrid._childrenPerPage;
 			let page = Math.floor(indexes[i] / allAppsGrid._childrenPerPage);
@@ -222,59 +252,24 @@ const OverlayManager = new Lang.Class({
 			} else {
 				[x, y] = previous[i].actor.get_position();
 			}
-	
-			// FIXME FIXME FIXME
-			log('x = ' + x);
-			log(x + allAppsGrid.leftPadding * 3);
-			log(x + allAppsGrid.leftPadding + allAppsGrid._getSpacing() * 2);
-			log('_getSpacing = ' + allAppsGrid._getSpacing());
-			log('leftPadding = ' + allAppsGrid.leftPadding);
 			
-			
-			let box = allAppsGrid._grid.get_theme_node().get_content_box(gridBox);
-			let availWidth = Main.overview.viewSelector.appDisplay._views[1].view._grid.actor.width;
-			log('availWidth = ' + availWidth);
-			let [nColumns, usedWidth] = allAppsGrid._computeLayout(availWidth);
-			log('usedWidth = ' + usedWidth);
-			log(usedWidth/nColumns);
-			log(4*usedWidth/nColumns);
-			log(3*usedWidth/nColumns);
-			log('');
-			log('actor.x = ' + allAppsGrid.actor.x); // osef, vaut zéro
-//			let aaa = x + 85;
-//			let aaa = ;
-			let aaa = x + allAppsGrid.actor.x + allAppsGrid.leftPadding + allAppsGrid._getSpacing();
-//			let aaa = x + allAppsGrid.leftPadding + allAppsGrid._getSpacing()/2; // pas assez sur mon écran
-//			let aaa = x + allAppsGrid.leftPadding + allAppsGrid._getSpacing(); // trop sur l'écran de tom
-			log('aaa = ' + aaa);
-			log('');
-			log('-------');
-			log('');
-			
-			x = aaa;
-			
-			
-			// FIXME FIXME FIXME
-	
+			// Invalid coords (example: when dragging out of the folder) should
+			// not produce a visible overlay, a negative page number is an easy
+			// way to be sure it stays hidden.
+			if (x == 0) {
+				page = -1;
+			}
+			x = Math.floor(x + x_correction);
 			y = y + this.findBorders()[1];
 			y = y - (page * availHeightPerPage);
 	
 			this.addActions[i] = new FolderArea(folders[i].id, x, y, page);
 		}
-
-		this.updateFoldersVisibility();
 	},
 
 	updateFoldersVisibility:	function () {
 		let currentPage = Main.overview.viewSelector.appDisplay._views[1].view._grid.currentPage;
 		for (var i = 0; i < this.addActions.length; i++) {
-			if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('debug') ) {
-				log(currentPage + 'ème page ; dossier en page ' + this.addActions[i].page +
-				' ; positionné en ' + this.addActions[i].actor.x + ', ' + this.addActions[i].actor.y);
-			}
-			if (100 > this.addActions[i].actor.x) {	// TODO hack immonde à virer
-				this.addActions[i].hide();			// TODO hack immonde à virer
-			} else								// TODO hack immonde à virer
 			if ((this.addActions[i].page == currentPage) && (!Main.overview.viewSelector.appDisplay._views[1].view._currentPopup)) {
 				this.addActions[i].show();
 			} else {
@@ -283,16 +278,13 @@ const OverlayManager = new Lang.Class({
 		}
 	},
 
-	popdownFolder:	function () {
+	ensurePopdowned:	function () {
 		if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) {
 			this.openedFolder = Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source.id;
 			Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown();
 		} else {
 			this.openedFolder = null;
 		}
-		this.computeFolderOverlayActors(null);
-		this.updateActorsPositions();
-		this.updateState(true);
 	},
 
 	goToPage:	function (nb) {
@@ -310,7 +302,7 @@ const OverlayManager = new Lang.Class({
 		this.createAction.destroy();
 		this.upAction.destroy();
 		this.downAction.destroy();
-		log('OverlayManager no destroy');
+		log('OverlayManager destroyed');
 	},
 });
 
@@ -619,7 +611,7 @@ const FolderArea = new Lang.Class({
 		return DND.DragMotionResult.NO_DROP;
 	},
 
-	acceptDrop: function(source, actor, x, y, time) { //FIXME recharger la vue ou au minimum les icônes des dossiers
+	acceptDrop: function(source, actor, x, y, time) { //FIXME recharger la vue ou au minimum les miniatures des dossiers
 		if (source instanceof AppDisplay.AppIcon) {
 //			if(Extension.isInFolder(source.id, this.id)) {
 //				log('app déjà ici');

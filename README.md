@@ -1,7 +1,7 @@
 *Be careful if you want to use this repo's unstable version*
 
 # Appfolders Management (GNOME extension)
-A [GNOME extension](https://extensions.gnome.org/extension/1217/appfolders-manager/) allowing easy management of "appfolders" directly from the applications view. As a bonus feature, it is possible to change the number of columns.
+A [GNOME extension](https://extensions.gnome.org/extension/1217/appfolders-manager/) allowing easy management of "appfolders" directly from the applications view.
 
 
 ![Screenshot](http://i.imgur.com/JKcVNyR.jpg)
@@ -26,10 +26,12 @@ A [GNOME extension](https://extensions.gnome.org/extension/1217/appfolders-manag
 A huge _thank you_ to translators
 
 ### Current version
+
 Features :
+
 * Create new appfolders
 * Delete appfolders
-* Rename appfolders (experimental)
+* Rename appfolders
 
 * Add applications to appfolders
 * Remove applications from appfolders
@@ -38,6 +40,8 @@ Features :
 * Remove a category from a folder
 
 (categories are defined by a [freedesktop standard](https://standards.freedesktop.org/menu-spec/latest/apa.html), see [this section](https://standards.freedesktop.org/menu-spec/latest/apas02.html) to learn more about additional categories available)
+
+Drag-and-drop exists as an experimental feature.
 
 ### Installation
 
@@ -50,10 +54,7 @@ Install it from https://extensions.gnome.org/extension/1217/appfolders-manager/
 * Restart Gnome Shell.
 * Activate the extension.
 
-### Future versions
-* Drag and drop actions
-* Merge folders
-
 ### See also
-https://github.com/muflone/gnome-appfolders-manager a GTK+ application which manages appfolders
-https://wiki.gnome.org/Apps/Software the "official" way to do it
+
+- [a GTK+ application which manages appfolders](https://github.com/muflone/gnome-appfolders-manager)
+- [the "official" way to do it](https://wiki.gnome.org/Apps/Software)
