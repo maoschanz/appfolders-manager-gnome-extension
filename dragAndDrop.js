@@ -200,7 +200,7 @@ const OverlayManager = new Lang.Class({
 		
 		// The grid "moved" or the whole shit needs forced updating
 		let allAppsGrid = Main.overview.viewSelector.appDisplay._views[1].view._grid;
-		let new_width = allAppsGrid._grid.allocation.get_width();
+		let new_width = allAppsGrid.actor.allocation.get_width();
 		if (new_width != this.current_width || this.next_drag_should_recompute) {
 			this.next_drag_should_recompute = false;
 			this.computeFolderOverlayActors();
@@ -235,7 +235,7 @@ const OverlayManager = new Lang.Class({
 			}
 		});
 
-		this.current_width = allAppsGrid._grid.allocation.get_width();
+		this.current_width = allAppsGrid.actor.allocation.get_width();
 		let x_correction = (monitor.width - this.current_width)/2;
 		let availHeightPerPage = (allAppsGrid.actor.height)/(allAppsGrid._nPages);
 		
