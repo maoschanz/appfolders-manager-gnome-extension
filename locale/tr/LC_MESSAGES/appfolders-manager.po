@@ -1,0 +1,97 @@
+# Uygulama klasörleme Türkçe çeviri.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Serdar Sağlam <teknomobil@yandex.com>, 2018.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: v12\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-12-28 01:49+0200\n"
+"PO-Revision-Date: 2018-12-18 12:10+0300\n"
+"Last-Translator: Serdar Sağlam <teknomobil@yandex.com>\n"
+"Language-Team: Türkçe <teknomobil@yandex.com>\n"
+"Language: tr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: extension.js:133
+msgid "Cancel"
+msgstr "İptal"
+
+#: extension.js:175
+msgid "This appfolder already exists."
+msgstr "Bu uygulama klasörü zaten mevcut."
+
+#: extension.js:302
+msgid "Add a category"
+msgstr "Kategori Ekle"
+
+#: extension.js:326
+msgid "Additional categories"
+msgstr "Ek kategoriler"
+
+#: extension.js:329
+msgid "Enter the name of a category"
+msgstr "Bu kategorinin adını girin"
+
+#: extension.js:329
+msgid "Add"
+msgstr "Ekle"
+
+#: extension.js:342
+msgid "Remove a category"
+msgstr "Bu Grubu Kaldır"
+
+#: extension.js:366 extension.js:368
+msgid "Rename"
+msgstr "Adlandır"
+
+#: extension.js:368 extension.js:437
+msgid "Enter a name"
+msgstr "İsim girin"
+
+#: extension.js:373
+msgid "Delete"
+msgstr "Sil"
+
+#: extension.js:431
+msgid "Add to"
+msgstr "Klasör Grubuna Taşı"
+
+#: extension.js:433
+msgid "New AppFolder"
+msgstr "Yeni Klasör Grubu"
+
+#: extension.js:437
+msgid "Create"
+msgstr "Oluştur"
+
+#: extension.js:463
+msgid "Remove from"
+msgstr "Buradan Kaldır"
+
+#: prefs.js:33
+msgid "Modifications will be effective after reloading the extension."
+msgstr "Değişiklikler, ekentiyi yeniden etkinleştirince etkili olacaktır."
+
+#: prefs.js:40
+msgid "Delete all related settings when an appfolder is deleted"
+msgstr "Bir klasör grubu silindiğinde tüm ilgili ayarları silin"
+
+#: prefs.js:56
+msgid "Experimental features (not recommended)"
+msgstr "Deneysel özellikler (önerilmez)"
+
+msgid "More informations about \"additional categories\""
+msgstr "Hakkında daha fazla bilgi \"ek kategoriler\""
+
+msgid "Standard specification"
+msgstr "Standart şartname"
+
+msgid "Report bugs or ideas"
+msgstr "Yeni bir fikir veya hata bildirin"
+
+msgid "This extension can be deactivated once your applications are organized as wished."
+msgstr "Menüleri istediğiniz şekilde düzenlendiğinde bu uzantı devre dışı bırakılabilir."
