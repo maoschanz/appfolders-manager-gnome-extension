@@ -147,7 +147,7 @@ const OverlayManager = new Lang.Class({
 		}
 	},
 
-	findBorders:	function () {
+	findBorders:	function () { // Abject XXX TODO
 		let y = 0;
 		let monitor = Main.layoutManager.primaryMonitor;
 		let widget = null;
@@ -172,8 +172,9 @@ const OverlayManager = new Lang.Class({
 
 	updateActorsPositions:	function () {
 		let monitor = Main.layoutManager.primaryMonitor;
-		let [bottomOfTheGrid, topOfTheGrid] = this.findBorders();
-		let _availHeight = bottomOfTheGrid - topOfTheGrid;
+		let bottomOfTheGrid;
+		[bottomOfTheGrid, this.topOfTheGrid] = this.findBorders();
+		let _availHeight = bottomOfTheGrid - this.topOfTheGrid;
 		let _availWidth = Main.overview.viewSelector.appDisplay._views[1].view._grid.actor.width;
 		let sideMargin = (monitor.width - _availWidth) / 2;
 
@@ -188,8 +189,8 @@ const OverlayManager = new Lang.Class({
 
 		// Sizes of areas
 		this.removeAction.setSize(xMiddle, monitor.height - bottomOfTheGrid);
-		this.createAction.setSize(xMiddle, topOfTheGrid - Main.overview._panelGhost.height);
-		this.upAction.setSize(xMiddle, topOfTheGrid - Main.overview._panelGhost.height);
+		this.createAction.setSize(xMiddle, this.topOfTheGrid - Main.overview._panelGhost.height);
+		this.upAction.setSize(xMiddle, this.topOfTheGrid - Main.overview._panelGhost.height);
 		this.downAction.setSize(xMiddle, monitor.height - bottomOfTheGrid);
 
 		this.updateArrowVisibility();
@@ -198,8 +199,8 @@ const OverlayManager = new Lang.Class({
 	ensureFolderOverlayActors:	function () {
 		// A folder was opened, and just closed.
 		if (this.openedFolder != null) {
-			this.computeFolderOverlayActors();
 			this.updateActorsPositions();
+			this.computeFolderOverlayActors();
 			this.next_drag_should_recompute = true;
 			return;
 		}
@@ -209,8 +210,8 @@ const OverlayManager = new Lang.Class({
 		let new_width = allAppsGrid.actor.allocation.get_width();
 		if (new_width != this.current_width || this.next_drag_should_recompute) {
 			this.next_drag_should_recompute = false;
-			this.computeFolderOverlayActors();
 			this.updateActorsPositions();
+			this.computeFolderOverlayActors();
 		}
 	},
 
@@ -264,7 +265,7 @@ const OverlayManager = new Lang.Class({
 				page = -1;
 			}
 			x = Math.floor(x + x_correction);
-			y = y + this.findBorders()[1];
+			y = y + this.topOfTheGrid;
 			y = y - (page * availHeightPerPage);
 
 			this.addActions[i] = new FolderArea(folders[i].id, x, y, page);
