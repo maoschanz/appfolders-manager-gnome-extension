@@ -147,29 +147,6 @@ const OverlayManager = new Lang.Class({
 		}
 	},
 
-	findBorders:	function () { // Abject XXX TODO
-		let y = 0;
-		let monitor = Main.layoutManager.primaryMonitor;
-		let widget = null;
-		let upper = null;
-		let lower = null;
-
-		while (lower == null) {
-			widget = global.stage.get_actor_at_pos(Clutter.PickMode.ALL, monitor.width-1, y);
-			if (widget instanceof St.Button || widget instanceof St.ScrollView) {
-				if (upper == null) {
-					upper = y;
-				}
-			} else {
-				if (upper != null) {
-					lower = y-15;
-				}
-			}
-			y += 5;
-		}
-		return [lower, upper];
-	},
-
 	updateActorsPositions:	function () {
 		let monitor = Main.layoutManager.primaryMonitor;
 		this.topOfTheGrid = Main.overview.viewSelector.actor.get_parent().get_parent().get_allocation_box().y1;
