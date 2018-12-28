@@ -172,8 +172,10 @@ const OverlayManager = new Lang.Class({
 
 	updateActorsPositions:	function () {
 		let monitor = Main.layoutManager.primaryMonitor;
-		let bottomOfTheGrid;
-		[bottomOfTheGrid, this.topOfTheGrid] = this.findBorders();
+		this.topOfTheGrid = Main.overview.viewSelector.actor.get_parent().get_parent().get_allocation_box().y1;
+		let temp = Main.overview.viewSelector.appDisplay._views[1].view.actor.get_parent();
+		let bottomOfTheGrid = this.topOfTheGrid + temp.get_allocation_box().y2;
+		
 		let _availHeight = bottomOfTheGrid - this.topOfTheGrid;
 		let _availWidth = Main.overview.viewSelector.appDisplay._views[1].view._grid.actor.width;
 		let sideMargin = (monitor.width - _availWidth) / 2;
@@ -410,14 +412,14 @@ const FolderActionArea = new Lang.Class({
 	},
 
 	getRemoveLabel: function () {
-		let label = _("Remove from ");
+		let label;
 		if (OVERLAY_MANAGER.openedFolder == null) {
-			label += '…';
+			label = '…';
 		} else {
 			let folder_schema = Extension.folderSchema (OVERLAY_MANAGER.openedFolder);
-			label += folder_schema.get_string('name');
+			label = folder_schema.get_string('name');
 		}
-		return label;
+		return (_("Remove from %s")).replace('%s', label);
 	},
 
 	setActive: function (active) {

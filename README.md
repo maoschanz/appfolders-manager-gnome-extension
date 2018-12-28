@@ -7,8 +7,9 @@ A GNOME Shell extension allowing easy management of "appfolders" directly from t
 ### Available in :
 
 * Belarusian - [DeadMetaler](https://github.com/DeadMetaler)
-* English - [Maestroschan](https://github.com/Maestroschan/)
-* French - [Maestroschan](https://github.com/Maestroschan/)
+* Brazilian Portuguese - [Fábio Nogueira](https://github.com/frnogueira)
+* English - [Maestroschan](https://github.com/maoschanz/)
+* French - [Maestroschan](https://github.com/maoschanz/)
 * German - [Marcel Hoppe](https://github.com/hobbypunk90)
 * Greek - [dirosis](https://github.com/dirosis)
 * Hungarian - [Balázs Úr](https://github.com/urbalazs)
@@ -16,7 +17,7 @@ A GNOME Shell extension allowing easy management of "appfolders" directly from t
 * Polish - [Piotr Komur](https://github.com/pkomur)
 * Russian - [DeadMetaler](https://github.com/DeadMetaler)
 * Serbian - [Slobodan Terzić](https://github.com/Faenriis)
-* Brazilian Portuguese - [Fábio Nogueira](https://github.com/frnogueira)
+* Turkish - [Serdar Sağlam](https://github.com/TeknoMobil)
 * Ukrainian - [Igor Gordiichuk](https://github.com/IgorHordiichuk)
 
 A huge _thank you_ to all translators!

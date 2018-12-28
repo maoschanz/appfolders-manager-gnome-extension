@@ -117,7 +117,7 @@ function injectionInAppsMenus() {
 			}
 			this.addMenuItem(addto);
 			
-			let removeFrom = new PopupMenu.PopupSubMenuMenuItem(_("Remove from "));
+			let removeFrom = new PopupMenu.PopupSubMenuMenuItem(_("Remove from"));
 			let shouldShow2 = false;
 			for (var i = 0 ; i < FOLDER_LIST.length ; i++) {
 				let _folder = FOLDER_LIST[i];
