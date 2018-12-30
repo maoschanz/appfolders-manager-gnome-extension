@@ -3,97 +3,110 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-28 01:49+0200\n"
+"POT-Creation-Date: 2018-12-28 18:37+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: extension.js:133
-msgid "Cancel"
-msgstr ""
-
-#: extension.js:175
-msgid "This appfolder already exists."
-msgstr ""
-
-#: extension.js:302
-msgid "Add a category"
-msgstr ""
-
-#: extension.js:326
-msgid "Additional categories"
-msgstr ""
-
-#: extension.js:329
-msgid "Enter the name of a category"
-msgstr ""
-
-#: extension.js:329
-msgid "Add"
-msgstr ""
-
-#: extension.js:342
-msgid "Remove a category"
-msgstr ""
-
-#: extension.js:366 extension.js:368
-msgid "Rename"
-msgstr ""
-
-#: extension.js:368 extension.js:437
-msgid "Enter a name"
-msgstr ""
-
-#: extension.js:373
-msgid "Delete"
-msgstr ""
-
-#: extension.js:431
+#: extension.js:67
 msgid "Add to"
 msgstr ""
 
-#: extension.js:433
+#: extension.js:69
 msgid "New AppFolder"
 msgstr ""
 
-#: extension.js:437
-msgid "Create"
-msgstr ""
-
-#: extension.js:463
+#: extension.js:120
 msgid "Remove from"
 msgstr ""
 
-#: prefs.js:33
+#: dragAndDrop.js:394
+msgid "Create a new folder"
+msgstr ""
+
+#: dragAndDrop.js:432
+#, javascript-format
+msgid "Remove from %s"
+msgstr ""
+
+#: appfolderDialog.js:75 appfolderDialog.js:85
+msgid "Cancel"
+msgstr ""
+
+#: appfolderDialog.js:79 appfolderDialog.js:93
+msgid "Apply"
+msgstr ""
+
+#: appfolderDialog.js:89
+msgid "Delete"
+msgstr ""
+
+#: appfolderDialog.js:118
+msgid "Folder's name:"
+msgstr ""
+
+#: appfolderDialog.js:150
+msgid "Categories:"
+msgstr ""
+
+#: appfolderDialog.js:181
+msgid "Other category?"
+msgstr ""
+
+#: appfolderDialog.js:191
+msgid "Select a category…"
+msgstr ""
+
+#: appfolderDialog.js:236
+msgid "No category"
+msgstr ""
+
+#: prefs.js:37
 msgid "Modifications will be effective after reloading the extension."
 msgstr ""
 
 #: prefs.js:40
+msgid "Main settings"
+msgstr ""
+
+#: prefs.js:41
+msgid "Categories"
+msgstr ""
+
+#: prefs.js:45
 msgid "Delete all related settings when an appfolder is deleted"
 msgstr ""
 
-#: prefs.js:56
-msgid "Experimental features (not recommended)"
+#: prefs.js:68
+msgid "Use categories"
 msgstr ""
 
+#: prefs.js:91
+msgid "Use the right-click menus in addition to the drag-and-drop"
+msgstr ""
+
+#: prefs.js:124
 msgid "More informations about \"additional categories\""
 msgstr ""
 
+#: prefs.js:126
 msgid "Standard specification"
 msgstr ""
 
+#: prefs.js:146
 msgid "Report bugs or ideas"
 msgstr ""
 
-msgid "This extension can be deactivated once your applications are organized as wished."
+#: prefs.js:157
+msgid ""
+"This extension can be deactivated once your applications are organized as "
+"wished."
 msgstr ""
-

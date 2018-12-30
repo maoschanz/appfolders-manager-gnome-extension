@@ -2,83 +2,111 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-02-03 18:48+0100\n"
+"POT-Creation-Date: 2018-12-28 18:37+0100\n"
 "PO-Revision-Date: 2017-02-05 16:47+0100\n"
+"Last-Translator: \n"
 "Language-Team: \n"
+"Language: fr\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.8.11\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"Last-Translator: \n"
-"Language: fr\n"
 
-msgid "Enter a name"
-msgstr "Entrez un nom"
-
-msgid "Cancel"
-msgstr "Annuler"
-
+#: extension.js:67
 msgid "Add to"
 msgstr "Ajouter à"
 
+#: extension.js:69
 msgid "New AppFolder"
 msgstr "Nouvel AppFolder"
 
+#: extension.js:120
 msgid "Remove from"
 msgstr "Retirer de"
 
-msgid "Delete AppFolder"
-msgstr "Supprimer un AppFolder"
+#: dragAndDrop.js:394
+msgid "Create a new folder"
+msgstr "Créer un nouveau dossier"
 
-msgid "Modifications will be effective after reloading the extension."
-msgstr "Les modifications prendront effet après avoir rechargé l'extension"
+#: dragAndDrop.js:432
+#, javascript-format
+msgid "Remove from %s"
+msgstr "Retirer de %s"
 
-msgid "Maximum number of columns :"
-msgstr "Nombre maximal de colonnes :"
+#: appfolderDialog.js:75 appfolderDialog.js:85
+msgid "Cancel"
+msgstr "Annuler"
 
-msgid "Delete all related settings when an appfolder is deleted"
-msgstr "Supprimer tous les réglages relatifs à un appfolder lors de sa suppression"
+#: appfolderDialog.js:79 appfolderDialog.js:93
+msgid "Apply"
+msgstr "Appliquer"
 
+#: appfolderDialog.js:89
 msgid "Delete"
 msgstr "Supprimer"
 
-msgid "Rename"
-msgstr "Renommer"
+#: appfolderDialog.js:118
+msgid "Folder's name:"
+msgstr "Nom du dossier :"
 
-msgid "This appfolder already exists."
-msgstr "Cet appfolder existe déjà"
+#: appfolderDialog.js:150
+msgid "Categories:"
+msgstr "Catégories :"
 
-msgid "Create"
-msgstr "Créer"
+#: appfolderDialog.js:181
+msgid "Other category?"
+msgstr "Autre catégorie ?"
 
-msgid "Remove a category"
-msgstr "Retirer une catégorie"
+#: appfolderDialog.js:191
+msgid "Select a category…"
+msgstr "Choisir une catégorie…"
 
-msgid "Additional categories"
-msgstr "Catégories supplémentaires"
+#: appfolderDialog.js:236
+msgid "No category"
+msgstr "Aucune catégorie"
 
-msgid "Add a category"
-msgstr "Ajouter une catégorie"
+#: prefs.js:37
+msgid "Modifications will be effective after reloading the extension."
+msgstr "Les modifications prendront effet après avoir rechargé l'extension"
 
-msgid "Add"
-msgstr "Ajouter"
+#: prefs.js:40
+msgid "Main settings"
+msgstr "Réglages principaux"
 
-msgid "Enter the name of a category"
-msgstr "Entrez le nom d'une catégorie"
+#: prefs.js:41
+msgid "Categories"
+msgstr "Catégories"
 
+#: prefs.js:45
+msgid "Delete all related settings when an appfolder is deleted"
+msgstr ""
+"Supprimer tous les réglages relatifs à un appfolder lors de sa suppression"
+
+#: prefs.js:68
+msgid "Use categories"
+msgstr "Utiliser des catégories"
+
+#: prefs.js:91
+msgid "Use the right-click menus in addition to the drag-and-drop"
+msgstr "Utiliser le menu du clic-droit en complément du glisser-déposer"
+
+#: prefs.js:124
 msgid "More informations about \"additional categories\""
 msgstr "Plus d'informations à propos des \"catégories supplémentaires\""
 
+#: prefs.js:126
 msgid "Standard specification"
 msgstr "Spécification standard"
 
+#: prefs.js:146
 msgid "Report bugs or ideas"
 msgstr "Reporter un bug ou une idée"
 
-msgid "This extension can be deactivated once your applications are organized as wished."
-msgstr "Cette extension peut être désactivée une fois que vos applications sont organisées comme souhaité."
-
-
-
-
+#: prefs.js:157
+msgid ""
+"This extension can be deactivated once your applications are organized as "
+"wished."
+msgstr ""
+"Cette extension peut être désactivée une fois que vos applications sont "
+"organisées comme souhaité."
