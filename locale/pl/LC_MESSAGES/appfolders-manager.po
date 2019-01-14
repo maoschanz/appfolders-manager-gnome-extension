@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Appfolders Management (GNOME extension)\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-28 01:49+0200\n"
+"POT-Creation-Date: 2019-01-14 20:11+0100\n"
 "PO-Revision-Date: 2018-12-19 21:13+0100\n"
 "Last-Translator: Piotr Komur <pkomur@gmail.com>\n"
 "Language-Team: Piotr Komur\n"
@@ -20,81 +20,106 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 "
 "|| n%100>=20) ? 1 : 2);\n"
 
-msgid "Cancel"
-msgstr "Anuluj"
-
-msgid "Delete"
-msgstr "Usuń"
-
-msgid "Apply"
-msgstr "Zastosuj"
-
-msgid "Folder's name:"
-msgstr "Nazwa folderu:"
-
-msgid "Categories:"
-msgstr "Kategorie programów:"
-
-msgid "Other category?"
-msgstr "Nowa kategoria"
-
-msgid "Select a categoryâ¦"
-msgstr "Wybierz kategorię"
-
-msgid "No category"
-msgstr "Brak wybranych kategorii"
-
-msgid "Create a new folder"
-msgstr "Utwórz nowy folder"
-
-msgid "Remove from "
-msgstr "Usuń z folderu"
-
+#: extension.js:67
 msgid "Add to"
 msgstr "Dodaj do folderu"
 
+#: extension.js:69
 msgid "New AppFolder"
 msgstr "Nowy folder programów"
 
+#: extension.js:120
 msgid "Remove from"
 msgstr "Usuń z folderu"
 
+#: dragAndDrop.js:361
+msgid "Create a new folder"
+msgstr "Utwórz nowy folder"
+
+#: dragAndDrop.js:399
+#, fuzzy, javascript-format
+msgid "Remove from %s"
+msgstr "Usuń z folderu"
+
+#: appfolderDialog.js:75 appfolderDialog.js:85
+msgid "Cancel"
+msgstr "Anuluj"
+
+#: appfolderDialog.js:79 appfolderDialog.js:93
+msgid "Apply"
+msgstr "Zastosuj"
+
+#: appfolderDialog.js:89
+msgid "Delete"
+msgstr "Usuń"
+
+#: appfolderDialog.js:118
+msgid "Folder's name:"
+msgstr "Nazwa folderu:"
+
+#: appfolderDialog.js:150
+msgid "Categories:"
+msgstr "Kategorie programów:"
+
+#: appfolderDialog.js:175
+msgid "Other category?"
+msgstr "Nowa kategoria"
+
+#: appfolderDialog.js:191
+#, fuzzy
+msgid "Select a category…"
+msgstr "Wybierz kategorię"
+
+#: appfolderDialog.js:236
+msgid "No category"
+msgstr "Brak wybranych kategorii"
+
+#: prefs.js:37
 msgid "Modifications will be effective after reloading the extension."
 msgstr "Zmiany będą aktywne po ponownym zrestartowaniu środowiska Gnome."
 
+#: prefs.js:40
 msgid "Main settings"
 msgstr "Ustawienia"
 
+#: prefs.js:41
 msgid "Categories"
 msgstr "Kategorie"
 
-msgid "Use categories"
-msgstr "Użyj standardowych kategorii"
-
-msgid "Use the right-click menus in addition to the drag-and-drop"
-msgstr ""
-
+#: prefs.js:45
 msgid "Delete all related settings when an appfolder is deleted"
 msgstr "Usuń powiązane zmiany wraz z usunięciem folderu programów."
 
-msgid "This appfolder already exists."
-msgstr "Folder o tej nazwie już istnieje."
+#: prefs.js:68
+msgid "Use categories"
+msgstr "Użyj standardowych kategorii"
 
+#: prefs.js:91
+msgid "Use the right-click menus in addition to the drag-and-drop"
+msgstr ""
+
+#: prefs.js:124
 msgid "More informations about \"additional categories\""
 msgstr "Więcej informacji o \"standardowych kategoriach\""
 
+#: prefs.js:126
 msgid "Standard specification"
 msgstr "Specyfikacja standardu"
 
+#: prefs.js:146
 msgid "Report bugs or ideas"
 msgstr "Zgłoś błędy lub nowe funkcje"
 
+#: prefs.js:157
 msgid ""
 "This extension can be deactivated once your applications are organized as "
 "wished."
 msgstr ""
 "Można dezaktywować to rozszerzenie po zakończeniu porządkowania programów w "
 "folderach."
+
+#~ msgid "This appfolder already exists."
+#~ msgstr "Folder o tej nazwie już istnieje."
 
 #~ msgid "Enter a name"
 #~ msgstr "Podaj nazwę"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-01 01:49+0200\n"
+"POT-Creation-Date: 2019-01-14 20:11+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Max Krapiŭka <metalomaniax@gmail.com>\n"
 "Language-Team: RUSSIAN <metalomaniax@gmail.com>\n"
@@ -16,83 +16,124 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: extension.js:133
-msgid "Cancel"
-msgstr "Отмена"
-
-#: extension.js:175
-msgid "This appfolder already exists."
-msgstr "Эта папка приложений уже существует"
-
-#: extension.js:302
-msgid "Add a category"
-msgstr "Добавить категорию"
-
-#: extension.js:326
-msgid "Additional categories"
-msgstr "Дополнительные категории"
-
-#: extension.js:329
-msgid "Enter the name of a category"
-msgstr "Введите название категории"
-
-#: extension.js:329
-msgid "Add"
-msgstr "Добавить"
-
-#: extension.js:342
-msgid "Remove a category"
-msgstr "Удалить категорию"
-
-#: extension.js:366 extension.js:368
-msgid "Rename"
-msgstr "Переименовать"
-
-#: extension.js:368 extension.js:437
-msgid "Enter a name"
-msgstr "Введите название"
-
-#: extension.js:373
-msgid "Delete"
-msgstr "Удалить"
-
-#: extension.js:431
+#: extension.js:67
 msgid "Add to"
 msgstr "Добавить в"
 
-#: extension.js:433
+#: extension.js:69
 msgid "New AppFolder"
 msgstr "Новая папка"
 
-#: extension.js:437
-msgid "Create"
-msgstr "Стварыць"
-
-#: extension.js:463
+#: extension.js:120
 msgid "Remove from"
 msgstr "Удалить из"
 
-#: prefs.js:33
+#: dragAndDrop.js:361
+msgid "Create a new folder"
+msgstr ""
+
+#: dragAndDrop.js:399
+#, fuzzy, javascript-format
+msgid "Remove from %s"
+msgstr "Удалить из"
+
+#: appfolderDialog.js:75 appfolderDialog.js:85
+msgid "Cancel"
+msgstr "Отмена"
+
+#: appfolderDialog.js:79 appfolderDialog.js:93
+msgid "Apply"
+msgstr ""
+
+#: appfolderDialog.js:89
+msgid "Delete"
+msgstr "Удалить"
+
+#: appfolderDialog.js:118
+msgid "Folder's name:"
+msgstr ""
+
+#: appfolderDialog.js:150
+msgid "Categories:"
+msgstr ""
+
+#: appfolderDialog.js:175
+#, fuzzy
+msgid "Other category?"
+msgstr "Удалить категорию"
+
+#: appfolderDialog.js:191
+#, fuzzy
+msgid "Select a category…"
+msgstr "Удалить категорию"
+
+#: appfolderDialog.js:236
+#, fuzzy
+msgid "No category"
+msgstr "Добавить категорию"
+
+#: prefs.js:37
 msgid "Modifications will be effective after reloading the extension."
 msgstr "Изменения вступят в силу после перезагрузки расширения."
 
 #: prefs.js:40
+msgid "Main settings"
+msgstr ""
+
+#: prefs.js:41
+msgid "Categories"
+msgstr ""
+
+#: prefs.js:45
 msgid "Delete all related settings when an appfolder is deleted"
 msgstr "Удалять все связанные настройки при удалении папки приложений."
 
-#: prefs.js:56
-msgid "Experimental features (not recommended)"
-msgstr "Эксперементальные возможности (не рекомендуется)"
+#: prefs.js:68
+#, fuzzy
+msgid "Use categories"
+msgstr "Дополнительные категории"
 
+#: prefs.js:91
+msgid "Use the right-click menus in addition to the drag-and-drop"
+msgstr ""
+
+#: prefs.js:124
 msgid "More informations about \"additional categories\""
 msgstr "Больше информации про \"дополнительные категории\""
 
+#: prefs.js:126
 msgid "Standard specification"
 msgstr "Стандартная спецификация"
 
+#: prefs.js:146
 msgid "Report bugs or ideas"
 msgstr "Сообщить об ошибках, предложить идеи"
 
-msgid "This extension can be deactivated once your applications are organized as wished."
-msgstr "Это расширение может быть деактивировано, после того как вы окончательно настроите организацию своих приложений."
+#: prefs.js:157
+msgid ""
+"This extension can be deactivated once your applications are organized as "
+"wished."
+msgstr ""
+"Это расширение может быть деактивировано, после того как вы окончательно "
+"настроите организацию своих приложений."
 
+#~ msgid "This appfolder already exists."
+#~ msgstr "Эта папка приложений уже существует"
+
+#~ msgid "Enter the name of a category"
+#~ msgstr "Введите название категории"
+
+#~ msgid "Add"
+#~ msgstr "Добавить"
+
+#~ msgid "Rename"
+#~ msgstr "Переименовать"
+
+#~ msgid "Enter a name"
+#~ msgstr "Введите название"
+
+#~ msgid "Create"
+#~ msgstr "Стварыць"
+
+#~ msgid "Experimental features (not recommended)"
+#~ msgstr "Эксперементальные возможности (не рекомендуется)"

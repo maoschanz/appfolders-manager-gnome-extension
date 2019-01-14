@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-12-28 18:37+0100\n"
+"POT-Creation-Date: 2019-01-14 20:11+0100\n"
 "PO-Revision-Date: 2017-02-05 16:47+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -25,11 +25,11 @@ msgstr "Nouvel AppFolder"
 msgid "Remove from"
 msgstr "Retirer de"
 
-#: dragAndDrop.js:394
+#: dragAndDrop.js:361
 msgid "Create a new folder"
 msgstr "Créer un nouveau dossier"
 
-#: dragAndDrop.js:432
+#: dragAndDrop.js:399
 #, javascript-format
 msgid "Remove from %s"
 msgstr "Retirer de %s"
@@ -54,7 +54,7 @@ msgstr "Nom du dossier :"
 msgid "Categories:"
 msgstr "Catégories :"
 
-#: appfolderDialog.js:181
+#: appfolderDialog.js:175
 msgid "Other category?"
 msgstr "Autre catégorie ?"
 

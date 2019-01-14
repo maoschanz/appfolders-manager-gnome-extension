@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-10-28 01:49+0200\n"
+"POT-Creation-Date: 2019-01-14 20:11+0100\n"
 "PO-Revision-Date: 2017-10-28 01:50+0200\n"
 "Last-Translator: Jonatan Hatakeyama Zeidler <jonatan_zeidler@gmx.de>\n"
 "Language-Team: https://github.com/hobbypunk90/appfolders-manager-gnome-"
@@ -20,73 +20,125 @@ msgstr ""
 "X-Generator: Poedit 2.0.4\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: extension.js:133
-msgid "Cancel"
-msgstr "Abbrechen"
-
-#: extension.js:175
-msgid "This appfolder already exists."
-msgstr "Dieser Ordner existiert bereits."
-
-#: extension.js:302
-msgid "Add a category"
-msgstr "Kategorie hinzufügen"
-
-#: extension.js:326
-msgid "Additional categories"
-msgstr "Hinzugefügte Kategorien"
-
-#: extension.js:329
-msgid "Enter the name of a category"
-msgstr "Gib der Kategorie einen Namen"
-
-#: extension.js:329
-msgid "Add"
-msgstr "Hinzufügen"
-
-#: extension.js:342
-msgid "Remove a category"
-msgstr "Lösche eine Kategorie"
-
-#: extension.js:366 extension.js:368
-msgid "Rename"
-msgstr "Umbenennen"
-
-#: extension.js:368 extension.js:437
-msgid "Enter a name"
-msgstr "Namen eingeben"
-
-#: extension.js:373
-msgid "Delete"
-msgstr "Löschen"
-
-#: extension.js:431
+#: extension.js:67
 msgid "Add to"
 msgstr "Hinzufügen zu"
 
-#: extension.js:433
+#: extension.js:69
 msgid "New AppFolder"
 msgstr "Neuer Ordner"
 
-#: extension.js:437
-msgid "Create"
-msgstr "Erstelle"
-
-#: extension.js:463
+#: extension.js:120
 msgid "Remove from"
 msgstr "Löschen aus"
 
-#: prefs.js:33
+#: dragAndDrop.js:361
+msgid "Create a new folder"
+msgstr ""
+
+#: dragAndDrop.js:399
+#, fuzzy, javascript-format
+msgid "Remove from %s"
+msgstr "Löschen aus"
+
+#: appfolderDialog.js:75 appfolderDialog.js:85
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: appfolderDialog.js:79 appfolderDialog.js:93
+msgid "Apply"
+msgstr ""
+
+#: appfolderDialog.js:89
+msgid "Delete"
+msgstr "Löschen"
+
+#: appfolderDialog.js:118
+msgid "Folder's name:"
+msgstr ""
+
+#: appfolderDialog.js:150
+msgid "Categories:"
+msgstr ""
+
+#: appfolderDialog.js:175
+#, fuzzy
+msgid "Other category?"
+msgstr "Lösche eine Kategorie"
+
+#: appfolderDialog.js:191
+#, fuzzy
+msgid "Select a category…"
+msgstr "Lösche eine Kategorie"
+
+#: appfolderDialog.js:236
+#, fuzzy
+msgid "No category"
+msgstr "Kategorie hinzufügen"
+
+#: prefs.js:37
 msgid "Modifications will be effective after reloading the extension."
 msgstr "Änderungen werden nach Neustart der Erweiterung übernommen."
 
 #: prefs.js:40
+msgid "Main settings"
+msgstr ""
+
+#: prefs.js:41
+msgid "Categories"
+msgstr ""
+
+#: prefs.js:45
 msgid "Delete all related settings when an appfolder is deleted"
 msgstr "Lösche alle Einstellungen, wenn ein Ordner gelöscht wird"
 
-#: prefs.js:56
-msgid "Experimental features (not recommended)"
-msgstr "Experimentelle Funktionen (nicht empfohlen)"
+#: prefs.js:68
+#, fuzzy
+msgid "Use categories"
+msgstr "Hinzugefügte Kategorien"
+
+#: prefs.js:91
+msgid "Use the right-click menus in addition to the drag-and-drop"
+msgstr ""
+
+#: prefs.js:124
+msgid "More informations about \"additional categories\""
+msgstr ""
+
+#: prefs.js:126
+msgid "Standard specification"
+msgstr ""
+
+#: prefs.js:146
+msgid "Report bugs or ideas"
+msgstr ""
+
+#: prefs.js:157
+msgid ""
+"This extension can be deactivated once your applications are organized as "
+"wished."
+msgstr ""
+
+#~ msgid "This appfolder already exists."
+#~ msgstr "Dieser Ordner existiert bereits."
+
+#~ msgid "Enter the name of a category"
+#~ msgstr "Gib der Kategorie einen Namen"
+
+#~ msgid "Add"
+#~ msgstr "Hinzufügen"
+
+#~ msgid "Rename"
+#~ msgstr "Umbenennen"
+
+#~ msgid "Enter a name"
+#~ msgstr "Namen eingeben"
+
+#~ msgid "Create"
+#~ msgstr "Erstelle"
+
+#~ msgid "Experimental features (not recommended)"
+#~ msgstr "Experimentelle Funktionen (nicht empfohlen)"
 
 #~ msgid "Delete AppFolder"
 #~ msgstr "Lösche Ordner"

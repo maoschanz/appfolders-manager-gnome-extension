@@ -8,67 +8,137 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-04-13 12:23+0200\n"
+"POT-Creation-Date: 2019-01-14 20:11+0100\n"
 "PO-Revision-Date: 2017-09-15 16:40+0200\n"
+"Last-Translator: \n"
 "Language-Team: \n"
+"Language: sr@latin\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 2.0.3\n"
-"Last-Translator: \n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"Language: sr@latin\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-msgid "Enter a name"
-msgstr "Unesite ime"
-
-msgid "Cancel"
-msgstr "Otkaži"
-
+#: extension.js:67
 msgid "Add to"
 msgstr "Dodaj u"
 
+#: extension.js:69
 msgid "New AppFolder"
 msgstr "Nova faskila programa"
 
+#: extension.js:120
 msgid "Remove from"
 msgstr "Ukloni stavku"
 
-msgid "Delete AppFolder"
-msgstr "Obriši fasciklu programa"
+#: dragAndDrop.js:361
+msgid "Create a new folder"
+msgstr ""
 
-msgid "Modifications will be effective after reloading the extension."
-msgstr "Izmene će stupiti na snagu po ponovnom učitavanju proširenja."
+#: dragAndDrop.js:399
+#, fuzzy, javascript-format
+msgid "Remove from %s"
+msgstr "Ukloni stavku"
 
-msgid "Maximum number of columns :"
-msgstr "Maksimalan broj kolona :"
+#: appfolderDialog.js:75 appfolderDialog.js:85
+msgid "Cancel"
+msgstr "Otkaži"
 
-msgid "Delete all related settings when an appfolder is deleted"
-msgstr "Obriši sve pripadajuće postavke pri brisanju proširenja"
+#: appfolderDialog.js:79 appfolderDialog.js:93
+msgid "Apply"
+msgstr ""
 
+#: appfolderDialog.js:89
 msgid "Delete"
 msgstr "Obriši"
 
-msgid "Rename"
-msgstr "Preimenuj"
+#: appfolderDialog.js:118
+msgid "Folder's name:"
+msgstr ""
 
-msgid "Create"
-msgstr "Napravi"
+#: appfolderDialog.js:150
+msgid "Categories:"
+msgstr ""
 
-msgid "This appfolder already exists."
-msgstr "Ova fascikla programa već postoji."
-
-msgid "Remove a category"
+#: appfolderDialog.js:175
+#, fuzzy
+msgid "Other category?"
 msgstr "Ukloni kategoriju"
 
-msgid "Additional categories"
-msgstr "Dodatne kategorije"
+#: appfolderDialog.js:191
+#, fuzzy
+msgid "Select a category…"
+msgstr "Ukloni kategoriju"
 
-msgid "Add a category"
+#: appfolderDialog.js:236
+#, fuzzy
+msgid "No category"
 msgstr "Dodaj kategoriju"
 
-msgid "Add"
-msgstr "Dodaj"
+#: prefs.js:37
+msgid "Modifications will be effective after reloading the extension."
+msgstr "Izmene će stupiti na snagu po ponovnom učitavanju proširenja."
 
-msgid "Enter the name of a category"
-msgstr "Unesite ime kategorije"
+#: prefs.js:40
+msgid "Main settings"
+msgstr ""
+
+#: prefs.js:41
+msgid "Categories"
+msgstr ""
+
+#: prefs.js:45
+msgid "Delete all related settings when an appfolder is deleted"
+msgstr "Obriši sve pripadajuće postavke pri brisanju proširenja"
+
+#: prefs.js:68
+#, fuzzy
+msgid "Use categories"
+msgstr "Dodatne kategorije"
+
+#: prefs.js:91
+msgid "Use the right-click menus in addition to the drag-and-drop"
+msgstr ""
+
+#: prefs.js:124
+msgid "More informations about \"additional categories\""
+msgstr ""
+
+#: prefs.js:126
+msgid "Standard specification"
+msgstr ""
+
+#: prefs.js:146
+msgid "Report bugs or ideas"
+msgstr ""
+
+#: prefs.js:157
+msgid ""
+"This extension can be deactivated once your applications are organized as "
+"wished."
+msgstr ""
+
+#~ msgid "Enter a name"
+#~ msgstr "Unesite ime"
+
+#~ msgid "Delete AppFolder"
+#~ msgstr "Obriši fasciklu programa"
+
+#~ msgid "Maximum number of columns :"
+#~ msgstr "Maksimalan broj kolona :"
+
+#~ msgid "Rename"
+#~ msgstr "Preimenuj"
+
+#~ msgid "Create"
+#~ msgstr "Napravi"
+
+#~ msgid "This appfolder already exists."
+#~ msgstr "Ova fascikla programa već postoji."
+
+#~ msgid "Add"
+#~ msgstr "Dodaj"
+
+#~ msgid "Enter the name of a category"
+#~ msgstr "Unesite ime kategorije"

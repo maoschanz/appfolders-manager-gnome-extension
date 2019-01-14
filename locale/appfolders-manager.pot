@@ -3,11 +3,12 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-12-28 18:37+0100\n"
+"POT-Creation-Date: 2019-01-14 20:11+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,11 +29,11 @@ msgstr ""
 msgid "Remove from"
 msgstr ""
 
-#: dragAndDrop.js:394
+#: dragAndDrop.js:361
 msgid "Create a new folder"
 msgstr ""
 
-#: dragAndDrop.js:432
+#: dragAndDrop.js:399
 #, javascript-format
 msgid "Remove from %s"
 msgstr ""
@@ -57,7 +58,7 @@ msgstr ""
 msgid "Categories:"
 msgstr ""
 
-#: appfolderDialog.js:181
+#: appfolderDialog.js:175
 msgid "Other category?"
 msgstr ""
 
