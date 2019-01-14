@@ -172,14 +172,14 @@ var AppfolderDialog = new Lang.Class({
 		this._categoryEntry = new St.Entry({
 			can_focus: true,
 			x_expand: true,
-			secondary_icon: new St.Icon({
-				icon_name: 'list-add-symbolic',
-				icon_size: 16,
-				style_class: 'system-status-icon',
-				y_align: Clutter.ActorAlign.CENTER,
-			}),
 			hint_text: _("Other category?"),
 		});
+		this._categoryEntry.set_secondary_icon(new St.Icon({ // 3.22 compatibility
+			icon_name: 'list-add-symbolic',
+			icon_size: 16,
+			style_class: 'system-status-icon',
+			y_align: Clutter.ActorAlign.CENTER,
+		}));
 		ShellEntry.addContextMenu(this._categoryEntry, null);
 		this._categoryEntry.connect('secondary-icon-clicked', Lang.bind(this,  this._addCategory));
 
