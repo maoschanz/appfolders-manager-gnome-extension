@@ -5,94 +5,115 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-01 01:49+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Max Krapiŭka <metalomaniax@gmail.com>\n"
-"Language-Team: BELARUSIAN <metalomaniax@gmail.com>\n"
-"Language: be\n"
+"POT-Creation-Date: 2018-12-28 18:37+0100\n"
+"PO-Revision-Date: 2018-12-30 14:03+0300\n"
+"Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.2\n"
+"Last-Translator: Максім Крапіўка <metalomaniax@gmail.com>\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);\n"
+"Language: be\n"
 
-#: extension.js:133
-msgid "Cancel"
-msgstr "Адмена"
-
-#: extension.js:175
-msgid "This appfolder already exists."
-msgstr "Гэтая папка праграм ужо існуе"
-
-#: extension.js:302
-msgid "Add a category"
-msgstr "Дадаць катэгорыю"
-
-#: extension.js:326
-msgid "Additional categories"
-msgstr "Дадатковыя катэгорыі"
-
-#: extension.js:329
-msgid "Enter the name of a category"
-msgstr "Увядзіце назву катэгорыі"
-
-#: extension.js:329
-msgid "Add"
-msgstr "Дадаць"
-
-#: extension.js:342
-msgid "Remove a category"
-msgstr "Выдаліць катэгорыю"
-
-#: extension.js:366 extension.js:368
-msgid "Rename"
-msgstr "Перайменаваць"
-
-#: extension.js:368 extension.js:437
-msgid "Enter a name"
-msgstr "Увядзіце назву"
-
-#: extension.js:373
-msgid "Delete"
-msgstr "Выдаліць"
-
-#: extension.js:431
+#: extension.js:67
 msgid "Add to"
 msgstr "Дадаць у"
 
-#: extension.js:433
+#: extension.js:69
 msgid "New AppFolder"
-msgstr "Новая папка"
+msgstr "Новая папка праграм"
 
-#: extension.js:437
-msgid "Create"
-msgstr "Стварыць"
-
-#: extension.js:463
+#: extension.js:120
 msgid "Remove from"
 msgstr "Выдаліць з"
 
-#: prefs.js:33
+#: dragAndDrop.js:394
+msgid "Create a new folder"
+msgstr "Стварыць новую папку"
+
+#: dragAndDrop.js:432
+#, javascript-format
+msgid "Remove from %s"
+msgstr "Выдаліць з %s"
+
+#: appfolderDialog.js:75 appfolderDialog.js:85
+msgid "Cancel"
+msgstr "Скасаваць"
+
+#: appfolderDialog.js:79 appfolderDialog.js:93
+msgid "Apply"
+msgstr "Дастасаваць"
+
+#: appfolderDialog.js:89
+msgid "Delete"
+msgstr "Выдаліць"
+
+#: appfolderDialog.js:118
+msgid "Folder's name:"
+msgstr "Назва папкі"
+
+#: appfolderDialog.js:150
+msgid "Categories:"
+msgstr "Катэгорыі:"
+
+#: appfolderDialog.js:181
+msgid "Other category?"
+msgstr "Іншая катэгорыя?"
+
+#: appfolderDialog.js:191
+msgid "Select a category…"
+msgstr "Выбраць катэгорыю..."
+
+#: appfolderDialog.js:236
+msgid "No category"
+msgstr "Без катэгорыі"
+
+#: prefs.js:37
 msgid "Modifications will be effective after reloading the extension."
 msgstr "Змены ўступяць у сілу пасля перазагрузкі пашырэння."
 
 #: prefs.js:40
+msgid "Main settings"
+msgstr "Галоўныя налады"
+
+#: prefs.js:41
+msgid "Categories"
+msgstr "Катэгорыі"
+
+#: prefs.js:45
 msgid "Delete all related settings when an appfolder is deleted"
-msgstr "Выдаляць усе звязаныя налады пры выдаленні папкі праграм."
+msgstr "Выдаляць усе звязаныя налады пры выдаленні папкі праграм"
 
-#: prefs.js:56
-msgid "Experimental features (not recommended)"
-msgstr "Эксперыментальныя магчымасці (не рэкамендуецца)"
+#: prefs.js:68
+msgid "Use categories"
+msgstr "Выкарыстоўваць катэгорыі"
 
+#: prefs.js:91
+msgid "Use the right-click menus in addition to the drag-and-drop"
+msgstr ""
+"Выкарыстоўваць націсканне правай кнопкай мышы ў дадатак да перацягвання "
+"значкоў"
+
+#: prefs.js:124
 msgid "More informations about \"additional categories\""
-msgstr "Больш інфармацыі пра \"дадатковыя катэгорыі\""
+msgstr "Больш інфармацыі пра «дадатковыя» катэгорыі"
 
+#: prefs.js:126
 msgid "Standard specification"
 msgstr "Стандартная спецыфікацыя"
 
+#: prefs.js:146
 msgid "Report bugs or ideas"
-msgstr "Паведаміць пра памылкі, прапанаваць ідэі"
+msgstr "Паведаміць пра памылкі або ідэі"
 
-msgid "This extension can be deactivated once your applications are organized as wished."
-msgstr "Гэта пашырэнне можа быць дэактывавана пасля таго як вы канчаткова наладзіце арганізацыю сваіх праграм."
-
+#: prefs.js:157
+msgid ""
+"This extension can be deactivated once your applications are organized as "
+"wished."
+msgstr ""
+"Гэта пашырэнне можна адключыць, пасля таго як вы канчаткова наладзіце "
+"арганізацыю сваіх праграм."
