@@ -8,133 +8,112 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-14 20:11+0100\n"
-"PO-Revision-Date: 2017-11-01 11:31-0300\n"
-"Last-Translator: Fábio Nogueira <fnogueira@gnome.org>\n"
+"PO-Revision-Date: 2018-12-19 05:43+0200\n"
+"Last-Translator: Igor Gordiichuk <igor_ck@outlook.com>\n"
 "Language-Team: \n"
-"Language: pt_BR\n"
+"Language: uk_UA\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.0.4\n"
-"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 2.2\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: extension.js:67
 msgid "Add to"
-msgstr "Adicionar para"
+msgstr "Додати до"
 
 #: extension.js:69
 msgid "New AppFolder"
-msgstr "Nova AppFolder"
+msgstr "Нова тека програм"
 
 #: extension.js:120
 msgid "Remove from"
-msgstr "Remover de"
+msgstr "Вилучити з"
 
 #: dragAndDrop.js:361
 msgid "Create a new folder"
-msgstr ""
+msgstr "Створити нову теку"
 
 #: dragAndDrop.js:399
 #, fuzzy, javascript-format
 msgid "Remove from %s"
-msgstr "Remover de"
+msgstr "Вилучити з "
 
 #: appfolderDialog.js:75 appfolderDialog.js:85
 msgid "Cancel"
-msgstr "Cancelar"
+msgstr "Скасувати"
 
 #: appfolderDialog.js:79 appfolderDialog.js:93
 msgid "Apply"
-msgstr ""
+msgstr "Застосовувати"
 
 #: appfolderDialog.js:89
 msgid "Delete"
-msgstr "Excluir"
+msgstr "Вилучити"
 
 #: appfolderDialog.js:118
 msgid "Folder's name:"
-msgstr ""
+msgstr "Назва теки:"
 
 #: appfolderDialog.js:150
 msgid "Categories:"
-msgstr ""
+msgstr "Категорії:"
 
 #: appfolderDialog.js:175
-#, fuzzy
 msgid "Other category?"
-msgstr "Apagar uma categoria"
+msgstr "Інша категорія?"
 
 #: appfolderDialog.js:191
 #, fuzzy
 msgid "Select a category…"
-msgstr "Apagar uma categoria"
+msgstr "Обрати категорію"
 
 #: appfolderDialog.js:236
-#, fuzzy
 msgid "No category"
-msgstr "Adicionar uma categoria"
+msgstr "Без категорії"
 
 #: prefs.js:37
 msgid "Modifications will be effective after reloading the extension."
-msgstr "As modificações entrarão em vigor depois de recarregar a extensão."
+msgstr "Зміни буде застосовано після перезавантаження розширення."
 
 #: prefs.js:40
 msgid "Main settings"
-msgstr ""
+msgstr "Основні налаштування"
 
 #: prefs.js:41
 msgid "Categories"
-msgstr ""
+msgstr "Категорії"
 
 #: prefs.js:45
 msgid "Delete all related settings when an appfolder is deleted"
-msgstr ""
-"Excluir todas as configurações relacionadas quando um appfolder for excluído"
+msgstr "Вилучити всі пов'язані налаштування, коли видаляється тека"
 
 #: prefs.js:68
-#, fuzzy
 msgid "Use categories"
-msgstr "Categorias adicionais"
+msgstr "Використати категорії"
 
 #: prefs.js:91
 msgid "Use the right-click menus in addition to the drag-and-drop"
-msgstr ""
+msgstr "Використовувати контекстне меню додатково до перетягування мишкою"
 
 #: prefs.js:124
 msgid "More informations about \"additional categories\""
-msgstr ""
+msgstr "Більше інформації про \"додаткові категорії\""
 
 #: prefs.js:126
 msgid "Standard specification"
-msgstr ""
+msgstr "Стандартні категорії"
 
 #: prefs.js:146
 msgid "Report bugs or ideas"
-msgstr ""
+msgstr "Повідомити про ваду або запропонувати ідею"
 
 #: prefs.js:157
 msgid ""
 "This extension can be deactivated once your applications are organized as "
 "wished."
-msgstr ""
+msgstr "Це розширення можна деактивувати, якщо програми було впорядковано."
 
 #~ msgid "This appfolder already exists."
-#~ msgstr "Esta appfolder já existe."
-
-#~ msgid "Enter the name of a category"
-#~ msgstr "Digite o nome de uma categoria"
-
-#~ msgid "Add"
-#~ msgstr "Adicionar"
-
-#~ msgid "Rename"
-#~ msgstr "Renomear"
-
-#~ msgid "Enter a name"
-#~ msgstr "Digite um nome"
-
-#~ msgid "Create"
-#~ msgstr "Criar"
-
-#~ msgid "Experimental features (not recommended)"
-#~ msgstr "Recursos experimentais (não recomendado)"
+#~ msgstr "Ця тека програм вже існує."

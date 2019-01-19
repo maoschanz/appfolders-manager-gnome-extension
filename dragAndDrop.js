@@ -147,33 +147,13 @@ const OverlayManager = new Lang.Class({
 		}
 	},
 
-	findBorders:	function () {
-		let y = 0;
-		let monitor = Main.layoutManager.primaryMonitor;
-		let widget = null;
-		let upper = null;
-		let lower = null;
-
-		while (lower == null) {
-			widget = global.stage.get_actor_at_pos(Clutter.PickMode.ALL, monitor.width-1, y);
-			if (widget instanceof St.Button || widget instanceof St.ScrollView) {
-				if (upper == null) {
-					upper = y;
-				}
-			} else {
-				if (upper != null) {
-					lower = y-15;
-				}
-			}
-			y += 5;
-		}
-		return [lower, upper];
-	},
-
 	updateActorsPositions:	function () {
 		let monitor = Main.layoutManager.primaryMonitor;
-		let [bottomOfTheGrid, topOfTheGrid] = this.findBorders();
-		let _availHeight = bottomOfTheGrid - topOfTheGrid;
+		this.topOfTheGrid = Main.overview.viewSelector.actor.get_parent().get_parent().get_allocation_box().y1;
+		let temp = Main.overview.viewSelector.appDisplay._views[1].view.actor.get_parent();
+		let bottomOfTheGrid = this.topOfTheGrid + temp.get_allocation_box().y2;
+		
+		let _availHeight = bottomOfTheGrid - this.topOfTheGrid;
 		let _availWidth = Main.overview.viewSelector.appDisplay._views[1].view._grid.actor.width;
 		let sideMargin = (monitor.width - _availWidth) / 2;
 
@@ -188,8 +168,8 @@ const OverlayManager = new Lang.Class({
 
 		// Sizes of areas
 		this.removeAction.setSize(xMiddle, monitor.height - bottomOfTheGrid);
-		this.createAction.setSize(xMiddle, topOfTheGrid - Main.overview._panelGhost.height);
-		this.upAction.setSize(xMiddle, topOfTheGrid - Main.overview._panelGhost.height);
+		this.createAction.setSize(xMiddle, this.topOfTheGrid - Main.overview._panelGhost.height);
+		this.upAction.setSize(xMiddle, this.topOfTheGrid - Main.overview._panelGhost.height);
 		this.downAction.setSize(xMiddle, monitor.height - bottomOfTheGrid);
 
 		this.updateArrowVisibility();
@@ -198,8 +178,8 @@ const OverlayManager = new Lang.Class({
 	ensureFolderOverlayActors:	function () {
 		// A folder was opened, and just closed.
 		if (this.openedFolder != null) {
-			this.computeFolderOverlayActors();
 			this.updateActorsPositions();
+			this.computeFolderOverlayActors();
 			this.next_drag_should_recompute = true;
 			return;
 		}
@@ -209,8 +189,8 @@ const OverlayManager = new Lang.Class({
 		let new_width = allAppsGrid.actor.allocation.get_width();
 		if (new_width != this.current_width || this.next_drag_should_recompute) {
 			this.next_drag_should_recompute = false;
-			this.computeFolderOverlayActors();
 			this.updateActorsPositions();
+			this.computeFolderOverlayActors();
 		}
 	},
 
@@ -264,7 +244,7 @@ const OverlayManager = new Lang.Class({
 				page = -1;
 			}
 			x = Math.floor(x + x_correction);
-			y = y + this.findBorders()[1];
+			y = y + this.topOfTheGrid;
 			y = y - (page * availHeightPerPage);
 
 			this.addActions[i] = new FolderArea(folders[i].id, x, y, page);
@@ -409,14 +389,14 @@ const FolderActionArea = new Lang.Class({
 	},
 
 	getRemoveLabel: function () {
-		let label = _("Remove from ");
+		let label;
 		if (OVERLAY_MANAGER.openedFolder == null) {
-			label += '…';
+			label = '…';
 		} else {
 			let folder_schema = Extension.folderSchema (OVERLAY_MANAGER.openedFolder);
-			label += folder_schema.get_string('name');
+			label = folder_schema.get_string('name');
 		}
-		return label;
+		return (_("Remove from %s")).replace('%s', label);
 	},
 
 	setActive: function (active) {

@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: appfolders-manager master\n"
-"Report-Msgid-Bugs-To: https://github.com/Maestroschan/appfolders-manager-gnome-extension/issues\n"
-"POT-Creation-Date: 2017-04-13 12:23+0200\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-01-14 20:11+0100\n"
 "PO-Revision-Date: 2017-05-31 20:41+0100\n"
 "Last-Translator: Balázs Úr <urbalazs@gmail.com>\n"
 "Language-Team: Hungarian <openscope@googlegroups.com>\n"
@@ -18,37 +18,110 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Lokalize 2.0\n"
 
-msgid "Enter a name"
-msgstr "Írjon be egy nevet"
-
-msgid "Cancel"
-msgstr "Mégse"
-
+#: extension.js:67
 msgid "Add to"
 msgstr "Hozzáadás ehhez"
 
+#: extension.js:69
 msgid "New AppFolder"
 msgstr "Új alkalmazásmappa"
 
+#: extension.js:120
 msgid "Remove from"
 msgstr "Eltávolítás innen"
 
-msgid "Delete AppFolder"
-msgstr "Alkalmazásmappa törlése"
+#: dragAndDrop.js:361
+msgid "Create a new folder"
+msgstr ""
 
+#: dragAndDrop.js:399
+#, fuzzy, javascript-format
+msgid "Remove from %s"
+msgstr "Eltávolítás innen"
+
+#: appfolderDialog.js:75 appfolderDialog.js:85
+msgid "Cancel"
+msgstr "Mégse"
+
+#: appfolderDialog.js:79 appfolderDialog.js:93
+msgid "Apply"
+msgstr ""
+
+#: appfolderDialog.js:89
+msgid "Delete"
+msgstr "Törlés"
+
+#: appfolderDialog.js:118
+msgid "Folder's name:"
+msgstr ""
+
+#: appfolderDialog.js:150
+msgid "Categories:"
+msgstr ""
+
+#: appfolderDialog.js:175
+msgid "Other category?"
+msgstr ""
+
+#: appfolderDialog.js:191
+msgid "Select a category…"
+msgstr ""
+
+#: appfolderDialog.js:236
+msgid "No category"
+msgstr ""
+
+#: prefs.js:37
 msgid "Modifications will be effective after reloading the extension."
 msgstr "A módosítások a kiterjesztés újratöltése után lépnek hatályba."
 
-msgid "Maximum number of columns :"
-msgstr "Oszlopok legnagyobb száma:"
+#: prefs.js:40
+msgid "Main settings"
+msgstr ""
 
+#: prefs.js:41
+msgid "Categories"
+msgstr ""
+
+#: prefs.js:45
 msgid "Delete all related settings when an appfolder is deleted"
 msgstr ""
 "Az összes kapcsolódó beállítás törlése, ha egy alkalmazásmappa törölve lesz"
 
-msgid "Delete"
-msgstr "Törlés"
+#: prefs.js:68
+msgid "Use categories"
+msgstr ""
 
-msgid "Rename"
-msgstr "Átnevezés"
+#: prefs.js:91
+msgid "Use the right-click menus in addition to the drag-and-drop"
+msgstr ""
 
+#: prefs.js:124
+msgid "More informations about \"additional categories\""
+msgstr ""
+
+#: prefs.js:126
+msgid "Standard specification"
+msgstr ""
+
+#: prefs.js:146
+msgid "Report bugs or ideas"
+msgstr ""
+
+#: prefs.js:157
+msgid ""
+"This extension can be deactivated once your applications are organized as "
+"wished."
+msgstr ""
+
+#~ msgid "Enter a name"
+#~ msgstr "Írjon be egy nevet"
+
+#~ msgid "Delete AppFolder"
+#~ msgstr "Alkalmazásmappa törlése"
+
+#~ msgid "Maximum number of columns :"
+#~ msgstr "Oszlopok legnagyobb száma:"
+
+#~ msgid "Rename"
+#~ msgstr "Átnevezés"

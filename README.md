@@ -7,8 +7,9 @@ A GNOME Shell extension allowing easy management of "appfolders" directly from t
 ### Available in :
 
 * Belarusian - [DeadMetaler](https://github.com/DeadMetaler)
-* English - [Maestroschan](https://github.com/Maestroschan/)
-* French - [Maestroschan](https://github.com/Maestroschan/)
+* Brazilian Portuguese - [Fábio Nogueira](https://github.com/frnogueira)
+* English - [Romain T.](https://github.com/maoschanz/)
+* French - [Romain T.](https://github.com/maoschanz/)
 * German - [Marcel Hoppe](https://github.com/hobbypunk90)
 * Greek - [dirosis](https://github.com/dirosis)
 * Hungarian - [Balázs Úr](https://github.com/urbalazs)
@@ -16,7 +17,8 @@ A GNOME Shell extension allowing easy management of "appfolders" directly from t
 * Polish - [Piotr Komur](https://github.com/pkomur)
 * Russian - [DeadMetaler](https://github.com/DeadMetaler)
 * Serbian - [Slobodan Terzić](https://github.com/Faenriis)
-* Brazilian Portuguese - [Fábio Nogueira](https://github.com/frnogueira)
+* Turkish - [Serdar Sağlam](https://github.com/TeknoMobil)
+* Ukrainian - [Igor Gordiichuk](https://github.com/IgorHordiichuk)
 
 A huge _thank you_ to all translators!
 
@@ -36,9 +38,11 @@ Features :
 
 ![Screenshot which isn't the current version at all (in french, sorry)](https://i.imgur.com/xNAVlbF.png)
 
+![Screenshot of the dialog for editing an appfolder (in french, sorry)](https://i.imgur.com/KZViAjt.png)
+
 (categories are defined by a [freedesktop standard](https://standards.freedesktop.org/menu-spec/latest/apa.html), see [this section](https://standards.freedesktop.org/menu-spec/latest/apas02.html) to learn more about additional categories available)
 
-Drag-and-drop exists as an experimental feature (GNOME Shell 3.30 and before).
+Drag-and-drop is possible.
 
 ### Installation
 
@@ -48,9 +52,9 @@ Install it from [extensions.gnome.org](https://extensions.gnome.org/extension/12
 
 #### Manual installation
 
-* Download the .zip archive and extract files in `~/.local/share/gnome-shell/extensions/appfolders-manager@maestroschan.fr`
-* Restart GNOME Shell.
-* Activate the extension.
+- Download the .zip archive and extract files in `~/.local/share/gnome-shell/extensions/appfolders-manager@maestroschan.fr`
+- Restart GNOME Shell.
+- Activate the extension.
 
 ### See also
 

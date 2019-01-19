@@ -8,46 +8,122 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-05-29 23:18+0300\n"
+"POT-Creation-Date: 2019-01-14 20:11+0100\n"
 "PO-Revision-Date: 2017-05-29 23:26+0300\n"
+"Last-Translator: \n"
 "Language-Team: \n"
+"Language: el\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 2.0.1\n"
-"Last-Translator: \n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"Language: el\n"
 
-msgid "Enter a name"
-msgstr "Εισαγωγή ονόματος"
-
-msgid "Cancel"
-msgstr "Αναίρεση"
-
+#: extension.js:67
 msgid "Add to"
 msgstr "Προσθήκη σε"
 
+#: extension.js:69
 msgid "New AppFolder"
 msgstr "Νέος φάκελος"
 
+#: extension.js:120
 msgid "Remove from"
 msgstr "Αφαίρεση από"
 
-msgid "Delete AppFolder"
-msgstr "Διαγραφή φακέλου"
+#: dragAndDrop.js:361
+msgid "Create a new folder"
+msgstr ""
 
-msgid "Modifications will be effective after reloading the extension."
-msgstr "Οι τροποποιήσεις απαιτούν την επανεκκίνηση της επέκτασης για να λειτουργήσουν."
+#: dragAndDrop.js:399
+#, fuzzy, javascript-format
+msgid "Remove from %s"
+msgstr "Αφαίρεση από"
 
-msgid "Maximum number of columns :"
-msgstr "Μέγιστος αριθμός στηλών :"
+#: appfolderDialog.js:75 appfolderDialog.js:85
+msgid "Cancel"
+msgstr "Αναίρεση"
 
-msgid "Delete all related settings when an appfolder is deleted"
-msgstr "Διαγραφή όλων των σχετικών ρυθμίσεων κατά την διαγραφή ενός φακέλου"
+#: appfolderDialog.js:79 appfolderDialog.js:93
+msgid "Apply"
+msgstr ""
 
+#: appfolderDialog.js:89
 msgid "Delete"
 msgstr "Διαγραφή"
 
-msgid "Rename"
-msgstr "Μετονομασία"
+#: appfolderDialog.js:118
+msgid "Folder's name:"
+msgstr ""
+
+#: appfolderDialog.js:150
+msgid "Categories:"
+msgstr ""
+
+#: appfolderDialog.js:175
+msgid "Other category?"
+msgstr ""
+
+#: appfolderDialog.js:191
+msgid "Select a category…"
+msgstr ""
+
+#: appfolderDialog.js:236
+msgid "No category"
+msgstr ""
+
+#: prefs.js:37
+msgid "Modifications will be effective after reloading the extension."
+msgstr ""
+"Οι τροποποιήσεις απαιτούν την επανεκκίνηση της επέκτασης για να "
+"λειτουργήσουν."
+
+#: prefs.js:40
+msgid "Main settings"
+msgstr ""
+
+#: prefs.js:41
+msgid "Categories"
+msgstr ""
+
+#: prefs.js:45
+msgid "Delete all related settings when an appfolder is deleted"
+msgstr "Διαγραφή όλων των σχετικών ρυθμίσεων κατά την διαγραφή ενός φακέλου"
+
+#: prefs.js:68
+msgid "Use categories"
+msgstr ""
+
+#: prefs.js:91
+msgid "Use the right-click menus in addition to the drag-and-drop"
+msgstr ""
+
+#: prefs.js:124
+msgid "More informations about \"additional categories\""
+msgstr ""
+
+#: prefs.js:126
+msgid "Standard specification"
+msgstr ""
+
+#: prefs.js:146
+msgid "Report bugs or ideas"
+msgstr ""
+
+#: prefs.js:157
+msgid ""
+"This extension can be deactivated once your applications are organized as "
+"wished."
+msgstr ""
+
+#~ msgid "Enter a name"
+#~ msgstr "Εισαγωγή ονόματος"
+
+#~ msgid "Delete AppFolder"
+#~ msgstr "Διαγραφή φακέλου"
+
+#~ msgid "Maximum number of columns :"
+#~ msgstr "Μέγιστος αριθμός στηλών :"
+
+#~ msgid "Rename"
+#~ msgstr "Μετονομασία"

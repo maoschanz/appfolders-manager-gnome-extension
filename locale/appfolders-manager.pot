@@ -3,91 +3,111 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-12-28 01:49+0200\n"
+"POT-Creation-Date: 2019-01-14 20:11+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-msgid "Cancel"
-msgstr ""
-
-msgid "Delete"
-msgstr ""
-
-msgid "Apply"
-msgstr ""
-
-msgid "Folder's name:"
-msgstr ""
-
-msgid "Categories:"
-msgstr ""
-
-msgid "Other category?"
-msgstr ""
-
-msgid "Select a category…"
-msgstr ""
-
-msgid "No category"
-msgstr ""
-
-msgid "Create a new folder"
-msgstr ""
-
-msgid "Remove from "
-msgstr ""
-
+#: extension.js:67
 msgid "Add to"
 msgstr ""
 
+#: extension.js:69
 msgid "New AppFolder"
 msgstr ""
 
+#: extension.js:120
 msgid "Remove from"
 msgstr ""
 
+#: dragAndDrop.js:361
+msgid "Create a new folder"
+msgstr ""
+
+#: dragAndDrop.js:399
+#, javascript-format
+msgid "Remove from %s"
+msgstr ""
+
+#: appfolderDialog.js:75 appfolderDialog.js:85
+msgid "Cancel"
+msgstr ""
+
+#: appfolderDialog.js:79 appfolderDialog.js:93
+msgid "Apply"
+msgstr ""
+
+#: appfolderDialog.js:89
+msgid "Delete"
+msgstr ""
+
+#: appfolderDialog.js:118
+msgid "Folder's name:"
+msgstr ""
+
+#: appfolderDialog.js:150
+msgid "Categories:"
+msgstr ""
+
+#: appfolderDialog.js:175
+msgid "Other category?"
+msgstr ""
+
+#: appfolderDialog.js:191
+msgid "Select a category…"
+msgstr ""
+
+#: appfolderDialog.js:236
+msgid "No category"
+msgstr ""
+
+#: prefs.js:37
 msgid "Modifications will be effective after reloading the extension."
 msgstr ""
 
+#: prefs.js:40
 msgid "Main settings"
 msgstr ""
 
+#: prefs.js:41
 msgid "Categories"
 msgstr ""
 
-msgid "Use categories"
-msgstr ""
-
-msgid "Use the right-click menus in addition to the drag-and-drop"
-msgstr ""
-
+#: prefs.js:45
 msgid "Delete all related settings when an appfolder is deleted"
 msgstr ""
 
-msgid "This appfolder already exists."
+#: prefs.js:68
+msgid "Use categories"
 msgstr ""
 
+#: prefs.js:91
+msgid "Use the right-click menus in addition to the drag-and-drop"
+msgstr ""
+
+#: prefs.js:124
 msgid "More informations about \"additional categories\""
 msgstr ""
 
+#: prefs.js:126
 msgid "Standard specification"
 msgstr ""
 
+#: prefs.js:146
 msgid "Report bugs or ideas"
 msgstr ""
 
-msgid "This extension can be deactivated once your applications are organized as wished."
+#: prefs.js:157
+msgid ""
+"This extension can be deactivated once your applications are organized as "
+"wished."
 msgstr ""
-
-
-
-
