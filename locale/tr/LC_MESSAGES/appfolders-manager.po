@@ -1,14 +1,14 @@
 # Uygulama klasörleme Türkçe çeviri.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# Serdar Sağlam <teknomobil@yandex.com>, 2018.
+# Serdar Sağlam <teknomobil@yandex.com>, 2019.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: v13\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-12-28 01:49+0200\n"
-"PO-Revision-Date: 2018-12-30 12:10+0300\n"
+"POT-Creation-Date: 2019-01-14 20:11+0100\n"
+"PO-Revision-Date: 2019-01-20 12:10+0300\n"
 "Last-Translator: Serdar Sağlam <teknomobil@yandex.com>\n"
 "Language-Team: Türkçe <teknomobil@yandex.com>\n"
 "Language: tr\n"
@@ -28,11 +28,11 @@ msgstr "Yeni Klasör Grubu"
 msgid "Remove from"
 msgstr "Buradan Kaldır"
 
-#: dragAndDrop.js:394
+#: dragAndDrop.js:361
 msgid "Create a new folder"
 msgstr "Yeni klasör oluştur"
 
-#: dragAndDrop.js:432
+#: dragAndDrop.js:399
 #, javascript-format
 msgid "Remove from %s"
 msgstr "Buradan Kaldır %s"
@@ -57,7 +57,7 @@ msgstr "Klasör İsmi:"
 msgid "Categories:"
 msgstr "Kategoriler:"
 
-#: appfolderDialog.js:181
+#: appfolderDialog.js:175
 msgid "Other category?"
 msgstr "Diğer Kategori?"
 
@@ -109,4 +109,6 @@ msgstr "Yeni bir fikir veya hata bildirin"
 msgid ""
 "This extension can be deactivated once your applications are organized as "
 "wished."
-msgstr "Menüleri istediğiniz şekilde düzenlendiğinde bu uzantı devre dışı bırakılabilir."
+msgstr ""
+"Menüleri istediğiniz şekilde düzenlendiğinde bu uzantı devre dışı "
+"bırakılabilir."
