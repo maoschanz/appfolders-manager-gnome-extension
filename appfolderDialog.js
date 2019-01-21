@@ -1,3 +1,5 @@
+// appfolderDialog.js
+// GPLv3
 
 const Clutter = imports.gi.Clutter;
 const Gio = imports.gi.Gio;
@@ -8,7 +10,6 @@ const ModalDialog = imports.ui.modalDialog;
 const PopupMenu = imports.ui.popupMenu;
 const ShellEntry = imports.ui.shellEntry;
 const Signals = imports.signals;
-
 const Gtk = imports.gi.Gtk;
 
 const ExtensionUtils = imports.misc.extensionUtils;
@@ -19,29 +20,21 @@ const Extension = Me.imports.extension;
 const Gettext = imports.gettext.domain('appfolders-manager');
 const _ = Gettext.gettext;
 
-//-------------------------------------------------
-
 let FOLDER_SCHEMA;
 let FOLDER_LIST;
-let SETTINGS;
-
-function init() {
-	Convenience.initTranslations();
-}
 
 //--------------------------------------------------------------
 
-/* this will construct a modal dialog for creating, renaming or modifying categories of existing folders.
- * Methods are:
- * _init(folder, app)
- * TODO
- * etc.
+/* This is a modal dialog for creating a new folder, or renaming or modifying
+ * categories of existing folders.
  */
 var AppfolderDialog = new Lang.Class({
-	Name: 'AppfolderDialog',
-	Extends: ModalDialog.ModalDialog,
+	Name:	'AppfolderDialog',
+	Extends:	ModalDialog.ModalDialog,
 
-	_init: function(folder, app, id) {
+/* build a new dialog. If folder is null, the dialog will be for creating a new
+ * folder, else app is null, and the dialog will be for editing an existing folder
+ */	_init:	function(folder, app, id) {
 		this._folder = folder;
 		this._app = app;
 		this._id = id;
@@ -66,8 +59,6 @@ var AppfolderDialog = new Lang.Class({
 				y_align: St.Align.START
 			});
 		}
-
-		//----------------------
 
 		if (this._folder == null) {
 			this.setButtons([
@@ -105,7 +96,8 @@ var AppfolderDialog = new Lang.Class({
 		}));
 	},
 
-	_buildNameSection: function () {
+/* build the section of the UI handling the folder's name and returns it.
+ */	_buildNameSection:	function () {
 		let nameSection = new St.BoxLayout({
 			style: 'spacing: 5px;',
 			vertical: true,
@@ -137,7 +129,8 @@ var AppfolderDialog = new Lang.Class({
 		return nameSection;
 	},
 
-	_buildCategoriesSection: function () {
+/* build the section of the UI handling the folder's categories and returns it.
+ */	_buildCategoriesSection:	function () {
 		let categoriesSection = new St.BoxLayout({
 			style: 'spacing: 5px;',
 			vertical: true,
@@ -181,7 +174,7 @@ var AppfolderDialog = new Lang.Class({
 			y_align: Clutter.ActorAlign.CENTER,
 		}));
 		ShellEntry.addContextMenu(this._categoryEntry, null);
-		this._categoryEntry.connect('secondary-icon-clicked', Lang.bind(this,  this._addCategory));
+		this._categoryEntry.connect('secondary-icon-clicked', Lang.bind(this, this._addCategory));
 
 		let catSelectBox = new St.BoxLayout({
 			vertical: false,
@@ -201,7 +194,7 @@ var AppfolderDialog = new Lang.Class({
 			x_align: Clutter.ActorAlign.END,
 			y_align: Clutter.ActorAlign.CENTER,
 		});
-		catSelectBox.add(catSelectLabel, { y_align: St.Align.CENTER });
+		catSelectBox.add(catSelectLabel, { y_align: St.Align.MIDDLE });
 		catSelectBox.add(catSelectIcon, { y_align: St.Align.END });
 
 		this._categoryEntryText = null; ///???
@@ -254,9 +247,8 @@ var AppfolderDialog = new Lang.Class({
 		return categoriesSection;
 	},
 
-	//---------------------------
-
-	_alreadyExists: function (folderId) {
+/* returns if a folder id already exists
+ */	_alreadyExists:	function (folderId) {
 		for(var i = 0; i < FOLDER_LIST.length; i++) {
 			if (FOLDER_LIST[i] == folderId) {
 //				this._showError( _("This appfolder already exists.") );
@@ -266,7 +258,7 @@ var AppfolderDialog = new Lang.Class({
 		return false;
 	},
 
-	destroy: function () {
+	destroy:	function () {
 		if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('debug') ) {
 			log('[AppfolderDialog v2] destroying dialog');
 		}
@@ -274,9 +266,9 @@ var AppfolderDialog = new Lang.Class({
 		this.parent();
 	},
 
-	//---------------------------------------
-
-	_folderId : function (newName) {
+/* Generates a valid folder id, which as no space, no dot, no slash, and which
+ * doesn't already exist.
+ */	_folderId:	function (newName) {
 		let tmp0 = newName.split(" ");
 		let folderId = "";
 		for(var i = 0; i < tmp0.length; i++) {
@@ -298,7 +290,8 @@ var AppfolderDialog = new Lang.Class({
 		return folderId;
 	},
 
-	_create: function () {
+/* creates a folder from the data filled by the user (with no properties)
+ */	_create:	function () {
 		let folderId = this._folderId(this._nameEntryText.get_text());
 
 		FOLDER_LIST.push(folderId);
@@ -308,19 +301,20 @@ var AppfolderDialog = new Lang.Class({
 			schema_id: 'org.gnome.desktop.app-folders.folder',
 			path: '/org/gnome/desktop/app-folders/folders/' + folderId + '/'
 		});
-//		this._folder.set_string('name', this._nameEntryText.get_text()); //superflu
+	//	this._folder.set_string('name', this._nameEntryText.get_text()); //superflu
 	//	est-il nécessaire d'initialiser la clé apps à [] ??
-
 		this._addToFolder();
 	},
 
-	_applyName: function () {
+/* sets the name to the folder
+ */	_applyName:	function () {
 		let newName = this._nameEntryText.get_text();
 		this._folder.set_string('name', newName); // génère un bug ?
 		return Clutter.EVENT_STOP;
 	},
 
-	_loadCategories: function() {
+/* loads categories, as set in gsettings, to the UI
+ */	_loadCategories:	function() {
 		if (this._folder == null) {
 			this._categories = [];
 		} else {
@@ -337,12 +331,13 @@ var AppfolderDialog = new Lang.Class({
 		}
 	},
 
-	_addCategoryBox: function(i) {
+	_addCategoryBox:	function(i) {
 		let aCategory = new AppCategoryBox(this, i);
 		this.listContainer.add_actor(aCategory);
 	},
 
-	_addCategory: function(entry, new_cat_name) {
+/* adds a category to the UI (will be added to gsettings when pressing "apply" only)
+ */	_addCategory:	function(entry, new_cat_name) {
 		if (new_cat_name == null) {
 			new_cat_name = this._categoryEntryText.get_text();
 		}
@@ -358,15 +353,17 @@ var AppfolderDialog = new Lang.Class({
 		this._addCategoryBox(this._categories.length-1);
 	},
 
-	_applyCategories: function () {
+/* adds all categories to gsettings
+ */	_applyCategories:	function () {
 		this._folder.set_strv('categories', this._categories);
 		return Clutter.EVENT_STOP;
 	},
 
-	_apply: function() {
+/* Apply everything by calling methods above, and reload the view
+ */	_apply:	function() {
 		if (this._app != null) {
 			this._create();
-//			this._addToFolder();
+		//	this._addToFolder();
 		}
 		this._applyCategories();
 		this._applyName();
@@ -378,13 +375,16 @@ var AppfolderDialog = new Lang.Class({
 		}
 	},
 
-	_addToFolder: function() {
+/* initializes the folder with its first app. This is not optional since empty
+ * folders are not displayed. TODO use the equivalent method from extension.js
+ */	_addToFolder:	function() {
 		let content = this._folder.get_strv('apps');
 		content.push(this._app);
 		this._folder.set_strv('apps', content);
 	},
 
-	_deleteFolder: function () {
+/* Delete the folder, using the extension.js method
+ */	_deleteFolder:	function () {
 		if (this._folder != null) {
 			Extension.deleteFolder(this._id);
 		}
@@ -394,10 +394,13 @@ var AppfolderDialog = new Lang.Class({
 
 //------------------------------------------------
 
+/* Very complex way to have a menubutton for displaying a menu with standard
+ * categories. Button part.
+ */
 var SelectCategoryButton = new Lang.Class({
 	Name: 'SelectCategoryButton',
 
-	_init: function(bouton, dialog){
+	_init:	function(bouton, dialog){
 		this.actor = bouton;
 		this._dialog = dialog;
 		this.actor.connect('button-press-event', Lang.bind(this, this._onButtonPress));
@@ -405,12 +408,12 @@ var SelectCategoryButton = new Lang.Class({
 		this._menuManager = new PopupMenu.PopupMenuManager(this);
 	},
 
-	_onMenuPoppedDown: function() {
+	_onMenuPoppedDown:	function() {
 		this.actor.sync_hover();
 		this.emit('menu-state-changed', false);
 	},
 
-	popupMenu: function() {
+	popupMenu:	function() {
 		this.actor.fake_release();
 		if (!this._menu) {
 			this._menu = new SelectCategoryMenu(this, this._dialog);
@@ -427,7 +430,7 @@ var SelectCategoryButton = new Lang.Class({
 		return false;
 	},
 
-	_onButtonPress: function(actor, event) {
+	_onButtonPress:	function(actor, event) {
 		this.popupMenu();
 		return Clutter.EVENT_STOP;
 	},
@@ -436,11 +439,14 @@ Signals.addSignalMethods(SelectCategoryButton.prototype);
 
 //------------------------------------------------
 
+/* Very complex way to have a menubutton for displaying a menu with standard
+ * categories. Menu part.
+ */
 const SelectCategoryMenu = new Lang.Class({
 	Name: 'SelectCategoryMenu',
 	Extends: PopupMenu.PopupMenu,
 
-	_init: function(source, dialog) {
+	_init:	function(source, dialog) {
 		this.parent(source.actor, 0.5, St.Side.RIGHT);
 		this._source = source;
 		this._dialog = dialog;
@@ -453,7 +459,7 @@ const SelectCategoryMenu = new Lang.Class({
 		Main.uiGroup.add_actor(this.actor);
 	},
 
-	_redisplay: function() {
+	_redisplay:	function() {
 		this.removeAll();
 		let mainCategories = ['AudioVideo','Audio','Video','Development','Education','Game',
 			'Graphics','Network','Office','Science','Settings','System','Utility'];
@@ -468,7 +474,7 @@ const SelectCategoryMenu = new Lang.Class({
 		}
 	},
 
-	popup: function(activatingButton) {
+	popup:	function(activatingButton) {
 		this._redisplay();
 		this.open();
 	},
@@ -477,18 +483,19 @@ Signals.addSignalMethods(SelectCategoryMenu.prototype);
 
 //----------------------------------------
 
+/* This custom widget is a deletable row, displaying a category name.
+ */
 const AppCategoryBox = new Lang.Class({
 	Name: 'AppCategoryBox',
 	Extends: St.BoxLayout,
 
-	_init: function (dialog, i) {
+	_init:	function (dialog, i) {
 		this.parent({
 			vertical: false,
 			style: 'background-color: rgba(100, 100, 100, 0.3); border-radius: 3px; margin: 3px; padding: 2px; padding-left: 6px;',
 		});
 		this._dialog = dialog;
 		this.catName = this._dialog._categories[i];
-
 		this.add_actor(new St.Label({
 			text: this.catName,
 			y_align: Clutter.ActorAlign.CENTER,
@@ -516,11 +523,10 @@ const AppCategoryBox = new Lang.Class({
 			}),
 		});
 		this.add_actor(this.deleteButton);
-
 		this.deleteButton.connect('clicked', Lang.bind(this, this.removeFromList));
 	},
 
-	removeFromList: function () {
+	removeFromList:	function () {
 		this._dialog._categories.splice(this._dialog._categories.indexOf(this.catName), 1);
 		if (this._dialog._categories.length == 0) {
 			this._dialog.noCatLabel.visible = true;
@@ -533,5 +539,4 @@ const AppCategoryBox = new Lang.Class({
 		this.parent();
 	},
 });
-
 

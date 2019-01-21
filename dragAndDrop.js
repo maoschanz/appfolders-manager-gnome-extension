@@ -1,4 +1,5 @@
-//dragAndDrop.js
+// dragAndDrop.js
+// GPLv3
 
 const DND = imports.ui.dnd;
 const AppDisplay = imports.ui.appDisplay;
@@ -43,6 +44,9 @@ function removeInjection(object, injection, name) {
 
 var OVERLAY_MANAGER;
 
+/* This method is called by extension.js' enable function. It does code injections
+ * to AppDisplay.AppIcon, connecting it to DND-related signals.
+ */
 function initDND () {
 	OVERLAY_MANAGER = new OverlayManager();
 
@@ -71,6 +75,10 @@ function initDND () {
 
 //--------------------------------------------------------------
 
+/* Amazing! A singleton! It allows easy (and safer?) access to general methods,
+ * managing other objects: it creates/updates/deletes all overlays (for folders,
+ * pages, creation, removing).
+ */
 const OverlayManager = new Lang.Class({
 	Name:	'OverlayManager',
 
@@ -286,12 +294,14 @@ const OverlayManager = new Lang.Class({
 		this.createAction.destroy();
 		this.upAction.destroy();
 		this.downAction.destroy();
-		log('OverlayManager destroyed');
+		//log('OverlayManager destroyed');
 	},
 });
 
 //-------------------------------------------------------
 
+/* Abstract overlay with very generic methods
+ */
 const DroppableArea = new Lang.Class({
 	Name:		'DroppableArea',
 	Abstract:	true,
@@ -347,6 +357,9 @@ const DroppableArea = new Lang.Class({
 	},
 });
 
+/* Overlay which represents an "action". Actions can be creating a folder, or
+ * removing an app from a folder. These areas accept drop, and display a label.
+ */
 const FolderActionArea = new Lang.Class({
 	Name:		'FolderActionArea',
 	Extends:	DroppableArea,
@@ -442,6 +455,9 @@ const FolderActionArea = new Lang.Class({
 	},
 });
 
+/* Overlay reacting to hover, but isn't droppable. The goal is to go to an other
+ * page of the grid while dragging an app.
+ */
 const NavigationArea = new Lang.Class({
 	Name:	'NavigationArea',
 	Extends:	DroppableArea,
@@ -533,16 +549,9 @@ const NavigationArea = new Lang.Class({
 	},
 });
 
-/*
- * This corresponds to the area upon a folder. Position and visibility of the actor
+/* This overlay is the area upon a folder. Position and visibility of the actor
  * is handled by exterior functions.
- *
  * "this.id" is the folder's id, a string, as written in the gsettings key.
- *
- * Hovering-while-dragging during OPEN_FOLDER_TIMEOUT milliseconds upon this
- * class' actor will open the corresponding folder if the dragged item is an AppIcon.
- *
- * Dropping another folder on this folder will merge them (dropped folder is deleted)
  * Dropping an app on this folder will add it to the folder
  */
 const FolderArea = new Lang.Class({
@@ -610,5 +619,4 @@ const FolderArea = new Lang.Class({
 		return false;
 	},
 });
-
 
