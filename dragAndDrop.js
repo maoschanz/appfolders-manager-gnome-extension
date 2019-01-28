@@ -605,12 +605,7 @@ const FolderArea = new Lang.Class({
 	},
 
 	acceptDrop: function(source, actor, x, y, time) { //FIXME recharger la vue ou au minimum les miniatures des dossiers
-		if (source instanceof AppDisplay.AppIcon) {
-//			if(Extension.isInFolder(source.id, this.id)) {
-//				log('app déjà ici');
-//				Main.overview.endItemDrag(this);
-//				return false;
-//			}
+		if ((source instanceof AppDisplay.AppIcon) && !Extension.isInFolder(source.id, this.id)) {
 			Extension.addToFolder(source, this.id);
 			Main.overview.endItemDrag(this);
 			return true;

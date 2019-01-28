@@ -251,7 +251,7 @@ function deleteFolder (folder_id) {
 
 //------------------------------------------------------------------------------
 
-function mergeFolders (folder_staying_id, folder_dying_id) {
+function mergeFolders (folder_staying_id, folder_dying_id) { //unused XXX
 	
 	let folder_dying_schema = folderSchema (folder_dying_id);
 	let folder_staying_schema = folderSchema (folder_staying_id);
@@ -301,10 +301,9 @@ function createNewFolder (app_source) {
 
 function addToFolder (app_source, folder_id) {
 	let id = app_source.app.get_id();
-	
 	let folder_schema = folderSchema (folder_id);
 	
-	//un-exclude the application if it was excluded
+	//un-exclude the application if it was excluded TODO else don't do it at all
 	let pastExcluded = folder_schema.get_strv('excluded-apps');
 	let presentExcluded = [];
 	for(let i = 0; i < pastExcluded.length; i++){
