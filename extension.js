@@ -60,7 +60,7 @@ function injectionInAppsMenus() {
 	injections['_redisplay'] = injectToFunction(AppDisplay.AppIconMenu.prototype, '_redisplay', function(){
 		
 		if (Main.overview.viewSelector.getActivePage() == 2 || Main.overview.viewSelector.getActivePage() == 3) {
-			this._appendSeparator();
+			this._appendSeparator(); //TODO injecter ailleurs?
 			
 			let addto = new PopupMenu.PopupSubMenuMenuItem(_("Add to"));
 			

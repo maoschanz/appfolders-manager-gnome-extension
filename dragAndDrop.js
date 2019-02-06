@@ -16,6 +16,9 @@ const Extension = Me.imports.extension;
 
 const CHANGE_PAGE_TIMEOUT = 400;
 
+const Gettext = imports.gettext.domain('appfolders-manager');
+const _ = Gettext.gettext;
+
 //-------------------------------------------------
 /* do not edit this section */
 
@@ -53,6 +56,9 @@ function initDND () {
 	injections['_init2'] = injectToFunction(AppDisplay.AppIcon.prototype, '_init', function(){
 		this._draggable.connect('drag-begin', Lang.bind(this,
 			function () {
+				if (Main.overview.viewSelector.getActivePage() != 2) {
+					return;
+				}
 				this._removeMenuTimeout(); // why ?
 				Main.overview.beginItemDrag(this);
 				OVERLAY_MANAGER.on_drag_begin();
