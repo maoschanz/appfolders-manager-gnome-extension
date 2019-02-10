@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-01-14 20:11+0100\n"
-"PO-Revision-Date: 2017-11-01 11:31-0300\n"
+"PO-Revision-Date: 2019-02-10 11:19-0200\n"
 "Last-Translator: Fábio Nogueira <fnogueira@gnome.org>\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.0.4\n"
+"X-Generator: Poedit 2.2.1\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
 #: extension.js:67
@@ -32,12 +32,12 @@ msgstr "Remover de"
 
 #: dragAndDrop.js:361
 msgid "Create a new folder"
-msgstr ""
+msgstr "Criar uma nova pasta"
 
 #: dragAndDrop.js:399
-#, fuzzy, javascript-format
+#, javascript-format
 msgid "Remove from %s"
-msgstr "Remover de"
+msgstr "Remover de %s"
 
 #: appfolderDialog.js:75 appfolderDialog.js:85
 msgid "Cancel"
@@ -45,7 +45,7 @@ msgstr "Cancelar"
 
 #: appfolderDialog.js:79 appfolderDialog.js:93
 msgid "Apply"
-msgstr ""
+msgstr "Aplicar"
 
 #: appfolderDialog.js:89
 msgid "Delete"
@@ -53,26 +53,23 @@ msgstr "Excluir"
 
 #: appfolderDialog.js:118
 msgid "Folder's name:"
-msgstr ""
+msgstr "Nome da pasta:"
 
 #: appfolderDialog.js:150
 msgid "Categories:"
-msgstr ""
+msgstr "Categorias:"
 
 #: appfolderDialog.js:175
-#, fuzzy
 msgid "Other category?"
-msgstr "Apagar uma categoria"
+msgstr "Outra categoria?"
 
 #: appfolderDialog.js:191
-#, fuzzy
 msgid "Select a category…"
-msgstr "Apagar uma categoria"
+msgstr "Selecione uma categoria…"
 
 #: appfolderDialog.js:236
-#, fuzzy
 msgid "No category"
-msgstr "Adicionar uma categoria"
+msgstr "Nenhuma categoria"
 
 #: prefs.js:37
 msgid "Modifications will be effective after reloading the extension."
@@ -80,11 +77,11 @@ msgstr "As modificações entrarão em vigor depois de recarregar a extensão."
 
 #: prefs.js:40
 msgid "Main settings"
-msgstr ""
+msgstr "Configurações principais"
 
 #: prefs.js:41
 msgid "Categories"
-msgstr ""
+msgstr "Categorias"
 
 #: prefs.js:45
 msgid "Delete all related settings when an appfolder is deleted"
@@ -92,31 +89,32 @@ msgstr ""
 "Excluir todas as configurações relacionadas quando um appfolder for excluído"
 
 #: prefs.js:68
-#, fuzzy
 msgid "Use categories"
-msgstr "Categorias adicionais"
+msgstr "Usar categorias"
 
 #: prefs.js:91
 msgid "Use the right-click menus in addition to the drag-and-drop"
-msgstr ""
+msgstr "Use os menus do botão direito, além do arrastar e soltar"
 
 #: prefs.js:124
 msgid "More informations about \"additional categories\""
-msgstr ""
+msgstr "Mais informações sobre \"categorias adicionais\""
 
 #: prefs.js:126
 msgid "Standard specification"
-msgstr ""
+msgstr "Especificação padrão"
 
 #: prefs.js:146
 msgid "Report bugs or ideas"
-msgstr ""
+msgstr "Comunicar erros ou ideias"
 
 #: prefs.js:157
 msgid ""
 "This extension can be deactivated once your applications are organized as "
 "wished."
 msgstr ""
+"Esta extensão pode ser desativada assim que seus aplicativos forem "
+"organizados conforme desejado."
 
 #~ msgid "This appfolder already exists."
 #~ msgstr "Esta appfolder já existe."
