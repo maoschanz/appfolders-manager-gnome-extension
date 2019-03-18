@@ -25,16 +25,15 @@ let FOLDER_LIST;
 
 //--------------------------------------------------------------
 
-/* This is a modal dialog for creating a new folder, or renaming or modifying
- * categories of existing folders.
- */
+// This is a modal dialog for creating a new folder, or renaming or modifying
+// categories of existing folders.
 var AppfolderDialog = new Lang.Class({
 	Name:	'AppfolderDialog',
 	Extends:	ModalDialog.ModalDialog,
 
-/* build a new dialog. If folder is null, the dialog will be for creating a new
- * folder, else app is null, and the dialog will be for editing an existing folder
- */	_init:	function(folder, app, id) {
+// build a new dialog. If folder is null, the dialog will be for creating a new
+// folder, else app is null, and the dialog will be for editing an existing folder
+	_init:	function(folder, app, id) {
 		this._folder = folder;
 		this._app = app;
 		this._id = id;
@@ -96,8 +95,8 @@ var AppfolderDialog = new Lang.Class({
 		}));
 	},
 
-/* build the section of the UI handling the folder's name and returns it.
- */	_buildNameSection:	function () {
+// build the section of the UI handling the folder's name and returns it.
+	_buildNameSection:	function () {
 		let nameSection = new St.BoxLayout({
 			style: 'spacing: 5px;',
 			vertical: true,
@@ -129,8 +128,8 @@ var AppfolderDialog = new Lang.Class({
 		return nameSection;
 	},
 
-/* build the section of the UI handling the folder's categories and returns it.
- */	_buildCategoriesSection:	function () {
+// build the section of the UI handling the folder's categories and returns it.
+	_buildCategoriesSection:	function () {
 		let categoriesSection = new St.BoxLayout({
 			style: 'spacing: 5px;',
 			vertical: true,
@@ -247,8 +246,8 @@ var AppfolderDialog = new Lang.Class({
 		return categoriesSection;
 	},
 
-/* returns if a folder id already exists
- */	_alreadyExists:	function (folderId) {
+// returns if a folder id already exists
+	_alreadyExists:	function (folderId) {
 		for(var i = 0; i < FOLDER_LIST.length; i++) {
 			if (FOLDER_LIST[i] == folderId) {
 //				this._showError( _("This appfolder already exists.") );
@@ -266,9 +265,9 @@ var AppfolderDialog = new Lang.Class({
 		this.parent();
 	},
 
-/* Generates a valid folder id, which as no space, no dot, no slash, and which
- * doesn't already exist.
- */	_folderId:	function (newName) {
+// Generates a valid folder id, which as no space, no dot, no slash, and which
+// doesn't already exist.
+	_folderId:	function (newName) {
 		let tmp0 = newName.split(" ");
 		let folderId = "";
 		for(var i = 0; i < tmp0.length; i++) {
@@ -290,8 +289,8 @@ var AppfolderDialog = new Lang.Class({
 		return folderId;
 	},
 
-/* creates a folder from the data filled by the user (with no properties)
- */	_create:	function () {
+// creates a folder from the data filled by the user (with no properties)
+	_create:	function () {
 		let folderId = this._folderId(this._nameEntryText.get_text());
 
 		FOLDER_LIST.push(folderId);
@@ -306,15 +305,15 @@ var AppfolderDialog = new Lang.Class({
 		this._addToFolder();
 	},
 
-/* sets the name to the folder
- */	_applyName:	function () {
+// sets the name to the folder
+	_applyName:	function () {
 		let newName = this._nameEntryText.get_text();
 		this._folder.set_string('name', newName); // génère un bug ?
 		return Clutter.EVENT_STOP;
 	},
 
-/* loads categories, as set in gsettings, to the UI
- */	_loadCategories:	function() {
+// loads categories, as set in gsettings, to the UI
+	_loadCategories:	function() {
 		if (this._folder == null) {
 			this._categories = [];
 		} else {
@@ -336,8 +335,9 @@ var AppfolderDialog = new Lang.Class({
 		this.listContainer.add_actor(aCategory);
 	},
 
-/* adds a category to the UI (will be added to gsettings when pressing "apply" only)
- */	_addCategory:	function(entry, new_cat_name) {
+// adds a category to the UI (will be added to gsettings when pressing "apply" only)
+	_addCategory (entry, new_cat_name) {
+//	_addCategory:	function(entry, new_cat_name) {
 		if (new_cat_name == null) {
 			new_cat_name = this._categoryEntryText.get_text();
 		}
@@ -353,14 +353,14 @@ var AppfolderDialog = new Lang.Class({
 		this._addCategoryBox(this._categories.length-1);
 	},
 
-/* adds all categories to gsettings
- */	_applyCategories:	function () {
+// adds all categories to gsettings
+	_applyCategories:	function () {
 		this._folder.set_strv('categories', this._categories);
 		return Clutter.EVENT_STOP;
 	},
 
-/* Apply everything by calling methods above, and reload the view
- */	_apply:	function() {
+// Apply everything by calling methods above, and reload the view
+	_apply:	function() {
 		if (this._app != null) {
 			this._create();
 		//	this._addToFolder();
@@ -375,16 +375,17 @@ var AppfolderDialog = new Lang.Class({
 		}
 	},
 
-/* initializes the folder with its first app. This is not optional since empty
- * folders are not displayed. TODO use the equivalent method from extension.js
- */	_addToFolder:	function() {
+// initializes the folder with its first app. This is not optional since empty
+// folders are not displayed. TODO use the equivalent method from extension.js
+	_addToFolder:	function() {
 		let content = this._folder.get_strv('apps');
 		content.push(this._app);
 		this._folder.set_strv('apps', content);
 	},
 
-/* Delete the folder, using the extension.js method
- */	_deleteFolder:	function () {
+// Delete the folder, using the extension.js method
+//	_deleteFolder:	function () {
+	_deleteFolder () {
 		if (this._folder != null) {
 			Extension.deleteFolder(this._id);
 		}
