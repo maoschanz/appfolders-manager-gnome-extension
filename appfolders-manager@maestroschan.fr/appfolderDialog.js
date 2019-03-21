@@ -27,7 +27,7 @@ let FOLDER_LIST;
 
 // This is a modal dialog for creating a new folder, or renaming or modifying
 // categories of existing folders.
-var AppfolderDialog = new Lang.Class({
+var AppfolderDialog = new Lang.Class({ //TODO FIXME composition over inheritance
 	Name:	'AppfolderDialog',
 	Extends:	ModalDialog.ModalDialog,
 
@@ -85,14 +85,14 @@ var AppfolderDialog = new Lang.Class({
 			]);
 		}
 
-		this._nameEntryText.connect('key-press-event', Lang.bind(this, function(o, e) {
+		this._nameEntryText.connect('key-press-event', (o, e) => {
 			let symbol = e.get_key_symbol();
 
 			if (symbol == Clutter.Return || symbol == Clutter.KP_Enter) {
 				this.popModal();
 				this._apply();
 			}
-		}));
+		});
 	},
 
 // build the section of the UI handling the folder's name and returns it.
@@ -173,7 +173,7 @@ var AppfolderDialog = new Lang.Class({
 			y_align: Clutter.ActorAlign.CENTER,
 		}));
 		ShellEntry.addContextMenu(this._categoryEntry, null);
-		this._categoryEntry.connect('secondary-icon-clicked', Lang.bind(this, this._addCategory));
+		this._categoryEntry.connect('secondary-icon-clicked', this._addCategory.bind(this));
 
 		let catSelectBox = new St.BoxLayout({
 			vertical: false,
@@ -404,7 +404,7 @@ var SelectCategoryButton = new Lang.Class({
 	_init:	function(bouton, dialog){
 		this.actor = bouton;
 		this._dialog = dialog;
-		this.actor.connect('button-press-event', Lang.bind(this, this._onButtonPress));
+		this.actor.connect('button-press-event', this._onButtonPress.bind(this));
 		this._menu = null;
 		this._menuManager = new PopupMenu.PopupMenuManager(this);
 	},
@@ -418,10 +418,10 @@ var SelectCategoryButton = new Lang.Class({
 		this.actor.fake_release();
 		if (!this._menu) {
 			this._menu = new SelectCategoryMenu(this, this._dialog);
-			this._menu.connect('open-state-changed', Lang.bind(this, function (menu, isPoppedUp) {
+			this._menu.connect('open-state-changed', (menu, isPoppedUp) => {
 				if (!isPoppedUp)
 					this._onMenuPoppedDown();
-			}));
+			});
 			this._menuManager.addMenu(this._menu);
 		}
 		this.emit('menu-state-changed', true);
@@ -452,7 +452,7 @@ const SelectCategoryMenu = new Lang.Class({
 		this._source = source;
 		this._dialog = dialog;
 		this.actor.add_style_class_name('app-well-menu');
-		this._source.actor.connect('destroy', Lang.bind(this, this.destroy));
+		this._source.actor.connect('destroy', this.destroy.bind(this));
 
 		// We want to keep the item hovered while the menu is up
 		this.blockSourceEvents = true;
@@ -468,7 +468,7 @@ const SelectCategoryMenu = new Lang.Class({
 		for (var i = 0; i < mainCategories.length; i++) {
 			let labelItem = mainCategories[i] ;
 			let item = new PopupMenu.PopupMenuItem( labelItem );
-			item.connect('activate', Lang.bind(this, function(a, b, c) {
+			item.connect('activate', Lang.bind(this, function(a, b, c) { //TODO
 				this._dialog._addCategory(null, c);
 			}, mainCategories[i]));
  			this.addMenuItem(item);
@@ -524,7 +524,7 @@ const AppCategoryBox = new Lang.Class({
 			}),
 		});
 		this.add_actor(this.deleteButton);
-		this.deleteButton.connect('clicked', Lang.bind(this, this.removeFromList));
+		this.deleteButton.connect('clicked', this.removeFromList.bind(this));
 	},
 
 	removeFromList:	function () {

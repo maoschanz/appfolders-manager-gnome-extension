@@ -65,7 +65,7 @@ function injectionInAppsMenus() {
 			let addto = new PopupMenu.PopupSubMenuMenuItem(_("Add to"));
 			
 			let newAppFolder = new PopupMenu.PopupMenuItem('+ ' + _("New AppFolder"));
-			newAppFolder.connect('activate', Lang.bind(this, function(aa, bb, that) {
+			newAppFolder.connect('activate', Lang.bind(this, function(aa, bb, that) { //TODO =>
 				that._source._menuManager._grabHelper.ungrab({ actor: that.actor });
 				// XXX broken scrolling ??
 				// We can't popdown the folder immediately because the
@@ -73,14 +73,14 @@ function injectionInAppsMenus() {
 				// the global focus from the folder's popup actor, which isn't
 				// having the focus since the menu is still open. Menus' animation
 				// last ~0.25s so we will wait 0.30s before doing anything.
-				let a = Mainloop.timeout_add(300, Lang.bind(this, function() {
+				let a = Mainloop.timeout_add(300, () => {
 					if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) {
 						Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown();
 					}
 					createNewFolder(this._source);
 					Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
 					Mainloop.source_remove(a);
-				}));
+				});
 			}, this));
 			addto.menu.addMenuItem(newAppFolder);
 			
@@ -95,7 +95,7 @@ function injectionInAppsMenus() {
 					shouldShow = true; //TODO ??? et l'exclusion ?
 				}
 				if(shouldShow) {
-					item.connect('activate', Lang.bind(this, function(aa, bb, that) {
+					item.connect('activate', Lang.bind(this, function(aa, bb, that) { //TODO =>
 						that._source._menuManager._grabHelper.ungrab({ actor: that.actor });
 						// XXX broken scrolling ??
 						// We can't popdown the folder immediatly because the
@@ -104,14 +104,14 @@ function injectionInAppsMenus() {
 						// which isn't having the focus since the menu is still
 						// open. Menus' animation last ~0.25s so we will wait 0.30s
 						// before doing anything.
-						let a = Mainloop.timeout_add(300, Lang.bind(this, function() {
+						let a = Mainloop.timeout_add(300, () => {
 							if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) {
 								Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown();
 							}
 							addToFolder(this._source, _folder);
 							Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
 							Mainloop.source_remove(a);
-						}));
+						});
 					}, this));
 					addto.menu.addMenuItem(item);
 				}
@@ -132,7 +132,7 @@ function injectionInAppsMenus() {
 				}
 				
 				if(shouldShow) {
-					item.connect('activate', Lang.bind(this, function(aa, bb, that) {
+					item.connect('activate', Lang.bind(this, function(aa, bb, that) { //TODO =>
 						that._source._menuManager._grabHelper.ungrab({ actor: that.actor });
 						// XXX broken scrolling ??
 						// We can't popdown the folder immediatly because the
@@ -141,14 +141,14 @@ function injectionInAppsMenus() {
 						// which isn't having the focus since the menu is still
 						// open. Menus' animation last ~0.25s so we will wait 0.30s
 						// before doing anything.
-						let a = Mainloop.timeout_add(300, Lang.bind(this, function() { //
+						let a = Mainloop.timeout_add(300, () => {
 							if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) {
 								Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown();
 							}
 							removeFromFolder(appId, _folder);
 							Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
 							Mainloop.source_remove(a);
-						}));
+						});
 					}, this));
 					removeFrom.menu.addMenuItem(item);
 					shouldShow2 = true;
@@ -189,7 +189,7 @@ function connectEditionDialogs() {
 		}
 		
 		injections['_init'] = injectToFunction(AppDisplay.FolderIcon.prototype, '_init', function(){
-			this.actor.connect('button-press-event', Lang.bind(this, this._onButtonPress));
+			this.actor.connect('button-press-event', this._onButtonPress.bind(this));
 		});
 	}
 }
@@ -224,7 +224,7 @@ function removeFromFolder (app_id, folder_id) {
 //------------------------------------------------------------------------------
 
 function deleteFolder (folder_id) {
-	Meta.later_add(Meta.LaterType.BEFORE_REDRAW, Lang.bind(this, function () {
+	Meta.later_add(Meta.LaterType.BEFORE_REDRAW, () => {
 		let tmp = [];
 		FOLDER_LIST = FOLDER_SCHEMA.get_strv('folder-children');
 		for(var j=0;j < FOLDER_LIST.length;j++){
@@ -244,7 +244,7 @@ function deleteFolder (folder_id) {
 			folder_schema.reset('excluded-apps'); // génère un bug volumineux ?
 			folder_schema.reset('name'); // génère un bug volumineux ?
 		}
-	}));
+	});
 	
 	return true;
 }
