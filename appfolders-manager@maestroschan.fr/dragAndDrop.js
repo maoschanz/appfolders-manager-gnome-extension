@@ -4,7 +4,6 @@
 const DND = imports.ui.dnd;
 const AppDisplay = imports.ui.appDisplay;
 const Clutter = imports.gi.Clutter;
-const Lang = imports.lang;
 const St = imports.gi.St;
 const Main = imports.ui.main;
 const Mainloop = imports.mainloop;
@@ -32,7 +31,7 @@ function injectToFunction(parent, name, func) {
 			if (ret === undefined)
 				ret = func.apply(this, arguments);
 			return ret;
-		}
+	}
 	return origin;
 }
 
@@ -53,30 +52,26 @@ var OVERLAY_MANAGER;
 function initDND () {
 	OVERLAY_MANAGER = new OverlayManager();
 
-	injections['_init2'] = injectToFunction(AppDisplay.AppIcon.prototype, '_init', function(){
-		this._draggable.connect('drag-begin', Lang.bind(this,
-			function () {
+	injections['_init2'] = injectToFunction(AppDisplay.AppIcon.prototype, '_init',
+		function() {
+			this._draggable.connect('drag-begin', () => {
 				if (Main.overview.viewSelector.getActivePage() != 2) {
 					return;
 				}
 				this._removeMenuTimeout(); // why ?
 				Main.overview.beginItemDrag(this);
 				OVERLAY_MANAGER.on_drag_begin();
-			}
-		));
-		this._draggable.connect('drag-cancelled', Lang.bind(this,
-			function () {
+			});
+			this._draggable.connect('drag-cancelled', () => {
 				Main.overview.cancelledItemDrag(this);
 				OVERLAY_MANAGER.on_drag_cancelled();
-			}
-		));
-		this._draggable.connect('drag-end', Lang.bind(this,
-			function () {
+			});
+			this._draggable.connect('drag-end', () => {
 				Main.overview.endItemDrag(this);
 				OVERLAY_MANAGER.on_drag_end();
-			}
-		));
-	});
+			});
+		}
+	);
 }
 
 //--------------------------------------------------------------
@@ -85,10 +80,9 @@ function initDND () {
  * managing other objects: it creates/updates/deletes all overlays (for folders,
  * pages, creation, removing).
  */
-const OverlayManager = new Lang.Class({
-	Name:	'OverlayManager',
+class OverlayManager {
 
-	_init:	function () {
+	constructor () {
 		this.addActions = [];
 		this.removeAction = new FolderActionArea('remove');
 		this.createAction = new FolderActionArea('create');
@@ -97,26 +91,26 @@ const OverlayManager = new Lang.Class({
 		
 		this.next_drag_should_recompute = true;
 		this.current_width = 0;
-	},
+	}
 
-	on_drag_begin:	function () {
+	on_drag_begin () {
 		this.ensurePopdowned();
 		this.ensureFolderOverlayActors();
 		this.updateFoldersVisibility();
 		this.updateState(true);
-	},
+	}
 
-	on_drag_end:	function () {
+	on_drag_end () {
 		// force to compute new positions if a drop occurs
 		this.next_drag_should_recompute = true;
 		this.updateState(false);
-	},
+	}
 
-	on_drag_cancelled:	function () {
+	on_drag_cancelled () {
 		this.updateState(false);
-	},
+	}
 
-	updateArrowVisibility:	function () {
+	updateArrowVisibility () {
 		let grid = Main.overview.viewSelector.appDisplay._views[1].view._grid;
 		if (grid.currentPage == 0) {
 			this.upAction.setActive(false);
@@ -130,9 +124,9 @@ const OverlayManager = new Lang.Class({
 		}
 		this.upAction.show();
 		this.downAction.show();
-	},
+	}
 
-	updateState:	function (isDragging) {
+	updateState (isDragging) {
 		if (isDragging) {
 			this.removeAction.show();
 			if (this.openedFolder == null) {
@@ -145,23 +139,23 @@ const OverlayManager = new Lang.Class({
 		} else {
 			this.hideAll();
 		}
-	},
+	}
 
-	hideAll:	function () {
+	hideAll () {
 		this.removeAction.hide();
 		this.createAction.hide();
 		this.upAction.hide();
 		this.downAction.hide();
 		this.hideAllFolders();
-	},
+	}
 
-	hideAllFolders:	function () {
+	hideAllFolders () {
 		for (var i = 0; i < this.addActions.length; i++) {
 			this.addActions[i].hide();
 		}
-	},
+	}
 
-	updateActorsPositions:	function () {
+	updateActorsPositions () {
 		let monitor = Main.layoutManager.primaryMonitor;
 		this.topOfTheGrid = Main.overview.viewSelector.actor.get_parent().get_parent().get_allocation_box().y1;
 		let temp = Main.overview.viewSelector.appDisplay._views[1].view.actor.get_parent();
@@ -187,9 +181,9 @@ const OverlayManager = new Lang.Class({
 		this.downAction.setSize(xMiddle, monitor.height - bottomOfTheGrid);
 
 		this.updateArrowVisibility();
-	},
+	}
 
-	ensureFolderOverlayActors:	function () {
+	ensureFolderOverlayActors () {
 		// A folder was opened, and just closed.
 		if (this.openedFolder != null) {
 			this.updateActorsPositions();
@@ -206,9 +200,9 @@ const OverlayManager = new Lang.Class({
 			this.updateActorsPositions();
 			this.computeFolderOverlayActors();
 		}
-	},
+	}
 
-	computeFolderOverlayActors:	function () {
+	computeFolderOverlayActors () {
 		let monitor = Main.layoutManager.primaryMonitor;
 		let xMiddle = ( monitor.x + monitor.width ) / 2;
 		let yMiddle = ( monitor.y + monitor.height ) / 2;
@@ -263,36 +257,37 @@ const OverlayManager = new Lang.Class({
 
 			this.addActions[i] = new FolderArea(folders[i].id, x, y, page);
 		}
-	},
+	}
 
-	updateFoldersVisibility:	function () {
-		let currentPage = Main.overview.viewSelector.appDisplay._views[1].view._grid.currentPage;
+	updateFoldersVisibility () {
+		let appView = Main.overview.viewSelector.appDisplay._views[1].view;
 		for (var i = 0; i < this.addActions.length; i++) {
-			if ((this.addActions[i].page == currentPage) && (!Main.overview.viewSelector.appDisplay._views[1].view._currentPopup)) {
+			if ((this.addActions[i].page == appView._grid.currentPage) && (!appView._currentPopup)) {
 				this.addActions[i].show();
 			} else {
 				this.addActions[i].hide();
 			}
 		}
-	},
+	}
 
-	ensurePopdowned:	function () {
-		if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) {
-			this.openedFolder = Main.overview.viewSelector.appDisplay._views[1].view._currentPopup._source.id;
-			Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown();
+	ensurePopdowned () {
+		let appView = Main.overview.viewSelector.appDisplay._views[1].view;
+		if (appView._currentPopup) {
+			this.openedFolder = appView._currentPopup._source.id;
+			appView._currentPopup.popdown();
 		} else {
 			this.openedFolder = null;
 		}
-	},
+	}
 
-	goToPage:	function (nb) {
+	goToPage (nb) {
 		Main.overview.viewSelector.appDisplay._views[1].view.goToPage( nb );
 		this.updateArrowVisibility();
 		this.hideAllFolders();
 		this.updateFoldersVisibility(); //load folders of the new page
-	},
+	}
 
-	destroy:	function () {
+	destroy () {
 		for (let i = 0; i > this.addActions.length; i++) {
 			this.addActions[i].destroy();
 		}
@@ -301,18 +296,15 @@ const OverlayManager = new Lang.Class({
 		this.upAction.destroy();
 		this.downAction.destroy();
 		//log('OverlayManager destroyed');
-	},
-});
+	}
+}
 
 //-------------------------------------------------------
 
-/* Abstract overlay with very generic methods
- */
-const DroppableArea = new Lang.Class({
-	Name:		'DroppableArea',
-	Abstract:	true,
+// Abstract overlay with very generic methods
+class DroppableArea {
 
-	_init:		function (id) {
+	constructor (id) {
 		this.id = id;
 		this.styleClass = 'folderArea';
 
@@ -325,53 +317,48 @@ const DroppableArea = new Lang.Class({
 
 		this.lock = true;
 		this.use_frame = Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('debug');
-	},
+	}
 
-	setPosition: function (x, y) {
+	setPosition  (x, y) {
 		let monitor = Main.layoutManager.primaryMonitor;
-		this.actor.set_position(
-			monitor.x + x,
-			monitor.y + y
-		);
-	},
+		this.actor.set_position(monitor.x + x, monitor.y + y);
+	}
 
-	setSize:	function (w, h) {
+	setSize (w, h) {
 		this.actor.width = w;
 		this.actor.height = h;
-	},
+	}
 
-	hide:		function () {
+	hide () {
 		this.actor.visible = false;
 		this.lock = true;
-	},
+	}
 
-	show:		function () {
+	show () {
 		this.actor.visible = true;
-	},
+	}
 
-	setActive:	function (active) {
+	setActive (active) {
 		this._active = active;
 		if (this._active) {
 			this.actor.style_class = this.styleClass;
 		} else {
 			this.actor.style_class = 'insensitiveArea';
 		}
-	},
+	}
 
-	destroy:	function () {
+	destroy () {
 		this.actor.destroy();
-	},
-});
+	}
+}
 
-/* Overlay which represents an "action". Actions can be creating a folder, or
+/* Overlay representing an "action". Actions can be creating a folder, or
  * removing an app from a folder. These areas accept drop, and display a label.
  */
-const FolderActionArea = new Lang.Class({
-	Name:		'FolderActionArea',
-	Extends:	DroppableArea,
+class FolderActionArea extends DroppableArea {
 
-	_init:	function(id) {
-		this.parent(id);
+	constructor (id) {
+		super(id);
 
 		let x, y, label;
 
@@ -405,9 +392,9 @@ const FolderActionArea = new Lang.Class({
 
 		this.setPosition(10, 10);
 		Main.layoutManager.overviewGroup.add_actor(this.actor);
-	},
+	}
 
-	getRemoveLabel: function () {
+	getRemoveLabel () {
 		let label;
 		if (OVERLAY_MANAGER.openedFolder == null) {
 			label = '…';
@@ -416,24 +403,24 @@ const FolderActionArea = new Lang.Class({
 			label = folder_schema.get_string('name');
 		}
 		return (_("Remove from %s")).replace('%s', label);
-	},
+	}
 
-	setActive: function (active) {
-		this.parent(active);
+	setActive (active) {
+		super.setActive(active);
 		if (this.id == 'remove') {
 			this.label.text = this.getRemoveLabel();
 		}
-	},
+	}
 
-	handleDragOver: function (source, actor, x, y, time) {
+	handleDragOver (source, actor, x, y, time) {
 		if (source instanceof AppDisplay.AppIcon && this._active) {
 			return DND.DragMotionResult.MOVE_DROP;
 		}
 		Main.overview.endItemDrag(this);
 		return DND.DragMotionResult.NO_DROP;
-	},
+	}
 
-	acceptDrop: function (source, actor, x, y, time) {
+	acceptDrop (source, actor, x, y, time) {
 		if ((source instanceof AppDisplay.AppIcon) && (this.id == 'create')) {
 			Extension.createNewFolder(source);
 			Main.overview.endItemDrag(this);
@@ -446,30 +433,28 @@ const FolderActionArea = new Lang.Class({
 		}
 		Main.overview.endItemDrag(this);
 		return false;
-	},
+	}
 
-	removeApp: function (source) {
+	removeApp (source) {
 		let id = source.app.get_id();
 		Extension.removeFromFolder(id, OVERLAY_MANAGER.openedFolder);
 		OVERLAY_MANAGER.updateState(false);
 		Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
-	},
+	}
 
-	destroy:	function () {
+	destroy () {
 		this.label.destroy();
-		this.parent();
-	},
-});
+		super.destroy();
+	}
+}
 
 /* Overlay reacting to hover, but isn't droppable. The goal is to go to an other
  * page of the grid while dragging an app.
  */
-const NavigationArea = new Lang.Class({
-	Name:	'NavigationArea',
-	Extends:	DroppableArea,
+class NavigationArea extends DroppableArea {
 
-	_init:	function(id) {
-		this.parent(id);
+	constructor (id) {
+		super(id);
 
 		let x, y, i;
 		switch (this.id) {
@@ -502,9 +487,9 @@ const NavigationArea = new Lang.Class({
 
 		this.setPosition(x, y);
 		Main.layoutManager.overviewGroup.add_actor(this.actor);
-	},
+	}
 
-	handleDragOver: function(source, actor, x, y, time) {
+	handleDragOver (source, actor, x, y, time) {
 		if (this.id == 'up' && this._active) {
 			this.pageUp();
 			return DND.DragMotionResult.CONTINUE;
@@ -517,11 +502,11 @@ const NavigationArea = new Lang.Class({
 
 		Main.overview.endItemDrag(this);
 		return DND.DragMotionResult.NO_DROP;
-	},
+	}
 
-	pageUp:	function() {
+	pageUp () {
 		if(this.lock && !this.timeoutSet) {
-			this._timeoutId = Mainloop.timeout_add(CHANGE_PAGE_TIMEOUT, Lang.bind(this, this.unlock));
+			this._timeoutId = Mainloop.timeout_add(CHANGE_PAGE_TIMEOUT, this.unlock.bind(this));
 			this.timeoutSet = true;
 		}
 		if(!this.lock) {
@@ -529,11 +514,11 @@ const NavigationArea = new Lang.Class({
 			this.lock = true;
 			OVERLAY_MANAGER.goToPage(currentPage - 1);
 		}
-	},
+	}
 
-	pageDown:	function() {
+	pageDown () {
 		if(this.lock && !this.timeoutSet) {
-			this._timeoutId = Mainloop.timeout_add(CHANGE_PAGE_TIMEOUT, Lang.bind(this, this.unlock));
+			this._timeoutId = Mainloop.timeout_add(CHANGE_PAGE_TIMEOUT, this.unlock.bind(this));
 			this.timeoutSet = true;
 		}
 		if(!this.lock) {
@@ -541,18 +526,18 @@ const NavigationArea = new Lang.Class({
 			this.lock = true;
 			OVERLAY_MANAGER.goToPage(currentPage + 1);
 		}
-	},
+	}
 
-	acceptDrop: function(source, actor, x, y, time) {
+	acceptDrop (source, actor, x, y, time) {
 		Main.overview.endItemDrag(this);
 		return false;
-	},
+	}
 
-	unlock:		function() {
+	unlock () {
 		this.lock = false;
 		this.timeoutSet = false;
 		Mainloop.source_remove(this._timeoutId);
-	},
+	}
 });
 
 /* This overlay is the area upon a folder. Position and visibility of the actor
@@ -560,12 +545,10 @@ const NavigationArea = new Lang.Class({
  * "this.id" is the folder's id, a string, as written in the gsettings key.
  * Dropping an app on this folder will add it to the folder
  */
-const FolderArea = new Lang.Class({
-	Name:		'FolderArea',
-	Extends:	DroppableArea,
+class FolderArea extends DroppableArea {
 
-	_init:		function(id, asked_x, asked_y, page) {
-		this.parent(id);
+	constructor (id, asked_x, asked_y, page) {
+		super(id);
 		this.page = page;
 
 		let grid = Main.overview.viewSelector.appDisplay._views[1].view._grid;
@@ -600,24 +583,25 @@ const FolderArea = new Lang.Class({
 
 		this.setPosition(asked_x, asked_y);
 		Main.layoutManager.overviewGroup.add_actor(this.actor);
-	},
+	}
 
-	handleDragOver: function(source, actor, x, y, time) {
+	handleDragOver (source, actor, x, y, time) {
 		if (source instanceof AppDisplay.AppIcon) {
 			return DND.DragMotionResult.MOVE_DROP;
 		}
 		Main.overview.endItemDrag(this);
 		return DND.DragMotionResult.NO_DROP;
-	},
+	}
 
-	acceptDrop: function(source, actor, x, y, time) { //FIXME recharger la vue ou au minimum les miniatures des dossiers
-		if ((source instanceof AppDisplay.AppIcon) && !Extension.isInFolder(source.id, this.id)) {
+	acceptDrop (source, actor, x, y, time) { //FIXME recharger la vue ou au minimum les miniatures des dossiers
+		if ((source instanceof AppDisplay.AppIcon) &&
+		                            !Extension.isInFolder(source.id, this.id)) {
 			Extension.addToFolder(source, this.id);
 			Main.overview.endItemDrag(this);
 			return true;
 		}
 		Main.overview.endItemDrag(this);
 		return false;
-	},
-});
+	}
+}
 

@@ -1,7 +1,6 @@
 
 const GObject = imports.gi.GObject;
 const Gtk = imports.gi.Gtk;
-const Lang = imports.lang;
 
 const Gettext = imports.gettext.domain('appfolders-manager');
 const _ = Gettext.gettext;
@@ -9,12 +8,6 @@ const _ = Gettext.gettext;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Convenience = Me.imports.convenience;
-
-//-----------------------------------------------
-
-function init() {
-	Convenience.initTranslations();
-}
 
 //-----------------------------------------------
 
@@ -47,13 +40,13 @@ const appfoldersManagerSettingsWidget = new GObject.Class({
 		deleteAllSwitch.set_state(true);
 		deleteAllSwitch.set_state(this._settings.get_boolean('total-deletion'));
 
-		deleteAllSwitch.connect('notify::active', Lang.bind(this, function(widget) {
+		deleteAllSwitch.connect('notify::active', (widget) => {
 			if (widget.active) {
 				this._settings.set_boolean('total-deletion', true);
 			} else {
 				this._settings.set_boolean('total-deletion', false);
 			}
-		}));
+		});
 
 		let deleteAllBox = new Gtk.Box({
 			orientation: Gtk.Orientation.HORIZONTAL,
@@ -70,13 +63,13 @@ const appfoldersManagerSettingsWidget = new GObject.Class({
 		categoriesSwitch.set_state(true);
 		categoriesSwitch.set_state(this._settings.get_boolean('categories'));
 
-		categoriesSwitch.connect('notify::active', Lang.bind(this, function(widget) {
+		categoriesSwitch.connect('notify::active', (widget) => {
 			if (widget.active) {
 				this._settings.set_boolean('categories', true);
 			} else {
 				this._settings.set_boolean('categories', false);
 			}
-		}));
+		});
 
 		let categoriesBox = new Gtk.Box({
 			orientation: Gtk.Orientation.HORIZONTAL,
@@ -93,13 +86,13 @@ const appfoldersManagerSettingsWidget = new GObject.Class({
 		menusSwitch.set_state(true);
 		menusSwitch.set_state(this._settings.get_boolean('extend-menus'));
 
-		menusSwitch.connect('notify::active', Lang.bind(this, function(widget) {
+		menusSwitch.connect('notify::active', (widget) => {
 			if (widget.active) {
 				this._settings.set_boolean('extend-menus', true);
 			} else {
 				this._settings.set_boolean('extend-menus', false);
 			}
-		}));
+		});
 
 		let menusBox = new Gtk.Box({
 			orientation: Gtk.Orientation.HORIZONTAL,
@@ -198,6 +191,12 @@ const appfoldersManagerSettingsWidget = new GObject.Class({
 		return a;
 	},
 });
+
+//-----------------------------------------------
+
+function init() {
+	Convenience.initTranslations();
+}
 
 //-----------------------------------------------
 

@@ -3,7 +3,6 @@
 
 const Clutter = imports.gi.Clutter;
 const Gio = imports.gi.Gio;
-const Lang = imports.lang;
 const St = imports.gi.St;
 const Main = imports.ui.main;
 const ModalDialog = imports.ui.modalDialog;
@@ -27,13 +26,13 @@ let FOLDER_LIST;
 
 // This is a modal dialog for creating a new folder, or renaming or modifying
 // categories of existing folders.
-var AppfolderDialog = new Lang.Class({ //TODO FIXME composition over inheritance
+var AppfolderDialog = new Lang.Class({ //TODO FIXME composition over inheritance (lang.class are broken because of the methods' syntax
 	Name:	'AppfolderDialog',
 	Extends:	ModalDialog.ModalDialog,
 
 // build a new dialog. If folder is null, the dialog will be for creating a new
 // folder, else app is null, and the dialog will be for editing an existing folder
-	_init:	function(folder, app, id) {
+	_init (folder, app, id) {
 		this._folder = folder;
 		this._app = app;
 		this._id = id;
@@ -61,25 +60,25 @@ var AppfolderDialog = new Lang.Class({ //TODO FIXME composition over inheritance
 
 		if (this._folder == null) {
 			this.setButtons([
-				{ action: Lang.bind(this, this.destroy),
+				{ action: this.destroy.bind(this),
 				label: _("Cancel"),
 				key: Clutter.Escape },
 	
-				{ action: Lang.bind(this, this._apply),
-				label: _("Apply"),
+				{ action: this._apply.bind(this),
+				label: _("Create"),
 				key: Clutter.Return }
 			]);
 		} else {
 			this.setButtons([
-				{ action: Lang.bind(this, this.destroy),
+				{ action: this.destroy.bind(this),
 				label: _("Cancel"),
 				key: Clutter.Escape },
 	
-				{ action: Lang.bind(this, this._deleteFolder),
+				{ action: this._deleteFolder.bind(this),
 				label: _("Delete"),
 				key: Clutter.Delete },
 	
-				{ action: Lang.bind(this, this._apply),
+				{ action: this._apply.bind(this),
 				label: _("Apply"),
 				key: Clutter.Return }
 			]);
@@ -96,7 +95,7 @@ var AppfolderDialog = new Lang.Class({ //TODO FIXME composition over inheritance
 	},
 
 // build the section of the UI handling the folder's name and returns it.
-	_buildNameSection:	function () {
+	_buildNameSection () {
 		let nameSection = new St.BoxLayout({
 			style: 'spacing: 5px;',
 			vertical: true,
@@ -129,7 +128,7 @@ var AppfolderDialog = new Lang.Class({ //TODO FIXME composition over inheritance
 	},
 
 // build the section of the UI handling the folder's categories and returns it.
-	_buildCategoriesSection:	function () {
+	_buildCategoriesSection () {
 		let categoriesSection = new St.BoxLayout({
 			style: 'spacing: 5px;',
 			vertical: true,
@@ -247,7 +246,7 @@ var AppfolderDialog = new Lang.Class({ //TODO FIXME composition over inheritance
 	},
 
 // returns if a folder id already exists
-	_alreadyExists:	function (folderId) {
+	_alreadyExists (folderId) {
 		for(var i = 0; i < FOLDER_LIST.length; i++) {
 			if (FOLDER_LIST[i] == folderId) {
 //				this._showError( _("This appfolder already exists.") );
@@ -257,7 +256,7 @@ var AppfolderDialog = new Lang.Class({ //TODO FIXME composition over inheritance
 		return false;
 	},
 
-	destroy:	function () {
+	destroy () {
 		if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('debug') ) {
 			log('[AppfolderDialog v2] destroying dialog');
 		}
@@ -267,7 +266,7 @@ var AppfolderDialog = new Lang.Class({ //TODO FIXME composition over inheritance
 
 // Generates a valid folder id, which as no space, no dot, no slash, and which
 // doesn't already exist.
-	_folderId:	function (newName) {
+	_folderId (newName) {
 		let tmp0 = newName.split(" ");
 		let folderId = "";
 		for(var i = 0; i < tmp0.length; i++) {
@@ -290,7 +289,7 @@ var AppfolderDialog = new Lang.Class({ //TODO FIXME composition over inheritance
 	},
 
 // creates a folder from the data filled by the user (with no properties)
-	_create:	function () {
+	_create () {
 		let folderId = this._folderId(this._nameEntryText.get_text());
 
 		FOLDER_LIST.push(folderId);
@@ -306,14 +305,14 @@ var AppfolderDialog = new Lang.Class({ //TODO FIXME composition over inheritance
 	},
 
 // sets the name to the folder
-	_applyName:	function () {
+	_applyName () {
 		let newName = this._nameEntryText.get_text();
 		this._folder.set_string('name', newName); // génère un bug ?
 		return Clutter.EVENT_STOP;
 	},
 
 // loads categories, as set in gsettings, to the UI
-	_loadCategories:	function() {
+	_loadCategories () {
 		if (this._folder == null) {
 			this._categories = [];
 		} else {
@@ -330,14 +329,13 @@ var AppfolderDialog = new Lang.Class({ //TODO FIXME composition over inheritance
 		}
 	},
 
-	_addCategoryBox:	function(i) {
+	_addCategoryBox (i) {
 		let aCategory = new AppCategoryBox(this, i);
 		this.listContainer.add_actor(aCategory);
 	},
 
 // adds a category to the UI (will be added to gsettings when pressing "apply" only)
 	_addCategory (entry, new_cat_name) {
-//	_addCategory:	function(entry, new_cat_name) {
 		if (new_cat_name == null) {
 			new_cat_name = this._categoryEntryText.get_text();
 		}
@@ -354,13 +352,13 @@ var AppfolderDialog = new Lang.Class({ //TODO FIXME composition over inheritance
 	},
 
 // adds all categories to gsettings
-	_applyCategories:	function () {
+	_applyCategories () {
 		this._folder.set_strv('categories', this._categories);
 		return Clutter.EVENT_STOP;
 	},
 
 // Apply everything by calling methods above, and reload the view
-	_apply:	function() {
+	_apply () {
 		if (this._app != null) {
 			this._create();
 		//	this._addToFolder();
@@ -377,14 +375,13 @@ var AppfolderDialog = new Lang.Class({ //TODO FIXME composition over inheritance
 
 // initializes the folder with its first app. This is not optional since empty
 // folders are not displayed. TODO use the equivalent method from extension.js
-	_addToFolder:	function() {
+	_addToFolder () {
 		let content = this._folder.get_strv('apps');
 		content.push(this._app);
 		this._folder.set_strv('apps', content);
 	},
 
 // Delete the folder, using the extension.js method
-//	_deleteFolder:	function () {
 	_deleteFolder () {
 		if (this._folder != null) {
 			Extension.deleteFolder(this._id);
@@ -401,7 +398,7 @@ var AppfolderDialog = new Lang.Class({ //TODO FIXME composition over inheritance
 var SelectCategoryButton = new Lang.Class({
 	Name: 'SelectCategoryButton',
 
-	_init:	function(bouton, dialog){
+	_init (bouton, dialog){
 		this.actor = bouton;
 		this._dialog = dialog;
 		this.actor.connect('button-press-event', this._onButtonPress.bind(this));
@@ -409,12 +406,12 @@ var SelectCategoryButton = new Lang.Class({
 		this._menuManager = new PopupMenu.PopupMenuManager(this);
 	},
 
-	_onMenuPoppedDown:	function() {
+	_onMenuPoppedDown () {
 		this.actor.sync_hover();
 		this.emit('menu-state-changed', false);
 	},
 
-	popupMenu:	function() {
+	popupMenu () {
 		this.actor.fake_release();
 		if (!this._menu) {
 			this._menu = new SelectCategoryMenu(this, this._dialog);
@@ -431,7 +428,7 @@ var SelectCategoryButton = new Lang.Class({
 		return false;
 	},
 
-	_onButtonPress:	function(actor, event) {
+	_onButtonPress (actor, event) {
 		this.popupMenu();
 		return Clutter.EVENT_STOP;
 	},
@@ -447,7 +444,7 @@ const SelectCategoryMenu = new Lang.Class({
 	Name: 'SelectCategoryMenu',
 	Extends: PopupMenu.PopupMenu,
 
-	_init:	function(source, dialog) {
+	_init (source, dialog) {
 		this.parent(source.actor, 0.5, St.Side.RIGHT);
 		this._source = source;
 		this._dialog = dialog;
@@ -460,22 +457,23 @@ const SelectCategoryMenu = new Lang.Class({
 		Main.uiGroup.add_actor(this.actor);
 	},
 
-	_redisplay:	function() {
+	_redisplay () {
 		this.removeAll();
-		let mainCategories = ['AudioVideo','Audio','Video','Development','Education','Game',
-			'Graphics','Network','Office','Science','Settings','System','Utility'];
+		let mainCategories = ['AudioVideo', 'Audio', 'Video', 'Development',
+		        'Education', 'Game', 'Graphics', 'Network', 'Office',' Science',
+		                                       'Settings', 'System', 'Utility'];
 
-		for (var i = 0; i < mainCategories.length; i++) {
+		for (var i=0; i<mainCategories.length; i++) {
 			let labelItem = mainCategories[i] ;
 			let item = new PopupMenu.PopupMenuItem( labelItem );
-			item.connect('activate', Lang.bind(this, function(a, b, c) { //TODO
-				this._dialog._addCategory(null, c);
-			}, mainCategories[i]));
- 			this.addMenuItem(item);
+			item.connect('activate', () => {
+				this._dialog._addCategory(null, labelItem);
+			});
+			this.addMenuItem(item);
 		}
 	},
 
-	popup:	function(activatingButton) {
+	popup (activatingButton) {
 		this._redisplay();
 		this.open();
 	},
@@ -490,10 +488,12 @@ const AppCategoryBox = new Lang.Class({
 	Name: 'AppCategoryBox',
 	Extends: St.BoxLayout,
 
-	_init:	function (dialog, i) {
+	_init (dialog, i) {
 		this.parent({
 			vertical: false,
-			style: 'background-color: rgba(100, 100, 100, 0.3); border-radius: 3px; margin: 3px; padding: 2px; padding-left: 6px;',
+			style: 'background-color: rgba(100, 100, 100, 0.3);'
+			                 + ' border-radius: 3px; margin: 3px; padding: 2px;'
+			                                             +' padding-left: 6px;',
 		});
 		this._dialog = dialog;
 		this.catName = this._dialog._categories[i];
@@ -527,7 +527,7 @@ const AppCategoryBox = new Lang.Class({
 		this.deleteButton.connect('clicked', this.removeFromList.bind(this));
 	},
 
-	removeFromList:	function () {
+	removeFromList () {
 		this._dialog._categories.splice(this._dialog._categories.indexOf(this.catName), 1);
 		if (this._dialog._categories.length == 0) {
 			this._dialog.noCatLabel.visible = true;
@@ -535,7 +535,7 @@ const AppCategoryBox = new Lang.Class({
 		this.destroy();
 	},
 
-	destroy:	function () {
+	destroy () {
 		this.deleteButton.destroy();
 		this.parent();
 	},

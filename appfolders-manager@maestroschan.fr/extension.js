@@ -3,14 +3,13 @@
 
 const Clutter = imports.gi.Clutter;
 const Gio = imports.gi.Gio;
-const Lang = imports.lang;
 const St = imports.gi.St;
 const Main = imports.ui.main;
 const AppDisplay = imports.ui.appDisplay;
 const PopupMenu = imports.ui.popupMenu;
 const Overview = imports.ui.overview;
 const Meta = imports.gi.Meta;
-const Mainloop = imports.mainloop; //XXX
+const Mainloop = imports.mainloop;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
@@ -57,16 +56,21 @@ let injections=[];
 
 /* this function injects items (1 or 2 submenus) in AppIconMenu's _redisplay method. */
 function injectionInAppsMenus() {
-	injections['_redisplay'] = injectToFunction(AppDisplay.AppIconMenu.prototype, '_redisplay', function(){
+	injections['_redisplay'] = injectToFunction(AppDisplay.AppIconMenu.prototype, '_redisplay', function() {
 		
 		if (Main.overview.viewSelector.getActivePage() == 2 || Main.overview.viewSelector.getActivePage() == 3) {
-			this._appendSeparator(); //TODO injecter ailleurs?
+			this._appendSeparator(); //TODO injecter ailleurs dans le menu?
+			
+			let mainAppView = Main.overview.viewSelector.appDisplay._views[1].view;
+			FOLDER_LIST = FOLDER_SCHEMA.get_strv('folder-children');
+			
+			//------------------------------------------------------------------
 			
 			let addto = new PopupMenu.PopupSubMenuMenuItem(_("Add to"));
 			
 			let newAppFolder = new PopupMenu.PopupMenuItem('+ ' + _("New AppFolder"));
-			newAppFolder.connect('activate', Lang.bind(this, function(aa, bb, that) { //TODO =>
-				that._source._menuManager._grabHelper.ungrab({ actor: that.actor });
+			newAppFolder.connect('activate', () => {
+				this._source._menuManager._grabHelper.ungrab({ actor: this.actor });
 				// XXX broken scrolling ??
 				// We can't popdown the folder immediately because the
 				// AppDisplay.AppFolderPopup.popdown() method tries to ungrab
@@ -74,17 +78,15 @@ function injectionInAppsMenus() {
 				// having the focus since the menu is still open. Menus' animation
 				// last ~0.25s so we will wait 0.30s before doing anything.
 				let a = Mainloop.timeout_add(300, () => {
-					if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) {
-						Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown();
+					if (mainAppView._currentPopup) {
+						mainAppView._currentPopup.popdown();
 					}
 					createNewFolder(this._source);
-					Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
+					mainAppView._redisplay();
 					Mainloop.source_remove(a);
 				});
-			}, this));
+			});
 			addto.menu.addMenuItem(newAppFolder);
-			
-			FOLDER_LIST = FOLDER_SCHEMA.get_strv('folder-children');
 			
 			for (var i = 0 ; i < FOLDER_LIST.length ; i++) {
 				let _folder = FOLDER_LIST[i];
@@ -95,8 +97,8 @@ function injectionInAppsMenus() {
 					shouldShow = true; //TODO ??? et l'exclusion ?
 				}
 				if(shouldShow) {
-					item.connect('activate', Lang.bind(this, function(aa, bb, that) { //TODO =>
-						that._source._menuManager._grabHelper.ungrab({ actor: that.actor });
+					item.connect('activate', () => {
+						this._source._menuManager._grabHelper.ungrab({ actor: this.actor });
 						// XXX broken scrolling ??
 						// We can't popdown the folder immediatly because the
 						// AppDisplay.AppFolderPopup.popdown() method tries to
@@ -105,18 +107,20 @@ function injectionInAppsMenus() {
 						// open. Menus' animation last ~0.25s so we will wait 0.30s
 						// before doing anything.
 						let a = Mainloop.timeout_add(300, () => {
-							if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) {
-								Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown();
+							if (mainAppView._currentPopup) {
+								mainAppView._currentPopup.popdown();
 							}
 							addToFolder(this._source, _folder);
-							Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
+							mainAppView._redisplay();
 							Mainloop.source_remove(a);
 						});
-					}, this));
+					});
 					addto.menu.addMenuItem(item);
 				}
 			}
 			this.addMenuItem(addto);
+			
+			//------------------------------------------------------------------
 			
 			let removeFrom = new PopupMenu.PopupSubMenuMenuItem(_("Remove from"));
 			let shouldShow2 = false;
@@ -132,8 +136,8 @@ function injectionInAppsMenus() {
 				}
 				
 				if(shouldShow) {
-					item.connect('activate', Lang.bind(this, function(aa, bb, that) { //TODO =>
-						that._source._menuManager._grabHelper.ungrab({ actor: that.actor });
+					item.connect('activate', () => {
+						this._source._menuManager._grabHelper.ungrab({ actor: this.actor });
 						// XXX broken scrolling ??
 						// We can't popdown the folder immediatly because the
 						// AppDisplay.AppFolderPopup.popdown() method tries to
@@ -142,14 +146,14 @@ function injectionInAppsMenus() {
 						// open. Menus' animation last ~0.25s so we will wait 0.30s
 						// before doing anything.
 						let a = Mainloop.timeout_add(300, () => {
-							if (Main.overview.viewSelector.appDisplay._views[1].view._currentPopup) {
-								Main.overview.viewSelector.appDisplay._views[1].view._currentPopup.popdown();
+							if (mainAppView._currentPopup) {
+								mainAppView._currentPopup.popdown();
 							}
 							removeFromFolder(appId, _folder);
-							Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
+							mainAppView._redisplay();
 							Mainloop.source_remove(a);
 						});
-					}, this));
+					});
 					removeFrom.menu.addMenuItem(item);
 					shouldShow2 = true;
 				}
