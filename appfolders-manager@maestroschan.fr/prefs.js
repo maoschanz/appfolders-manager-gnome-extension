@@ -198,8 +198,6 @@ function init() {
 	Convenience.initTranslations();
 }
 
-//-----------------------------------------------
-
 //I guess this is like the "enable" in extension.js : something called each
 //time he user try to access the settings' window
 function buildPrefsWidget() {

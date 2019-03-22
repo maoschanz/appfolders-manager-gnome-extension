@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-14 20:11+0100\n"
+"POT-Creation-Date: 2019-03-22 03:13+0100\n"
 "PO-Revision-Date: 2019-02-10 11:19-0200\n"
 "Last-Translator: Fábio Nogueira <fnogueira@gnome.org>\n"
 "Language-Team: \n"
@@ -18,97 +18,102 @@ msgstr ""
 "X-Generator: Poedit 2.2.1\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: extension.js:67
+#: appfolders-manager@maestroschan.fr/extension.js:69
 msgid "Add to"
 msgstr "Adicionar para"
 
-#: extension.js:69
+#: appfolders-manager@maestroschan.fr/extension.js:71
 msgid "New AppFolder"
 msgstr "Nova AppFolder"
 
-#: extension.js:120
+#: appfolders-manager@maestroschan.fr/extension.js:125
 msgid "Remove from"
 msgstr "Remover de"
 
-#: dragAndDrop.js:361
+#: appfolders-manager@maestroschan.fr/dragAndDrop.js:367
 msgid "Create a new folder"
 msgstr "Criar uma nova pasta"
 
-#: dragAndDrop.js:399
+#: appfolders-manager@maestroschan.fr/dragAndDrop.js:405
 #, javascript-format
 msgid "Remove from %s"
 msgstr "Remover de %s"
 
-#: appfolderDialog.js:75 appfolderDialog.js:85
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:62
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:72
 msgid "Cancel"
 msgstr "Cancelar"
 
-#: appfolderDialog.js:79 appfolderDialog.js:93
-msgid "Apply"
-msgstr "Aplicar"
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:66
+msgid "Create"
+msgstr "Criar"
 
-#: appfolderDialog.js:89
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:76
 msgid "Delete"
 msgstr "Excluir"
 
-#: appfolderDialog.js:118
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:80
+msgid "Apply"
+msgstr "Aplicar"
+
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:106
 msgid "Folder's name:"
 msgstr "Nome da pasta:"
 
-#: appfolderDialog.js:150
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:139
 msgid "Categories:"
 msgstr "Categorias:"
 
-#: appfolderDialog.js:175
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:164
 msgid "Other category?"
 msgstr "Outra categoria?"
 
-#: appfolderDialog.js:191
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:180
 msgid "Select a category…"
 msgstr "Selecione uma categoria…"
 
-#: appfolderDialog.js:236
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:225
 msgid "No category"
 msgstr "Nenhuma categoria"
 
-#: prefs.js:37
+#: appfolders-manager@maestroschan.fr/prefs.js:30
 msgid "Modifications will be effective after reloading the extension."
 msgstr "As modificações entrarão em vigor depois de recarregar a extensão."
 
-#: prefs.js:40
+#: appfolders-manager@maestroschan.fr/prefs.js:33
 msgid "Main settings"
 msgstr "Configurações principais"
 
-#: prefs.js:41
+#: appfolders-manager@maestroschan.fr/prefs.js:34
 msgid "Categories"
 msgstr "Categorias"
 
-#: prefs.js:45
+#: appfolders-manager@maestroschan.fr/prefs.js:38
 msgid "Delete all related settings when an appfolder is deleted"
 msgstr ""
 "Excluir todas as configurações relacionadas quando um appfolder for excluído"
 
-#: prefs.js:68
+#: appfolders-manager@maestroschan.fr/prefs.js:61
 msgid "Use categories"
 msgstr "Usar categorias"
 
-#: prefs.js:91
+#: appfolders-manager@maestroschan.fr/prefs.js:84
 msgid "Use the right-click menus in addition to the drag-and-drop"
 msgstr "Use os menus do botão direito, além do arrastar e soltar"
 
-#: prefs.js:124
+#: appfolders-manager@maestroschan.fr/prefs.js:117
 msgid "More informations about \"additional categories\""
 msgstr "Mais informações sobre \"categorias adicionais\""
 
-#: prefs.js:126
+#: appfolders-manager@maestroschan.fr/prefs.js:119
 msgid "Standard specification"
 msgstr "Especificação padrão"
 
-#: prefs.js:146
+#: appfolders-manager@maestroschan.fr/prefs.js:139
 msgid "Report bugs or ideas"
 msgstr "Comunicar erros ou ideias"
 
-#: prefs.js:157
+#: appfolders-manager@maestroschan.fr/prefs.js:150
 msgid ""
 "This extension can be deactivated once your applications are organized as "
 "wished."
@@ -118,21 +123,3 @@ msgstr ""
 
 #~ msgid "This appfolder already exists."
 #~ msgstr "Esta appfolder já existe."
-
-#~ msgid "Enter the name of a category"
-#~ msgstr "Digite o nome de uma categoria"
-
-#~ msgid "Add"
-#~ msgstr "Adicionar"
-
-#~ msgid "Rename"
-#~ msgstr "Renomear"
-
-#~ msgid "Enter a name"
-#~ msgstr "Digite um nome"
-
-#~ msgid "Create"
-#~ msgstr "Criar"
-
-#~ msgid "Experimental features (not recommended)"
-#~ msgstr "Recursos experimentais (não recomendado)"

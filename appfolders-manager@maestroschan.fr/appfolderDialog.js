@@ -26,17 +26,15 @@ let FOLDER_LIST;
 
 // This is a modal dialog for creating a new folder, or renaming or modifying
 // categories of existing folders.
-var AppfolderDialog = new Lang.Class({ //TODO FIXME composition over inheritance (lang.class are broken because of the methods' syntax
-	Name:	'AppfolderDialog',
-	Extends:	ModalDialog.ModalDialog,
+var AppfolderDialog = class AppfolderDialog {
 
-// build a new dialog. If folder is null, the dialog will be for creating a new
-// folder, else app is null, and the dialog will be for editing an existing folder
-	_init (folder, app, id) {
+	// build a new dialog. If folder is null, the dialog will be for creating a new
+	// folder, else app is null, and the dialog will be for editing an existing folder
+	constructor (folder, app, id) {
 		this._folder = folder;
 		this._app = app;
 		this._id = id;
-		this.parent({ destroyOnClose: true });
+		this.super_dialog = new ModalDialog.ModalDialog({ destroyOnClose: true });
 
 		FOLDER_SCHEMA = new Gio.Settings({ schema_id: 'org.gnome.desktop.app-folders' });
 		FOLDER_LIST = FOLDER_SCHEMA.get_strv('folder-children');
@@ -44,14 +42,14 @@ var AppfolderDialog = new Lang.Class({ //TODO FIXME composition over inheritance
 		let nameSection = this._buildNameSection();
 		let categoriesSection = this._buildCategoriesSection();
 
-		this.contentLayout.style = 'spacing: 20px';
-		this.contentLayout.add(nameSection, {
+		this.super_dialog.contentLayout.style = 'spacing: 20px';
+		this.super_dialog.contentLayout.add(nameSection, {
 			x_fill: false,
 			x_align: St.Align.START,
 			y_align: St.Align.START
 		});
 		if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('categories') ) {
-			this.contentLayout.add(categoriesSection, {
+			this.super_dialog.contentLayout.add(categoriesSection, {
 				x_fill: false,
 				x_align: St.Align.START,
 				y_align: St.Align.START
@@ -59,7 +57,7 @@ var AppfolderDialog = new Lang.Class({ //TODO FIXME composition over inheritance
 		}
 
 		if (this._folder == null) {
-			this.setButtons([
+			this.super_dialog.setButtons([
 				{ action: this.destroy.bind(this),
 				label: _("Cancel"),
 				key: Clutter.Escape },
@@ -69,7 +67,7 @@ var AppfolderDialog = new Lang.Class({ //TODO FIXME composition over inheritance
 				key: Clutter.Return }
 			]);
 		} else {
-			this.setButtons([
+			this.super_dialog.setButtons([
 				{ action: this.destroy.bind(this),
 				label: _("Cancel"),
 				key: Clutter.Escape },
@@ -88,13 +86,13 @@ var AppfolderDialog = new Lang.Class({ //TODO FIXME composition over inheritance
 			let symbol = e.get_key_symbol();
 
 			if (symbol == Clutter.Return || symbol == Clutter.KP_Enter) {
-				this.popModal();
+				this.super_dialog.popModal();
 				this._apply();
 			}
 		});
-	},
+	}
 
-// build the section of the UI handling the folder's name and returns it.
+	// build the section of the UI handling the folder's name and returns it.
 	_buildNameSection () {
 		let nameSection = new St.BoxLayout({
 			style: 'spacing: 5px;',
@@ -118,16 +116,16 @@ var AppfolderDialog = new Lang.Class({ //TODO FIXME composition over inheritance
 
 		nameSection.add(this._nameEntry, { y_align: St.Align.START });
 		ShellEntry.addContextMenu(this._nameEntry);
-		this.setInitialKeyFocus(this._nameEntryText);
+		this.super_dialog.setInitialKeyFocus(this._nameEntryText);
 
 		if (this._folder != null) {
 			this._nameEntryText.set_text(this._folder.get_string('name'));
 		}
 
 		return nameSection;
-	},
+	}
 
-// build the section of the UI handling the folder's categories and returns it.
+	// build the section of the UI handling the folder's categories and returns it.
 	_buildCategoriesSection () {
 		let categoriesSection = new St.BoxLayout({
 			style: 'spacing: 5px;',
@@ -164,13 +162,13 @@ var AppfolderDialog = new Lang.Class({ //TODO FIXME composition over inheritance
 			can_focus: true,
 			x_expand: true,
 			hint_text: _("Other category?"),
+			secondary_icon: new St.Icon({
+				icon_name: 'list-add-symbolic',
+				icon_size: 16,
+				style_class: 'system-status-icon',
+				y_align: Clutter.ActorAlign.CENTER,
+			}),
 		});
-		this._categoryEntry.set_secondary_icon(new St.Icon({ // 3.22 compatibility
-			icon_name: 'list-add-symbolic',
-			icon_size: 16,
-			style_class: 'system-status-icon',
-			y_align: Clutter.ActorAlign.CENTER,
-		}));
 		ShellEntry.addContextMenu(this._categoryEntry, null);
 		this._categoryEntry.connect('secondary-icon-clicked', this._addCategory.bind(this));
 
@@ -243,9 +241,13 @@ var AppfolderDialog = new Lang.Class({ //TODO FIXME composition over inheritance
 		this._loadCategories();
 
 		return categoriesSection;
-	},
+	}
 
-// returns if a folder id already exists
+	open () {
+		this.super_dialog.open();
+	}
+
+	// returns if a folder id already exists
 	_alreadyExists (folderId) {
 		for(var i = 0; i < FOLDER_LIST.length; i++) {
 			if (FOLDER_LIST[i] == folderId) {
@@ -254,18 +256,18 @@ var AppfolderDialog = new Lang.Class({ //TODO FIXME composition over inheritance
 			}
 		}
 		return false;
-	},
+	}
 
 	destroy () {
 		if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('debug') ) {
 			log('[AppfolderDialog v2] destroying dialog');
 		}
 		// TODO ?
-		this.parent();
-	},
+		this.super_dialog.destroy(); //XXX crée des erreurs reloues ??? FIXME
+	}
 
-// Generates a valid folder id, which as no space, no dot, no slash, and which
-// doesn't already exist.
+	// Generates a valid folder id, which as no space, no dot, no slash, and which
+	// doesn't already exist.
 	_folderId (newName) {
 		let tmp0 = newName.split(" ");
 		let folderId = "";
@@ -286,9 +288,9 @@ var AppfolderDialog = new Lang.Class({ //TODO FIXME composition over inheritance
 			folderId = this._folderId(folderId+'_');
 		}
 		return folderId;
-	},
+	}
 
-// creates a folder from the data filled by the user (with no properties)
+	// creates a folder from the data filled by the user (with no properties)
 	_create () {
 		let folderId = this._folderId(this._nameEntryText.get_text());
 
@@ -302,16 +304,16 @@ var AppfolderDialog = new Lang.Class({ //TODO FIXME composition over inheritance
 	//	this._folder.set_string('name', this._nameEntryText.get_text()); //superflu
 	//	est-il nécessaire d'initialiser la clé apps à [] ??
 		this._addToFolder();
-	},
+	}
 
-// sets the name to the folder
+	// sets the name to the folder
 	_applyName () {
 		let newName = this._nameEntryText.get_text();
 		this._folder.set_string('name', newName); // génère un bug ?
 		return Clutter.EVENT_STOP;
-	},
+	}
 
-// loads categories, as set in gsettings, to the UI
+	// loads categories, as set in gsettings, to the UI
 	_loadCategories () {
 		if (this._folder == null) {
 			this._categories = [];
@@ -327,14 +329,14 @@ var AppfolderDialog = new Lang.Class({ //TODO FIXME composition over inheritance
 		for (var i = 0; i < this._categories.length; i++) {
 			this._addCategoryBox(i);
 		}
-	},
+	}
 
 	_addCategoryBox (i) {
 		let aCategory = new AppCategoryBox(this, i);
-		this.listContainer.add_actor(aCategory);
-	},
+		this.listContainer.add_actor(aCategory.super_box);
+	}
 
-// adds a category to the UI (will be added to gsettings when pressing "apply" only)
+	// adds a category to the UI (will be added to gsettings when pressing "apply" only)
 	_addCategory (entry, new_cat_name) {
 		if (new_cat_name == null) {
 			new_cat_name = this._categoryEntryText.get_text();
@@ -349,15 +351,15 @@ var AppfolderDialog = new Lang.Class({ //TODO FIXME composition over inheritance
 		this._categoryEntryText.set_text('');
 		this.noCatLabel.visible = false;
 		this._addCategoryBox(this._categories.length-1);
-	},
+	}
 
-// adds all categories to gsettings
+	// adds all categories to gsettings
 	_applyCategories () {
 		this._folder.set_strv('categories', this._categories);
 		return Clutter.EVENT_STOP;
-	},
+	}
 
-// Apply everything by calling methods above, and reload the view
+	// Apply everything by calling methods above, and reload the view
 	_apply () {
 		if (this._app != null) {
 			this._create();
@@ -371,45 +373,43 @@ var AppfolderDialog = new Lang.Class({ //TODO FIXME composition over inheritance
 		if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('debug') ) {
 			log('[AppfolderDialog v2] reload the view');
 		}
-	},
+	}
 
-// initializes the folder with its first app. This is not optional since empty
-// folders are not displayed. TODO use the equivalent method from extension.js
+	// initializes the folder with its first app. This is not optional since empty
+	// folders are not displayed. TODO use the equivalent method from extension.js
 	_addToFolder () {
 		let content = this._folder.get_strv('apps');
 		content.push(this._app);
 		this._folder.set_strv('apps', content);
-	},
+	}
 
-// Delete the folder, using the extension.js method
+	// Delete the folder, using the extension.js method
 	_deleteFolder () {
 		if (this._folder != null) {
 			Extension.deleteFolder(this._id);
 		}
 		this.destroy();
-	},
-});
+	}
+};
 
 //------------------------------------------------
 
-/* Very complex way to have a menubutton for displaying a menu with standard
- * categories. Button part.
- */
-var SelectCategoryButton = new Lang.Class({
-	Name: 'SelectCategoryButton',
+// Very complex way to have a menubutton for displaying a menu with standard
+// categories. Button part.
+class SelectCategoryButton {
 
-	_init (bouton, dialog){
+	constructor (bouton, dialog){
 		this.actor = bouton;
 		this._dialog = dialog;
 		this.actor.connect('button-press-event', this._onButtonPress.bind(this));
 		this._menu = null;
 		this._menuManager = new PopupMenu.PopupMenuManager(this);
-	},
+	}
 
 	_onMenuPoppedDown () {
 		this.actor.sync_hover();
 		this.emit('menu-state-changed', false);
-	},
+	}
 
 	popupMenu () {
 		this.actor.fake_release();
@@ -426,43 +426,44 @@ var SelectCategoryButton = new Lang.Class({
 		this._menu.popup();
 		this._menuManager.ignoreRelease();
 		return false;
-	},
+	}
 
 	_onButtonPress (actor, event) {
 		this.popupMenu();
 		return Clutter.EVENT_STOP;
-	},
-});
+	}
+};
 Signals.addSignalMethods(SelectCategoryButton.prototype);
 
 //------------------------------------------------
 
-/* Very complex way to have a menubutton for displaying a menu with standard
- * categories. Menu part.
- */
-const SelectCategoryMenu = new Lang.Class({
-	Name: 'SelectCategoryMenu',
-	Extends: PopupMenu.PopupMenu,
+// Very complex way to have a menubutton for displaying a menu with standard
+// categories. Menu part.
+class SelectCategoryMenu {
 
-	_init (source, dialog) {
-		this.parent(source.actor, 0.5, St.Side.RIGHT);
+	constructor (source, dialog) {
+		this.super_menu = new PopupMenu.PopupMenu(source.actor, 0.5, St.Side.RIGHT);
 		this._source = source;
 		this._dialog = dialog;
-		this.actor.add_style_class_name('app-well-menu');
-		this._source.actor.connect('destroy', this.destroy.bind(this));
+		this.super_menu.actor.add_style_class_name('app-well-menu');
+		this._source.actor.connect('destroy', this.super_menu.destroy.bind(this));
 
-		// We want to keep the item hovered while the menu is up
-		this.blockSourceEvents = true;
+		// We want to keep the item hovered while the menu is up //XXX used ??
+		this.super_menu.blockSourceEvents = true;
 
-		Main.uiGroup.add_actor(this.actor);
-	},
+		Main.uiGroup.add_actor(this.super_menu.actor);
+		
+		// This is a really terrible hack to overwrite _redisplay without
+		// actually inheriting from PopupMenu.PopupMenu
+		this.super_menu._redisplay = this._redisplay;
+		this.super_menu._dialog = this._dialog;
+	}
 
 	_redisplay () {
 		this.removeAll();
 		let mainCategories = ['AudioVideo', 'Audio', 'Video', 'Development',
 		        'Education', 'Game', 'Graphics', 'Network', 'Office',' Science',
 		                                       'Settings', 'System', 'Utility'];
-
 		for (var i=0; i<mainCategories.length; i++) {
 			let labelItem = mainCategories[i] ;
 			let item = new PopupMenu.PopupMenuItem( labelItem );
@@ -471,45 +472,37 @@ const SelectCategoryMenu = new Lang.Class({
 			});
 			this.addMenuItem(item);
 		}
-	},
+	}
 
 	popup (activatingButton) {
-		this._redisplay();
-		this.open();
-	},
-});
+		this.super_menu._redisplay();
+		this.super_menu.open();
+	}
+};
 Signals.addSignalMethods(SelectCategoryMenu.prototype);
 
 //----------------------------------------
 
-/* This custom widget is a deletable row, displaying a category name.
- */
-const AppCategoryBox = new Lang.Class({
-	Name: 'AppCategoryBox',
-	Extends: St.BoxLayout,
+// This custom widget is a deletable row, displaying a category name.
+class AppCategoryBox {
 
-	_init (dialog, i) {
-		this.parent({
+	constructor (dialog, i) {
+		this.super_box = new St.BoxLayout({
 			vertical: false,
-			style: 'background-color: rgba(100, 100, 100, 0.3);'
-			                 + ' border-radius: 3px; margin: 3px; padding: 2px;'
-			                                             +' padding-left: 6px;',
+			style_class: 'appCategoryBox',
 		});
 		this._dialog = dialog;
 		this.catName = this._dialog._categories[i];
-		this.add_actor(new St.Label({
+		this.super_box.add_actor(new St.Label({
 			text: this.catName,
 			y_align: Clutter.ActorAlign.CENTER,
 			x_align: Clutter.ActorAlign.CENTER,
 		}));
-		this.add_actor(new St.BoxLayout({
-			x_expand: true
-		}));
+		this.super_box.add_actor( new St.BoxLayout({ x_expand: true }) );
 		this.deleteButton = new St.Button({
 			x_expand: false,
 			y_expand: true,
-//			style_class: '',
-			style: 'background-color: rgba(100, 100, 100, 0.3); border-radius: 3px;',
+			style_class: 'appCategoryDeleteBtn',
 			y_align: Clutter.ActorAlign.CENTER,
 			x_align: Clutter.ActorAlign.CENTER,
 			child: new St.Icon({
@@ -523,9 +516,9 @@ const AppCategoryBox = new Lang.Class({
 				x_align: Clutter.ActorAlign.CENTER,
 			}),
 		});
-		this.add_actor(this.deleteButton);
+		this.super_box.add_actor(this.deleteButton);
 		this.deleteButton.connect('clicked', this.removeFromList.bind(this));
-	},
+	}
 
 	removeFromList () {
 		this._dialog._categories.splice(this._dialog._categories.indexOf(this.catName), 1);
@@ -533,11 +526,11 @@ const AppCategoryBox = new Lang.Class({
 			this._dialog.noCatLabel.visible = true;
 		}
 		this.destroy();
-	},
+	}
 
 	destroy () {
 		this.deleteButton.destroy();
-		this.parent();
-	},
-});
+		this.super_box.destroy();
+	}
+};
 

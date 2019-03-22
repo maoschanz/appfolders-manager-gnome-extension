@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-14 20:11+0100\n"
+"POT-Creation-Date: 2019-03-22 03:13+0100\n"
 "PO-Revision-Date: 2018-12-19 05:43+0200\n"
 "Last-Translator: Igor Gordiichuk <igor_ck@outlook.com>\n"
 "Language-Team: \n"
@@ -19,97 +19,102 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: extension.js:67
+#: appfolders-manager@maestroschan.fr/extension.js:69
 msgid "Add to"
 msgstr "Додати до"
 
-#: extension.js:69
+#: appfolders-manager@maestroschan.fr/extension.js:71
 msgid "New AppFolder"
 msgstr "Нова тека програм"
 
-#: extension.js:120
+#: appfolders-manager@maestroschan.fr/extension.js:125
 msgid "Remove from"
 msgstr "Вилучити з"
 
-#: dragAndDrop.js:361
+#: appfolders-manager@maestroschan.fr/dragAndDrop.js:367
 msgid "Create a new folder"
 msgstr "Створити нову теку"
 
-#: dragAndDrop.js:399
+#: appfolders-manager@maestroschan.fr/dragAndDrop.js:405
 #, fuzzy, javascript-format
 msgid "Remove from %s"
 msgstr "Вилучити з "
 
-#: appfolderDialog.js:75 appfolderDialog.js:85
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:62
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:72
 msgid "Cancel"
 msgstr "Скасувати"
 
-#: appfolderDialog.js:79 appfolderDialog.js:93
-msgid "Apply"
-msgstr "Застосовувати"
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:66
+msgid "Create"
+msgstr ""
 
-#: appfolderDialog.js:89
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:76
 msgid "Delete"
 msgstr "Вилучити"
 
-#: appfolderDialog.js:118
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:80
+msgid "Apply"
+msgstr "Застосовувати"
+
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:106
 msgid "Folder's name:"
 msgstr "Назва теки:"
 
-#: appfolderDialog.js:150
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:139
 msgid "Categories:"
 msgstr "Категорії:"
 
-#: appfolderDialog.js:175
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:164
 msgid "Other category?"
 msgstr "Інша категорія?"
 
-#: appfolderDialog.js:191
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:180
 #, fuzzy
 msgid "Select a category…"
 msgstr "Обрати категорію"
 
-#: appfolderDialog.js:236
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:225
 msgid "No category"
 msgstr "Без категорії"
 
-#: prefs.js:37
+#: appfolders-manager@maestroschan.fr/prefs.js:30
 msgid "Modifications will be effective after reloading the extension."
 msgstr "Зміни буде застосовано після перезавантаження розширення."
 
-#: prefs.js:40
+#: appfolders-manager@maestroschan.fr/prefs.js:33
 msgid "Main settings"
 msgstr "Основні налаштування"
 
-#: prefs.js:41
+#: appfolders-manager@maestroschan.fr/prefs.js:34
 msgid "Categories"
 msgstr "Категорії"
 
-#: prefs.js:45
+#: appfolders-manager@maestroschan.fr/prefs.js:38
 msgid "Delete all related settings when an appfolder is deleted"
 msgstr "Вилучити всі пов'язані налаштування, коли видаляється тека"
 
-#: prefs.js:68
+#: appfolders-manager@maestroschan.fr/prefs.js:61
 msgid "Use categories"
 msgstr "Використати категорії"
 
-#: prefs.js:91
+#: appfolders-manager@maestroschan.fr/prefs.js:84
 msgid "Use the right-click menus in addition to the drag-and-drop"
 msgstr "Використовувати контекстне меню додатково до перетягування мишкою"
 
-#: prefs.js:124
+#: appfolders-manager@maestroschan.fr/prefs.js:117
 msgid "More informations about \"additional categories\""
 msgstr "Більше інформації про \"додаткові категорії\""
 
-#: prefs.js:126
+#: appfolders-manager@maestroschan.fr/prefs.js:119
 msgid "Standard specification"
 msgstr "Стандартні категорії"
 
-#: prefs.js:146
+#: appfolders-manager@maestroschan.fr/prefs.js:139
 msgid "Report bugs or ideas"
 msgstr "Повідомити про ваду або запропонувати ідею"
 
-#: prefs.js:157
+#: appfolders-manager@maestroschan.fr/prefs.js:150
 msgid ""
 "This extension can be deactivated once your applications are organized as "
 "wished."

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-14 20:11+0100\n"
+"POT-Creation-Date: 2019-03-22 03:13+0100\n"
 "PO-Revision-Date: 2017-02-05 16:47+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -13,97 +13,102 @@ msgstr ""
 "X-Generator: Poedit 1.8.11\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: extension.js:67
+#: appfolders-manager@maestroschan.fr/extension.js:69
 msgid "Add to"
 msgstr "Ajouter à"
 
-#: extension.js:69
+#: appfolders-manager@maestroschan.fr/extension.js:71
 msgid "New AppFolder"
 msgstr "Nouvel AppFolder"
 
-#: extension.js:120
+#: appfolders-manager@maestroschan.fr/extension.js:125
 msgid "Remove from"
 msgstr "Retirer de"
 
-#: dragAndDrop.js:361
+#: appfolders-manager@maestroschan.fr/dragAndDrop.js:367
 msgid "Create a new folder"
 msgstr "Créer un nouveau dossier"
 
-#: dragAndDrop.js:399
+#: appfolders-manager@maestroschan.fr/dragAndDrop.js:405
 #, javascript-format
 msgid "Remove from %s"
 msgstr "Retirer de %s"
 
-#: appfolderDialog.js:75 appfolderDialog.js:85
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:62
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:72
 msgid "Cancel"
 msgstr "Annuler"
 
-#: appfolderDialog.js:79 appfolderDialog.js:93
-msgid "Apply"
-msgstr "Appliquer"
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:66
+msgid "Create"
+msgstr "Créer"
 
-#: appfolderDialog.js:89
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:76
 msgid "Delete"
 msgstr "Supprimer"
 
-#: appfolderDialog.js:118
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:80
+msgid "Apply"
+msgstr "Appliquer"
+
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:106
 msgid "Folder's name:"
 msgstr "Nom du dossier :"
 
-#: appfolderDialog.js:150
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:139
 msgid "Categories:"
 msgstr "Catégories :"
 
-#: appfolderDialog.js:175
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:164
 msgid "Other category?"
 msgstr "Autre catégorie ?"
 
-#: appfolderDialog.js:191
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:180
 msgid "Select a category…"
 msgstr "Choisir une catégorie…"
 
-#: appfolderDialog.js:236
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:225
 msgid "No category"
 msgstr "Aucune catégorie"
 
-#: prefs.js:37
+#: appfolders-manager@maestroschan.fr/prefs.js:30
 msgid "Modifications will be effective after reloading the extension."
 msgstr "Les modifications prendront effet après avoir rechargé l'extension"
 
-#: prefs.js:40
+#: appfolders-manager@maestroschan.fr/prefs.js:33
 msgid "Main settings"
 msgstr "Réglages principaux"
 
-#: prefs.js:41
+#: appfolders-manager@maestroschan.fr/prefs.js:34
 msgid "Categories"
 msgstr "Catégories"
 
-#: prefs.js:45
+#: appfolders-manager@maestroschan.fr/prefs.js:38
 msgid "Delete all related settings when an appfolder is deleted"
 msgstr ""
 "Supprimer tous les réglages relatifs à un appfolder lors de sa suppression"
 
-#: prefs.js:68
+#: appfolders-manager@maestroschan.fr/prefs.js:61
 msgid "Use categories"
 msgstr "Utiliser des catégories"
 
-#: prefs.js:91
+#: appfolders-manager@maestroschan.fr/prefs.js:84
 msgid "Use the right-click menus in addition to the drag-and-drop"
 msgstr "Utiliser le menu du clic-droit en complément du glisser-déposer"
 
-#: prefs.js:124
+#: appfolders-manager@maestroschan.fr/prefs.js:117
 msgid "More informations about \"additional categories\""
 msgstr "Plus d'informations à propos des \"catégories supplémentaires\""
 
-#: prefs.js:126
+#: appfolders-manager@maestroschan.fr/prefs.js:119
 msgid "Standard specification"
 msgstr "Spécification standard"
 
-#: prefs.js:146
+#: appfolders-manager@maestroschan.fr/prefs.js:139
 msgid "Report bugs or ideas"
 msgstr "Reporter un bug ou une idée"
 
-#: prefs.js:157
+#: appfolders-manager@maestroschan.fr/prefs.js:150
 msgid ""
 "This extension can be deactivated once your applications are organized as "
 "wished."

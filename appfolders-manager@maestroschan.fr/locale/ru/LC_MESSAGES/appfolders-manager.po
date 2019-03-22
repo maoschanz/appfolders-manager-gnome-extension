@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-14 20:11+0100\n"
+"POT-Creation-Date: 2019-03-22 03:13+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: Max Krapiŭka <metalomaniax@gmail.com>\n"
 "Language-Team: RUSSIAN <metalomaniax@gmail.com>\n"
@@ -16,100 +16,105 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: extension.js:67
+#: appfolders-manager@maestroschan.fr/extension.js:69
 msgid "Add to"
 msgstr "Добавить в"
 
-#: extension.js:69
+#: appfolders-manager@maestroschan.fr/extension.js:71
 msgid "New AppFolder"
 msgstr "Новая папка"
 
-#: extension.js:120
+#: appfolders-manager@maestroschan.fr/extension.js:125
 msgid "Remove from"
 msgstr "Удалить из"
 
-#: dragAndDrop.js:361
+#: appfolders-manager@maestroschan.fr/dragAndDrop.js:367
 msgid "Create a new folder"
 msgstr ""
 
-#: dragAndDrop.js:399
+#: appfolders-manager@maestroschan.fr/dragAndDrop.js:405
 #, fuzzy, javascript-format
 msgid "Remove from %s"
 msgstr "Удалить из"
 
-#: appfolderDialog.js:75 appfolderDialog.js:85
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:62
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:72
 msgid "Cancel"
 msgstr "Отмена"
 
-#: appfolderDialog.js:79 appfolderDialog.js:93
-msgid "Apply"
-msgstr ""
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:66
+msgid "Create"
+msgstr "Стварыць"
 
-#: appfolderDialog.js:89
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:76
 msgid "Delete"
 msgstr "Удалить"
 
-#: appfolderDialog.js:118
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:80
+msgid "Apply"
+msgstr ""
+
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:106
 msgid "Folder's name:"
 msgstr ""
 
-#: appfolderDialog.js:150
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:139
 msgid "Categories:"
 msgstr ""
 
-#: appfolderDialog.js:175
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:164
 #, fuzzy
 msgid "Other category?"
 msgstr "Удалить категорию"
 
-#: appfolderDialog.js:191
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:180
 #, fuzzy
 msgid "Select a category…"
 msgstr "Удалить категорию"
 
-#: appfolderDialog.js:236
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:225
 #, fuzzy
 msgid "No category"
 msgstr "Добавить категорию"
 
-#: prefs.js:37
+#: appfolders-manager@maestroschan.fr/prefs.js:30
 msgid "Modifications will be effective after reloading the extension."
 msgstr "Изменения вступят в силу после перезагрузки расширения."
 
-#: prefs.js:40
+#: appfolders-manager@maestroschan.fr/prefs.js:33
 msgid "Main settings"
 msgstr ""
 
-#: prefs.js:41
+#: appfolders-manager@maestroschan.fr/prefs.js:34
 msgid "Categories"
 msgstr ""
 
-#: prefs.js:45
+#: appfolders-manager@maestroschan.fr/prefs.js:38
 msgid "Delete all related settings when an appfolder is deleted"
 msgstr "Удалять все связанные настройки при удалении папки приложений."
 
-#: prefs.js:68
+#: appfolders-manager@maestroschan.fr/prefs.js:61
 #, fuzzy
 msgid "Use categories"
 msgstr "Дополнительные категории"
 
-#: prefs.js:91
+#: appfolders-manager@maestroschan.fr/prefs.js:84
 msgid "Use the right-click menus in addition to the drag-and-drop"
 msgstr ""
 
-#: prefs.js:124
+#: appfolders-manager@maestroschan.fr/prefs.js:117
 msgid "More informations about \"additional categories\""
 msgstr "Больше информации про \"дополнительные категории\""
 
-#: prefs.js:126
+#: appfolders-manager@maestroschan.fr/prefs.js:119
 msgid "Standard specification"
 msgstr "Стандартная спецификация"
 
-#: prefs.js:146
+#: appfolders-manager@maestroschan.fr/prefs.js:139
 msgid "Report bugs or ideas"
 msgstr "Сообщить об ошибках, предложить идеи"
 
-#: prefs.js:157
+#: appfolders-manager@maestroschan.fr/prefs.js:150
 msgid ""
 "This extension can be deactivated once your applications are organized as "
 "wished."
@@ -119,21 +124,3 @@ msgstr ""
 
 #~ msgid "This appfolder already exists."
 #~ msgstr "Эта папка приложений уже существует"
-
-#~ msgid "Enter the name of a category"
-#~ msgstr "Введите название категории"
-
-#~ msgid "Add"
-#~ msgstr "Добавить"
-
-#~ msgid "Rename"
-#~ msgstr "Переименовать"
-
-#~ msgid "Enter a name"
-#~ msgstr "Введите название"
-
-#~ msgid "Create"
-#~ msgstr "Стварыць"
-
-#~ msgid "Experimental features (not recommended)"
-#~ msgstr "Эксперементальные возможности (не рекомендуется)"

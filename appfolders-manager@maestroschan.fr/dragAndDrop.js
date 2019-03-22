@@ -297,7 +297,7 @@ class OverlayManager {
 		this.downAction.destroy();
 		//log('OverlayManager destroyed');
 	}
-}
+};
 
 //-------------------------------------------------------
 
@@ -446,7 +446,7 @@ class FolderActionArea extends DroppableArea {
 		this.label.destroy();
 		super.destroy();
 	}
-}
+};
 
 /* Overlay reacting to hover, but isn't droppable. The goal is to go to an other
  * page of the grid while dragging an app.
@@ -538,7 +538,7 @@ class NavigationArea extends DroppableArea {
 		this.timeoutSet = false;
 		Mainloop.source_remove(this._timeoutId);
 	}
-});
+};
 
 /* This overlay is the area upon a folder. Position and visibility of the actor
  * is handled by exterior functions.
@@ -603,5 +603,5 @@ class FolderArea extends DroppableArea {
 		Main.overview.endItemDrag(this);
 		return false;
 	}
-}
+};
 

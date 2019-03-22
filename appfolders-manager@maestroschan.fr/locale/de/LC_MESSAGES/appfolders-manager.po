@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-01-14 20:11+0100\n"
+"POT-Creation-Date: 2019-03-22 03:13+0100\n"
 "PO-Revision-Date: 2017-10-28 01:50+0200\n"
 "Last-Translator: Jonatan Hatakeyama Zeidler <jonatan_zeidler@gmx.de>\n"
 "Language-Team: https://github.com/hobbypunk90/appfolders-manager-gnome-"
@@ -20,100 +20,105 @@ msgstr ""
 "X-Generator: Poedit 2.0.4\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: extension.js:67
+#: appfolders-manager@maestroschan.fr/extension.js:69
 msgid "Add to"
 msgstr "Hinzufügen zu"
 
-#: extension.js:69
+#: appfolders-manager@maestroschan.fr/extension.js:71
 msgid "New AppFolder"
 msgstr "Neuer Ordner"
 
-#: extension.js:120
+#: appfolders-manager@maestroschan.fr/extension.js:125
 msgid "Remove from"
 msgstr "Löschen aus"
 
-#: dragAndDrop.js:361
+#: appfolders-manager@maestroschan.fr/dragAndDrop.js:367
 msgid "Create a new folder"
 msgstr ""
 
-#: dragAndDrop.js:399
+#: appfolders-manager@maestroschan.fr/dragAndDrop.js:405
 #, fuzzy, javascript-format
 msgid "Remove from %s"
 msgstr "Löschen aus"
 
-#: appfolderDialog.js:75 appfolderDialog.js:85
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:62
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:72
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: appfolderDialog.js:79 appfolderDialog.js:93
-msgid "Apply"
-msgstr ""
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:66
+msgid "Create"
+msgstr "Erstelle"
 
-#: appfolderDialog.js:89
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:76
 msgid "Delete"
 msgstr "Löschen"
 
-#: appfolderDialog.js:118
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:80
+msgid "Apply"
+msgstr ""
+
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:106
 msgid "Folder's name:"
 msgstr ""
 
-#: appfolderDialog.js:150
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:139
 msgid "Categories:"
 msgstr ""
 
-#: appfolderDialog.js:175
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:164
 #, fuzzy
 msgid "Other category?"
 msgstr "Lösche eine Kategorie"
 
-#: appfolderDialog.js:191
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:180
 #, fuzzy
 msgid "Select a category…"
 msgstr "Lösche eine Kategorie"
 
-#: appfolderDialog.js:236
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:225
 #, fuzzy
 msgid "No category"
 msgstr "Kategorie hinzufügen"
 
-#: prefs.js:37
+#: appfolders-manager@maestroschan.fr/prefs.js:30
 msgid "Modifications will be effective after reloading the extension."
 msgstr "Änderungen werden nach Neustart der Erweiterung übernommen."
 
-#: prefs.js:40
+#: appfolders-manager@maestroschan.fr/prefs.js:33
 msgid "Main settings"
 msgstr ""
 
-#: prefs.js:41
+#: appfolders-manager@maestroschan.fr/prefs.js:34
 msgid "Categories"
 msgstr ""
 
-#: prefs.js:45
+#: appfolders-manager@maestroschan.fr/prefs.js:38
 msgid "Delete all related settings when an appfolder is deleted"
 msgstr "Lösche alle Einstellungen, wenn ein Ordner gelöscht wird"
 
-#: prefs.js:68
+#: appfolders-manager@maestroschan.fr/prefs.js:61
 #, fuzzy
 msgid "Use categories"
 msgstr "Hinzugefügte Kategorien"
 
-#: prefs.js:91
+#: appfolders-manager@maestroschan.fr/prefs.js:84
 msgid "Use the right-click menus in addition to the drag-and-drop"
 msgstr ""
 
-#: prefs.js:124
+#: appfolders-manager@maestroschan.fr/prefs.js:117
 msgid "More informations about \"additional categories\""
 msgstr ""
 
-#: prefs.js:126
+#: appfolders-manager@maestroschan.fr/prefs.js:119
 msgid "Standard specification"
 msgstr ""
 
-#: prefs.js:146
+#: appfolders-manager@maestroschan.fr/prefs.js:139
 msgid "Report bugs or ideas"
 msgstr ""
 
-#: prefs.js:157
+#: appfolders-manager@maestroschan.fr/prefs.js:150
 msgid ""
 "This extension can be deactivated once your applications are organized as "
 "wished."
@@ -121,27 +126,3 @@ msgstr ""
 
 #~ msgid "This appfolder already exists."
 #~ msgstr "Dieser Ordner existiert bereits."
-
-#~ msgid "Enter the name of a category"
-#~ msgstr "Gib der Kategorie einen Namen"
-
-#~ msgid "Add"
-#~ msgstr "Hinzufügen"
-
-#~ msgid "Rename"
-#~ msgstr "Umbenennen"
-
-#~ msgid "Enter a name"
-#~ msgstr "Namen eingeben"
-
-#~ msgid "Create"
-#~ msgstr "Erstelle"
-
-#~ msgid "Experimental features (not recommended)"
-#~ msgstr "Experimentelle Funktionen (nicht empfohlen)"
-
-#~ msgid "Delete AppFolder"
-#~ msgstr "Lösche Ordner"
-
-#~ msgid "Maximum number of columns :"
-#~ msgstr "Maximale Anzahl an Spalten:"
