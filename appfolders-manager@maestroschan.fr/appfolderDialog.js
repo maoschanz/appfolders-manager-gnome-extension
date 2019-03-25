@@ -262,6 +262,7 @@ var AppfolderDialog = class AppfolderDialog {
 		if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('debug') ) {
 			log('[AppfolderDialog v2] destroying dialog');
 		}
+		this._catMenu.destroy();
 		// TODO ?
 		this.super_dialog.destroy(); //XXX crée des erreurs reloues ??? FIXME
 	}
@@ -432,6 +433,13 @@ class SelectCategoryButton {
 		this.popupMenu();
 		return Clutter.EVENT_STOP;
 	}
+
+	destroy () {
+		if (this._menu != null) {
+			this._menu.destroy();
+		}
+		this.actor.destroy();
+	}
 };
 Signals.addSignalMethods(SelectCategoryButton.prototype);
 
@@ -477,6 +485,11 @@ class SelectCategoryMenu {
 	popup (activatingButton) {
 		this.super_menu._redisplay();
 		this.super_menu.open();
+	}
+
+	destroy () {
+		this.super_menu.close();
+		this.super_menu.destroy();
 	}
 };
 Signals.addSignalMethods(SelectCategoryMenu.prototype);
