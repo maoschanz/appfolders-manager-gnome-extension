@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-03-22 03:13+0100\n"
+"POT-Creation-Date: 2019-04-02 19:51+0200\n"
 "PO-Revision-Date: 2017-09-15 16:40+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -20,63 +20,63 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: appfolders-manager@maestroschan.fr/extension.js:69
+#: appfolders-manager@maestroschan.fr/extension.js:73
 msgid "Add to"
 msgstr "Додај у"
 
-#: appfolders-manager@maestroschan.fr/extension.js:71
+#: appfolders-manager@maestroschan.fr/extension.js:75
 msgid "New AppFolder"
 msgstr "Нова фаскила програма"
 
-#: appfolders-manager@maestroschan.fr/extension.js:125
+#: appfolders-manager@maestroschan.fr/extension.js:129
 msgid "Remove from"
 msgstr "Уклони ставку"
 
-#: appfolders-manager@maestroschan.fr/dragAndDrop.js:367
+#: appfolders-manager@maestroschan.fr/dragAndDrop.js:341
 msgid "Create a new folder"
 msgstr ""
 
-#: appfolders-manager@maestroschan.fr/dragAndDrop.js:405
+#: appfolders-manager@maestroschan.fr/dragAndDrop.js:379
 #, fuzzy, javascript-format
 msgid "Remove from %s"
 msgstr "Уклони ставку"
 
-#: appfolders-manager@maestroschan.fr/appfolderDialog.js:62
-#: appfolders-manager@maestroschan.fr/appfolderDialog.js:72
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:63
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:73
 msgid "Cancel"
 msgstr "Откажи"
 
-#: appfolders-manager@maestroschan.fr/appfolderDialog.js:66
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:67
 msgid "Create"
 msgstr "Направи"
 
-#: appfolders-manager@maestroschan.fr/appfolderDialog.js:76
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:77
 msgid "Delete"
 msgstr "Обриши"
 
-#: appfolders-manager@maestroschan.fr/appfolderDialog.js:80
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:81
 msgid "Apply"
 msgstr ""
 
-#: appfolders-manager@maestroschan.fr/appfolderDialog.js:106
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:107
 msgid "Folder's name:"
 msgstr ""
 
-#: appfolders-manager@maestroschan.fr/appfolderDialog.js:139
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:140
 msgid "Categories:"
 msgstr ""
 
-#: appfolders-manager@maestroschan.fr/appfolderDialog.js:164
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:165
 #, fuzzy
 msgid "Other category?"
 msgstr "Уклони категорију"
 
-#: appfolders-manager@maestroschan.fr/appfolderDialog.js:180
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:181
 #, fuzzy
 msgid "Select a category…"
 msgstr "Уклони категорију"
 
-#: appfolders-manager@maestroschan.fr/appfolderDialog.js:225
+#: appfolders-manager@maestroschan.fr/appfolderDialog.js:226
 #, fuzzy
 msgid "No category"
 msgstr "Додај категорију"
