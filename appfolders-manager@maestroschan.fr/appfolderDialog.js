@@ -31,6 +31,7 @@ var AppfolderDialog = class AppfolderDialog {
 	// build a new dialog. If folder is null, the dialog will be for creating a new
 	// folder, else app is null, and the dialog will be for editing an existing folder
 	constructor (folder, app, id) {
+		log('AppfolderDialog, ligne 34');
 		this._folder = folder;
 		this._app = app;
 		this._id = id;
@@ -399,7 +400,7 @@ var AppfolderDialog = class AppfolderDialog {
 // categories. Button part.
 class SelectCategoryButton {
 
-	constructor (bouton, dialog){
+	constructor (bouton, dialog) {
 		this.actor = bouton;
 		this._dialog = dialog;
 		this.actor.connect('button-press-event', this._onButtonPress.bind(this));

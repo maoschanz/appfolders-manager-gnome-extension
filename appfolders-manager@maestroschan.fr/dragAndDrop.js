@@ -19,30 +19,6 @@ const Gettext = imports.gettext.domain('appfolders-manager');
 const _ = Gettext.gettext;
 
 //-------------------------------------------------
-/* do not edit this section */
-
-let injections=[];
-
-function injectToFunction(parent, name, func) {
-	let origin = parent[name];
-	parent[name] = function() {
-		let ret;
-		ret = origin.apply(this, arguments);
-			if (ret === undefined)
-				ret = func.apply(this, arguments);
-			return ret;
-	}
-	return origin;
-}
-
-function removeInjection(object, injection, name) {
-	if (injection[name] === undefined)
-		delete object[name];
-	else
-		object[name] = injection[name];
-}
-
-//-------------------------------------------------
 
 var OVERLAY_MANAGER;
 
@@ -51,27 +27,25 @@ var OVERLAY_MANAGER;
  */
 function initDND () {
 	OVERLAY_MANAGER = new OverlayManager();
+}
 
-	injections['_init2'] = injectToFunction(AppDisplay.AppIcon.prototype, '_init',
-		function() {
-			this._draggable.connect('drag-begin', () => {
-				if (Main.overview.viewSelector.getActivePage() != 2) {
-					return;
-				}
-				this._removeMenuTimeout(); // why ?
-				Main.overview.beginItemDrag(this);
-				OVERLAY_MANAGER.on_drag_begin();
-			});
-			this._draggable.connect('drag-cancelled', () => {
-				Main.overview.cancelledItemDrag(this);
-				OVERLAY_MANAGER.on_drag_cancelled();
-			});
-			this._draggable.connect('drag-end', () => {
-				Main.overview.endItemDrag(this);
-				OVERLAY_MANAGER.on_drag_end();
-			});
+function connectAppIconDNDSignals(icon) {
+	icon._draggable.connect('drag-begin', () => {
+		if (Main.overview.viewSelector.getActivePage() != 2) {
+			return;
 		}
-	);
+		icon._removeMenuTimeout(); // why ?
+		Main.overview.beginItemDrag(icon);
+		OVERLAY_MANAGER.on_drag_begin();
+	});
+	icon._draggable.connect('drag-cancelled', () => {
+		Main.overview.cancelledItemDrag(icon);
+		OVERLAY_MANAGER.on_drag_cancelled();
+	});
+	icon._draggable.connect('drag-end', () => {
+		Main.overview.endItemDrag(icon);
+		OVERLAY_MANAGER.on_drag_end();
+	});
 }
 
 //--------------------------------------------------------------
@@ -81,8 +55,8 @@ function initDND () {
  * pages, creation, removing).
  */
 class OverlayManager {
-
 	constructor () {
+		log('OverlayManager, ligne 86');
 		this.addActions = [];
 		this.removeAction = new FolderActionArea('remove');
 		this.createAction = new FolderActionArea('create');
