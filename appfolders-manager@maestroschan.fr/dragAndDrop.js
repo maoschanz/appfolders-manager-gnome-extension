@@ -29,25 +29,6 @@ function initDND () {
 	OVERLAY_MANAGER = new OverlayManager();
 }
 
-function connectAppIconDNDSignals(icon) {
-	icon._draggable.connect('drag-begin', () => {
-		if (Main.overview.viewSelector.getActivePage() != 2) {
-			return;
-		}
-		icon._removeMenuTimeout(); // why ?
-		Main.overview.beginItemDrag(icon);
-		OVERLAY_MANAGER.on_drag_begin();
-	});
-	icon._draggable.connect('drag-cancelled', () => {
-		Main.overview.cancelledItemDrag(icon);
-		OVERLAY_MANAGER.on_drag_cancelled();
-	});
-	icon._draggable.connect('drag-end', () => {
-		Main.overview.endItemDrag(icon);
-		OVERLAY_MANAGER.on_drag_end();
-	});
-}
-
 //--------------------------------------------------------------
 
 /* Amazing! A singleton! It allows easy (and safer?) access to general methods,
@@ -56,7 +37,6 @@ function connectAppIconDNDSignals(icon) {
  */
 class OverlayManager {
 	constructor () {
-		log('OverlayManager, ligne 86');
 		this.addActions = [];
 		this.removeAction = new FolderActionArea('remove');
 		this.createAction = new FolderActionArea('create');
@@ -181,24 +161,19 @@ class OverlayManager {
 		let xMiddle = ( monitor.x + monitor.width ) / 2;
 		let yMiddle = ( monitor.y + monitor.height ) / 2;
 		let allAppsGrid = Main.overview.viewSelector.appDisplay._views[1].view._grid;
-
+		
 		let nItems = 0;
 		let indexes = [];
 		let folders = [];
-		let previous = [];
 		let x, y;
-		let decrementLimit = null;
-		let previousIcon = null;
 
 		Main.overview.viewSelector.appDisplay._views[1].view._allItems.forEach(function(icon) {
 			if (icon.actor.visible) {
 				if (icon instanceof AppDisplay.FolderIcon) {
 					indexes.push(nItems);
 					folders.push(icon);
-					previous.push(previousIcon);
 				}
 				nItems++;
-				previousIcon = icon;
 			}
 		});
 
@@ -213,11 +188,8 @@ class OverlayManager {
 		for (var i = 0; i < indexes.length; i++) {
 			let inPageIndex = indexes[i] % allAppsGrid._childrenPerPage;
 			let page = Math.floor(indexes[i] / allAppsGrid._childrenPerPage);
-			if ((decrementLimit == null) || (i < decrementLimit)) {
-				[x, y] = folders[i].actor.get_position();
-			} else {
-				[x, y] = previous[i].actor.get_position();
-			}
+			x = folders[i].actor.get_allocation_box().x1;
+			y = folders[i].actor.get_allocation_box().y1;
 
 			// Invalid coords (example: when dragging out of the folder) should
 			// not produce a visible overlay, a negative page number is an easy
@@ -330,7 +302,6 @@ class DroppableArea {
  * removing an app from a folder. These areas accept drop, and display a label.
  */
 class FolderActionArea extends DroppableArea {
-
 	constructor (id) {
 		super(id);
 
@@ -426,7 +397,6 @@ class FolderActionArea extends DroppableArea {
  * page of the grid while dragging an app.
  */
 class NavigationArea extends DroppableArea {
-
 	constructor (id) {
 		super(id);
 
@@ -520,7 +490,6 @@ class NavigationArea extends DroppableArea {
  * Dropping an app on this folder will add it to the folder
  */
 class FolderArea extends DroppableArea {
-
 	constructor (id, asked_x, asked_y, page) {
 		super(id);
 		this.page = page;

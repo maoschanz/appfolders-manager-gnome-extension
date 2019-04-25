@@ -44,7 +44,7 @@ msgstr "İptal"
 
 #: appfolders-manager@maestroschan.fr/appfolderDialog.js:67
 msgid "Create"
-msgstr ""
+msgstr "Oluştur"
 
 #: appfolders-manager@maestroschan.fr/appfolderDialog.js:77
 msgid "Delete"

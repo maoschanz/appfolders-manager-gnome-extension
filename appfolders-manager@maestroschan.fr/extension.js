@@ -171,6 +171,7 @@ function injectionInAppsMenus() {
 //------------------------------------------------
 
 function injectionInIcons() {
+	// Right-click on a FolderIcon launches a new AppfolderDialog
 	AppDisplay.FolderIcon = class extends AppDisplay.FolderIcon {
 		constructor (id, path, parentView) {
 			super(id, path, parentView);
@@ -191,10 +192,26 @@ function injectionInIcons() {
 		}
 	};
 
+	// Dragging an AppIcon triggers the DND mode
 	AppDisplay.AppIcon = class extends AppDisplay.AppIcon {
 		constructor (app, params) {
 			super(app, params);
-			DragAndDrop.connectAppIconDNDSignals(this);
+			this._draggable.connect('drag-begin', () => {
+				if (Main.overview.viewSelector.getActivePage() != 2) {
+					return;
+				}
+				this._removeMenuTimeout(); // why ?
+				Main.overview.beginItemDrag(this);
+				DragAndDrop.OVERLAY_MANAGER.on_drag_begin();
+			});
+			this._draggable.connect('drag-cancelled', () => {
+				Main.overview.cancelledItemDrag(this);
+				DragAndDrop.OVERLAY_MANAGER.on_drag_cancelled();
+			});
+			this._draggable.connect('drag-end', () => {
+				Main.overview.endItemDrag(this);
+				DragAndDrop.OVERLAY_MANAGER.on_drag_end();
+			});
 		}
 	};
 }
