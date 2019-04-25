@@ -156,39 +156,21 @@ const appfoldersManagerSettingsWidget = new GObject.Class({
 	add_section: function(titre) {
 		let section = new Gtk.Box({
 			orientation: Gtk.Orientation.VERTICAL,
+			margin: 6,
 			spacing: 6,
 		});
-		if (titre != "") {
-			section.add(new Gtk.Label({
-				label: '<b>' + titre + '</b>',
-				halign: Gtk.Align.START,
-				use_markup: true,
-			}));
-		}
 
-		let a = new Gtk.ListBox({
-			can_focus: false,
-			has_focus: false,
-			is_focus: false,
-			has_default: false,
-			selection_mode: Gtk.SelectionMode.NONE,
+		let frame = new Gtk.Frame({
+			label: titre,
+			label_xalign: 0.1,
 		});
-		section.add(a);
-		this.add(section);
-		return a;
+		frame.add(section);
+		this.add(frame);
+		return section;
 	},
 
 	add_row: function(filledbox, section) {
-		let a = new Gtk.ListBoxRow({
-			can_focus: false,
-			has_focus: false,
-			is_focus: false,
-			has_default: false,
-			selectable: false,
-		});
-		a.add(filledbox);
-		section.add(a);
-		return a;
+		section.add(filledbox);
 	},
 });
 

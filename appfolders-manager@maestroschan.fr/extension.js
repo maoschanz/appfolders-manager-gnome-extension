@@ -24,8 +24,18 @@ const _ = Gettext.gettext;
 let FOLDER_SCHEMA;
 let FOLDER_LIST;
 
-function init() {
+let INIT_TIME;
+
+function init () {
 	Convenience.initTranslations();
+	
+	INIT_TIME = getTimeStamp();
+}
+
+function getTimeStamp () {
+	let today = new Date();
+	let str = today.getHours() + '' + today.getMinutes() + '' + today.getSeconds();
+	return parseInt(str);
 }
 
 //------------------------------------------------
@@ -57,7 +67,8 @@ var injections=[];
 /* this function injects items (1 or 2 submenus) in AppIconMenu's _redisplay method. */
 function injectionInAppsMenus() {
 	injections['_redisplay'] = injectToFunction(AppDisplay.AppIconMenu.prototype, '_redisplay', function() {
-		if (Main.overview.viewSelector.getActivePage() == 2 || Main.overview.viewSelector.getActivePage() == 3) {
+		if (Main.overview.viewSelector.getActivePage() == 2
+		                   || Main.overview.viewSelector.getActivePage() == 3) {
 			//ok
 		} else {
 			return;
@@ -175,7 +186,10 @@ function injectionInIcons() {
 	AppDisplay.FolderIcon = class extends AppDisplay.FolderIcon {
 		constructor (id, path, parentView) {
 			super(id, path, parentView);
-			this.actor.connect('button-press-event', this._onButtonPress.bind(this));
+			if (!this.isCustom) {
+				this.actor.connect('button-press-event', this._onButtonPress.bind(this));
+			}
+			this.isCustom = true;
 		}
 
 		_onButtonPress (actor, event) {
@@ -196,22 +210,31 @@ function injectionInIcons() {
 	AppDisplay.AppIcon = class extends AppDisplay.AppIcon {
 		constructor (app, params) {
 			super(app, params);
-			this._draggable.connect('drag-begin', () => {
-				if (Main.overview.viewSelector.getActivePage() != 2) {
-					return;
-				}
-				this._removeMenuTimeout(); // why ?
-				Main.overview.beginItemDrag(this);
-				DragAndDrop.OVERLAY_MANAGER.on_drag_begin();
-			});
-			this._draggable.connect('drag-cancelled', () => {
-				Main.overview.cancelledItemDrag(this);
-				DragAndDrop.OVERLAY_MANAGER.on_drag_cancelled();
-			});
-			this._draggable.connect('drag-end', () => {
-				Main.overview.endItemDrag(this);
-				DragAndDrop.OVERLAY_MANAGER.on_drag_end();
-			});
+			if (!this.isCustom) {
+				this._draggable.connect('drag-begin', this.onDragBeginExt.bind(this));
+				this._draggable.connect('drag-cancelled', this.onDragCancelledExt.bind(this));
+				this._draggable.connect('drag-end', this.onDragEndExt.bind(this));
+			}
+			this.isCustom = true;
+		}
+
+		onDragBeginExt () {
+			if (Main.overview.viewSelector.getActivePage() != 2) {
+				return;
+			}
+			this._removeMenuTimeout(); // why ?
+			Main.overview.beginItemDrag(this);
+			DragAndDrop.OVERLAY_MANAGER.on_drag_begin();
+		}
+
+		onDragEndExt () {
+			Main.overview.endItemDrag(this);
+			DragAndDrop.OVERLAY_MANAGER.on_drag_end();
+		}
+
+		onDragCancelledExt () {
+			Main.overview.cancelledItemDrag(this);
+			DragAndDrop.OVERLAY_MANAGER.on_drag_cancelled();
 		}
 	};
 }
@@ -229,7 +252,7 @@ function removeFromFolder (app_id, folder_id) {
 	if ( isInFolder(app_id, folder_id) ) {
 		let pastContent = folder_schema.get_strv('apps');
 		let presentContent = [];
-		for(var i=0;i<pastContent.length;i++){
+		for(var i=0; i<pastContent.length; i++){
 			if(pastContent[i] != app_id) {
 				presentContent.push(pastContent[i]);
 			}
@@ -328,27 +351,37 @@ function addToFolder (app_source, folder_id) {
 	//un-exclude the application if it was excluded TODO else don't do it at all
 	let pastExcluded = folder_schema.get_strv('excluded-apps');
 	let presentExcluded = [];
-	for(let i = 0; i < pastExcluded.length; i++){
+	for(let i=0; i<pastExcluded.length; i++){
 		if(pastExcluded[i] != id) {
 			presentExcluded.push(pastExcluded[i]);
 		}
 	}
-	folder_schema.set_strv('excluded-apps', presentExcluded);
+	if (presentExcluded.length > 0) {
+		folder_schema.set_strv('excluded-apps', presentExcluded);
+	}
 	
 	//actually add the app
 	let content = folder_schema.get_strv('apps');
 	content.push(id);
-	folder_schema.set_strv('apps', content);
+	folder_schema.set_strv('apps', content); //XXX verbose errors
+	
+	//update icons in the ugliest possible way
+	let icons = Main.overview.viewSelector.appDisplay._views[1].view.folderIcons;
+	for (let i=0; i<icons.length; i++) {
+		let size = icons[i].icon._iconBin.width;
+		icons[i].icon.icon = icons[i]._createIcon(size);
+		icons[i].icon._iconBin.child = icons[i].icon.icon;
+	}
 	return true;
 }
 
 //------------------------------------------------------------------------------
 
 function isInFolder (app_id, folder_id) {
-	let folder_schema = folderSchema (folder_id);
+	let folder_schema = folderSchema(folder_id);
 	let isIn = false;
 	let content_ = folder_schema.get_strv('apps');
-	for(var j=0;j<content_.length;j++){
+	for(var j=0; j<content_.length; j++) {
 		if(content_[j] == app_id) {
 			isIn = true;
 		}
@@ -378,6 +411,13 @@ function enable() {
 		injectionInAppsMenus();
 	}
 	DragAndDrop.initDND();
+	
+	// Reload the view if the user load the extension at least a minute after
+	// opening the session. XXX works like shit
+	let delta = getTimeStamp() - INIT_TIME;
+	if (delta < 0 || delta > 105) {
+		Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
+	}
 }
 
 function disable() {
@@ -385,8 +425,21 @@ function disable() {
 	AppDisplay.FolderIcon.prototype.popupMenu = null;
 
 	removeInjection(AppDisplay.AppIconMenu.prototype, injections, '_redisplay');
-//	removeInjection(AppDisplay.FolderIcon.prototype, injections, '_init'); // FIXME
-//	removeInjection(AppDisplay.AppIcon.prototype, injections, '_init2');
+
+	// Overwrite my shit for FolderIcon
+	AppDisplay.FolderIcon = class extends AppDisplay.FolderIcon {
+		_onButtonPress (actor, event) {
+			return Clutter.EVENT_PROPAGATE;
+		}
+	};
+
+	// Overwrite my shit for AppIcon
+	AppDisplay.AppIcon = class extends AppDisplay.AppIcon {
+		onDragBeginExt () {}
+		onDragEndExt () {}
+		onDragCancelledExt () {}
+	};
+
 	DragAndDrop.OVERLAY_MANAGER.destroy();
 }
 
