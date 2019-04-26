@@ -7,7 +7,6 @@ const St = imports.gi.St;
 const Main = imports.ui.main;
 const AppDisplay = imports.ui.appDisplay;
 const PopupMenu = imports.ui.popupMenu;
-const Overview = imports.ui.overview;
 const Meta = imports.gi.Meta;
 const Mainloop = imports.mainloop;
 
@@ -28,17 +27,17 @@ let INIT_TIME;
 
 function init () {
 	Convenience.initTranslations();
-	
 	INIT_TIME = getTimeStamp();
 }
 
 function getTimeStamp () {
 	let today = new Date();
-	let str = today.getHours() + '' + today.getMinutes() + '' + today.getSeconds();
+	let str = today.getDate() + '' + today.getHours() + '' + today.getMinutes()
+	                                                  + '' + today.getSeconds();
 	return parseInt(str);
 }
 
-//------------------------------------------------
+//------------------------------------------------------------------------------
 /* do not edit this section */
 
 function injectToFunction(parent, name, func) {
@@ -62,7 +61,7 @@ function removeInjection(object, injection, name) {
 
 var injections=[];
 
-//------------------------------------------------
+//------------------------------------------------------------------------------
 
 /* this function injects items (1 or 2 submenus) in AppIconMenu's _redisplay method. */
 function injectionInAppsMenus() {
@@ -135,7 +134,7 @@ function injectionInAppsMenus() {
 		}
 		this.addMenuItem(addto);
 		
-		//------------------------------------------------------------------
+		//----------------------------------------------------------------------
 		
 		let removeFrom = new PopupMenu.PopupSubMenuMenuItem(_("Remove from"));
 		let shouldShow2 = false;

@@ -16,7 +16,7 @@ const appfoldersManagerSettingsWidget = new GObject.Class({
 	GTypeName: 'appfoldersManagerPrefsWidget',
 	Extends: Gtk.Box,
 
-	_init: function(params) {
+	_init: function (params) {
 		this.parent(params);
 		this.margin = 30;
 		this.spacing = 18;
@@ -27,120 +27,55 @@ const appfoldersManagerSettingsWidget = new GObject.Class({
 
 		//----------------------------
 
-		let labelMain = _("Modifications will be effective after reloading the extension.");
-		this.add(new Gtk.Label({ label: labelMain, use_markup: true, halign: Gtk.Align.START }));
+		let labelMain = new Gtk.Label({
+			label: _("Modifications will be effective after reloading the extension."),
+			use_markup: true,
+			wrap: true,
+			halign: Gtk.Align.START
+		});
+		this.add(labelMain);
 
 		let generalSection = this.add_section(_("Main settings"));
 		let categoriesSection = this.add_section(_("Categories"));
 
 		//----------------------------
 
-		let deleteAllText = _("Delete all related settings when an appfolder is deleted");
-		let deleteAllSwitch = new Gtk.Switch();
-		deleteAllSwitch.set_state(true);
-		deleteAllSwitch.set_state(this._settings.get_boolean('total-deletion'));
+//		let autoDeleteBox = this.build_switch('auto-deletion',
+//		                               _("Delete automatically empty folders"));
+		let deleteAllBox = this.build_switch('total-deletion',
+		         _("Delete all related settings when an appfolder is deleted"));
+		let menusBox = this.build_switch('extend-menus',
+		       _("Use the right-click menus in addition to the drag-and-drop"));
 
-		deleteAllSwitch.connect('notify::active', (widget) => {
-			if (widget.active) {
-				this._settings.set_boolean('total-deletion', true);
-			} else {
-				this._settings.set_boolean('total-deletion', false);
-			}
-		});
-
-		let deleteAllBox = new Gtk.Box({
-			orientation: Gtk.Orientation.HORIZONTAL,
-			spacing: 15,
-			margin: 6,
-		});
-		deleteAllBox.pack_start(new Gtk.Label({ label: deleteAllText, halign: Gtk.Align.START }), false, false, 0);
-		deleteAllBox.pack_end(deleteAllSwitch, false, false, 0);
-
-		//----------------------------
-
-		let categoriesText = _("Use categories");
-		let categoriesSwitch = new Gtk.Switch();
-		categoriesSwitch.set_state(true);
-		categoriesSwitch.set_state(this._settings.get_boolean('categories'));
-
-		categoriesSwitch.connect('notify::active', (widget) => {
-			if (widget.active) {
-				this._settings.set_boolean('categories', true);
-			} else {
-				this._settings.set_boolean('categories', false);
-			}
-		});
-
-		let categoriesBox = new Gtk.Box({
-			orientation: Gtk.Orientation.HORIZONTAL,
-			spacing: 15,
-			margin: 6,
-		});
-		categoriesBox.pack_start(new Gtk.Label({ label: categoriesText, halign: Gtk.Align.START }), false, false, 0);
-		categoriesBox.pack_end(categoriesSwitch, false, false, 0);
-
-		//----------------------------
-
-		let menusText = _("Use the right-click menus in addition to the drag-and-drop");
-		let menusSwitch = new Gtk.Switch({visible: this._settings.get_boolean('extend-menus')});
-		menusSwitch.set_state(true);
-		menusSwitch.set_state(this._settings.get_boolean('extend-menus'));
-
-		menusSwitch.connect('notify::active', (widget) => {
-			if (widget.active) {
-				this._settings.set_boolean('extend-menus', true);
-			} else {
-				this._settings.set_boolean('extend-menus', false);
-			}
-		});
-
-		let menusBox = new Gtk.Box({
-			orientation: Gtk.Orientation.HORIZONTAL,
-			spacing: 15,
-			margin: 6,
-			visible: true,
-		});
-		menusBox.pack_start(new Gtk.Label({
-			label: menusText,
-			halign: Gtk.Align.START,
-			visible: true,
-		}), false, false, 0);
-		menusBox.pack_end(menusSwitch, false, false, 0);
-
-		//----------------------------
-
+//		this.add_row(autoDeleteBox, generalSection);
 		this.add_row(deleteAllBox, generalSection);
 		this.add_row(menusBox, generalSection);
 
 		//-------------------------
 
-		let categoriesText2 = _("More informations about \"additional categories\"");
+		let categoriesBox = this.build_switch('categories', _("Use categories"));
+
 		let categoriesLinkButton = new Gtk.LinkButton({
-			label: _("Standard specification"),
+			label: _("More informations about \"additional categories\""),
 			uri: "https://standards.freedesktop.org/menu-spec/latest/apas02.html"
 		});
 
-		let categoriesBox2 = new Gtk.Box({
-			orientation: Gtk.Orientation.HORIZONTAL,
-			spacing: 15,
-			margin: 6,
-		});
-		categoriesBox2.pack_start(new Gtk.Label({ label: categoriesText2, halign: Gtk.Align.START }), false, false, 0);
-		categoriesBox2.pack_end(categoriesLinkButton, false, false, 0);
-
 		this.add_row(categoriesBox, categoriesSection);
-		this.add_row(categoriesBox2, categoriesSection);
+		this.add_row(categoriesLinkButton, categoriesSection);
 
 		//-------------------------
 
 		let aboutBox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 10 });
-		let a_version = ' (v' + Me.metadata.version.toString() + ') ';
+		let about_label = new Gtk.Label({
+			label: '(v' + Me.metadata.version.toString() + ')',
+			halign: Gtk.Align.START
+		});
 		let url_button = new Gtk.LinkButton({
 			label: _("Report bugs or ideas"),
 			uri: Me.metadata.url.toString()
 		});
 		aboutBox.pack_start(url_button, false, false, 0);
-		aboutBox.pack_end(new Gtk.Label({ label: a_version, halign: Gtk.Align.START }), false, false, 0);
+		aboutBox.pack_end(about_label, false, false, 0);
 
 		this.pack_end(aboutBox, false, false, 0);
 
@@ -148,12 +83,13 @@ const appfoldersManagerSettingsWidget = new GObject.Class({
 
 		let desacLabel = new Gtk.Label({
 			label: _("This extension can be deactivated once your applications are organized as wished."),
+			wrap: true,
 			halign: Gtk.Align.CENTER
 		});
 		this.pack_end(desacLabel, false, false, 0);
 	},
 
-	add_section: function(titre) {
+	add_section: function (titre) {
 		let section = new Gtk.Box({
 			orientation: Gtk.Orientation.VERTICAL,
 			margin: 6,
@@ -169,8 +105,34 @@ const appfoldersManagerSettingsWidget = new GObject.Class({
 		return section;
 	},
 
-	add_row: function(filledbox, section) {
+	add_row: function (filledbox, section) {
 		section.add(filledbox);
+	},
+	
+	build_switch: function (key, label) {
+		let rowLabel = new Gtk.Label({
+			label: label,
+			halign: Gtk.Align.START,
+			wrap: true,
+			visible: true,
+		});
+		
+		let rowSwitch = new Gtk.Switch({ valign: Gtk.Align.CENTER });
+		rowSwitch.set_state(this._settings.get_boolean(key));
+		rowSwitch.connect('notify::active', (widget) => {
+			this._settings.set_boolean(key, widget.active);
+		});
+
+		let rowBox = new Gtk.Box({
+			orientation: Gtk.Orientation.HORIZONTAL,
+			spacing: 15,
+			margin: 6,
+			visible: true,
+		});
+		rowBox.pack_start(rowLabel, false, false, 0);
+		rowBox.pack_end(rowSwitch, false, false, 0);
+		
+		return rowBox;
 	},
 });
 
@@ -182,7 +144,7 @@ function init() {
 
 //I guess this is like the "enable" in extension.js : something called each
 //time he user try to access the settings' window
-function buildPrefsWidget() {
+function buildPrefsWidget () {
 	let widget = new appfoldersManagerSettingsWidget();
 	widget.show_all();
 
