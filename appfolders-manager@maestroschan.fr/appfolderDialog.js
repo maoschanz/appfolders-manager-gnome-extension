@@ -172,44 +172,11 @@ var AppfolderDialog = class AppfolderDialog {
 		ShellEntry.addContextMenu(this._categoryEntry, null);
 		this._categoryEntry.connect('secondary-icon-clicked', this._addCategory.bind(this));
 
-		let catSelectBox = new St.BoxLayout({
-			vertical: false,
-			x_expand: true,
-		});
-		let catSelectLabel = new St.Label({
-			text: _("Select a category…"),
-			x_align: Clutter.ActorAlign.START,
-			y_align: Clutter.ActorAlign.CENTER,
-			x_expand: true,
-		});
-		let catSelectIcon = new St.Icon({
-			icon_name: 'pan-down-symbolic',
-			icon_size: 16,
-			style_class: 'system-status-icon',
-			x_expand: false,
-			x_align: Clutter.ActorAlign.END,
-			y_align: Clutter.ActorAlign.CENTER,
-		});
-		catSelectBox.add(catSelectLabel, { y_align: St.Align.MIDDLE });
-		catSelectBox.add(catSelectIcon, { y_align: St.Align.END });
-
 		this._categoryEntryText = null; ///???
 		this._categoryEntryText = this._categoryEntry.clutter_text;
-		this._catSelectButton = new St.Button ({
-			x_align: Clutter.ActorAlign.CENTER,
-			y_align: Clutter.ActorAlign.CENTER,
-			child: catSelectBox,
-			style_class: 'button',
-			style: 'padding: 5px 5px;',
-			x_expand: true,
-			y_expand: false,
-			x_fill: true,
-			y_fill: true,
-		});
-		// very stupid way to add a menu
-		this._catMenu = new SelectCategoryButton(this._catSelectButton, this);
+		this._catSelectButton = new SelectCategoryButton(this);
 
-		addCategoryBox.add(this._catSelectButton, { y_align: St.Align.CENTER });
+		addCategoryBox.add(this._catSelectButton.actor, { y_align: St.Align.CENTER });
 		addCategoryBox.add(this._categoryEntry, { y_align: St.Align.START });
 		categoriesBox.add(addCategoryBox, {
 			x_fill: true,
@@ -262,9 +229,8 @@ var AppfolderDialog = class AppfolderDialog {
 		if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('debug') ) {
 			log('[AppfolderDialog v2] destroying dialog');
 		}
-		this._catMenu.destroy();
-		// TODO ?
-		this.super_dialog.destroy(); //XXX crée des erreurs reloues ??? FIXME
+		this._catSelectButton.destroy(); // TODO ?
+		this.super_dialog.destroy(); //XXX crée des erreurs reloues ???
 	}
 
 	// Generates a valid folder id, which as no space, no dot, no slash, and which
@@ -398,29 +364,57 @@ var AppfolderDialog = class AppfolderDialog {
 // Very complex way to have a menubutton for displaying a menu with standard
 // categories. Button part.
 class SelectCategoryButton {
-
-	constructor (bouton, dialog) {
-		this.actor = bouton;
+	constructor (dialog) {
 		this._dialog = dialog;
+
+		let catSelectBox = new St.BoxLayout({
+			vertical: false,
+			x_expand: true,
+		});
+		let catSelectLabel = new St.Label({
+			text: _("Select a category…"),
+			x_align: Clutter.ActorAlign.START,
+			y_align: Clutter.ActorAlign.CENTER,
+			x_expand: true,
+		});
+		let catSelectIcon = new St.Icon({
+			icon_name: 'pan-down-symbolic',
+			icon_size: 16,
+			style_class: 'system-status-icon',
+			x_expand: false,
+			x_align: Clutter.ActorAlign.END,
+			y_align: Clutter.ActorAlign.CENTER,
+		});
+		catSelectBox.add(catSelectLabel, { y_align: St.Align.MIDDLE });
+		catSelectBox.add(catSelectIcon, { y_align: St.Align.END });
+		this.actor = new St.Button ({
+			x_align: Clutter.ActorAlign.CENTER,
+			y_align: Clutter.ActorAlign.CENTER,
+			child: catSelectBox,
+			style_class: 'button',
+			style: 'padding: 5px 5px;',
+			x_expand: true,
+			y_expand: false,
+			x_fill: true,
+			y_fill: true,
+		});
 		this.actor.connect('button-press-event', this._onButtonPress.bind(this));
+
 		this._menu = null;
 		this._menuManager = new PopupMenu.PopupMenuManager(this);
-	}
-
-	_onMenuPoppedDown () {
-		this.actor.sync_hover();
-		this.emit('menu-state-changed', false);
 	}
 
 	popupMenu () {
 		this.actor.fake_release();
 		if (!this._menu) {
 			this._menu = new SelectCategoryMenu(this, this._dialog);
-			this._menu.connect('open-state-changed', (menu, isPoppedUp) => {
-				if (!isPoppedUp)
-					this._onMenuPoppedDown();
+			this._menu.super_menu.connect('open-state-changed', (menu, isPoppedUp) => {
+				if (!isPoppedUp) {
+					this.actor.sync_hover();
+					this.emit('menu-state-changed', false);
+				}
 			});
-			this._menuManager.addMenu(this._menu);
+			this._menuManager.addMenu(this._menu.super_menu);
 		}
 		this.emit('menu-state-changed', true);
 		this.actor.set_hover(true);
@@ -435,7 +429,7 @@ class SelectCategoryButton {
 	}
 
 	destroy () {
-		if (this._menu != null) {
+		if (this._menu) {
 			this._menu.destroy();
 		}
 		this.actor.destroy();
@@ -448,7 +442,6 @@ Signals.addSignalMethods(SelectCategoryButton.prototype);
 // Very complex way to have a menubutton for displaying a menu with standard
 // categories. Menu part.
 class SelectCategoryMenu {
-
 	constructor (source, dialog) {
 		this.super_menu = new PopupMenu.PopupMenu(source.actor, 0.5, St.Side.RIGHT);
 		this._source = source;
@@ -488,7 +481,7 @@ class SelectCategoryMenu {
 	}
 
 	destroy () {
-		this.super_menu.close();
+		this.super_menu.close(); //FIXME error in the logs but i don't care
 		this.super_menu.destroy();
 	}
 };
@@ -498,7 +491,6 @@ Signals.addSignalMethods(SelectCategoryMenu.prototype);
 
 // This custom widget is a deletable row, displaying a category name.
 class AppCategoryBox {
-
 	constructor (dialog, i) {
 		this.super_box = new St.BoxLayout({
 			vertical: false,
@@ -546,4 +538,5 @@ class AppCategoryBox {
 		this.super_box.destroy();
 	}
 };
+
 
