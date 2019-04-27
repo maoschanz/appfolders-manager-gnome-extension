@@ -4,11 +4,10 @@
   "gettext-domain": "appfolders-manager", 
   "name": "Appfolders Management extension", 
   "shell-version": [
-    "3.22",
-    "3.24",
     "3.26",
     "3.28",
-    "3.30"
+    "3.30",
+    "3.32"
   ],
   "url": "https://github.com/maoschanz/appfolders-manager-gnome-extension", 
   "uuid": "appfolders-manager@maestroschan.fr",

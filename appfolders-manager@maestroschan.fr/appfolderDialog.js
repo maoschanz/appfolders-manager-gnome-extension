@@ -463,7 +463,7 @@ class SelectCategoryMenu {
 	_redisplay () {
 		this.removeAll();
 		let mainCategories = ['AudioVideo', 'Audio', 'Video', 'Development',
-		        'Education', 'Game', 'Graphics', 'Network', 'Office',' Science',
+		        'Education', 'Game', 'Graphics', 'Network', 'Office', 'Science',
 		                                       'Settings', 'System', 'Utility'];
 		for (var i=0; i<mainCategories.length; i++) {
 			let labelItem = mainCategories[i] ;
