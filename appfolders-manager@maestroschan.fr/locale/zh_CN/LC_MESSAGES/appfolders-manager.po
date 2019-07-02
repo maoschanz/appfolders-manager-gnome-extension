@@ -3,120 +3,121 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-27 21:15+0200\n"
-"PO-Revision-Date: 2019-05-15 11:21+0200\n"
-"Last-Translator: Markus Neumeister\n"
-"Language-Team: https://github.com/hobbypunk90/appfolders-manager-gnome-"
-"extension\n"
-"Language: de\n"
+"POT-Creation-Date: 2019-06-05 12:26+0800\n"
+"PO-Revision-Date: 2018-12-19 05:43+0200\n"
+"Last-Translator: Zodiac <liubodong1994@outlook.com>\n"
+"Language-Team: \n"
+"Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.0.6\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.2\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: appfolders-manager@maestroschan.fr/extension.js:83
 msgid "Add to"
-msgstr "Hinzufügen zu"
+msgstr "添加到"
 
 #: appfolders-manager@maestroschan.fr/extension.js:85
 msgid "New AppFolder"
-msgstr "Neuer Ordner"
+msgstr "新建App文件夹"
 
 #: appfolders-manager@maestroschan.fr/extension.js:139
 msgid "Remove from"
-msgstr "Löschen aus"
+msgstr "从以下移除"
 
 #: appfolders-manager@maestroschan.fr/dragAndDrop.js:312
 msgid "Create a new folder"
-msgstr "Neuen Ordner erstellen"
+msgstr "新建文件夹"
 
 #: appfolders-manager@maestroschan.fr/dragAndDrop.js:350
-#, javascript-format
+#, fuzzy, javascript-format
 msgid "Remove from %s"
-msgstr "Löschen aus %s"
+msgstr "从以下移除 %s"
 
 #: appfolders-manager@maestroschan.fr/appfolderDialog.js:62
 #: appfolders-manager@maestroschan.fr/appfolderDialog.js:72
 msgid "Cancel"
-msgstr "Abbrechen"
+msgstr "取消"
 
 #: appfolders-manager@maestroschan.fr/appfolderDialog.js:66
 msgid "Create"
-msgstr "Erstellen"
+msgstr "新建"
 
 #: appfolders-manager@maestroschan.fr/appfolderDialog.js:76
 msgid "Delete"
-msgstr "Löschen"
+msgstr "删除"
 
 #: appfolders-manager@maestroschan.fr/appfolderDialog.js:80
 msgid "Apply"
-msgstr "Anwenden"
+msgstr "应用"
 
 #: appfolders-manager@maestroschan.fr/appfolderDialog.js:106
 msgid "Folder's name:"
-msgstr "Ordner Name:"
+msgstr "文件夹名称:"
 
 #: appfolders-manager@maestroschan.fr/appfolderDialog.js:139
 msgid "Categories:"
-msgstr "Kategorien:"
+msgstr "目录:"
 
 #: appfolders-manager@maestroschan.fr/appfolderDialog.js:164
 msgid "Other category?"
-msgstr "Neue Kategorie?"
+msgstr "其他目录?"
 
 #: appfolders-manager@maestroschan.fr/appfolderDialog.js:192
 msgid "No category"
-msgstr "Keine Kategorie"
+msgstr "没有此目录"
 
 #: appfolders-manager@maestroschan.fr/appfolderDialog.js:375
+#, fuzzy
 msgid "Select a category…"
-msgstr "Kategorie auswählen..."
+msgstr "选择一个目录..."
 
 #: appfolders-manager@maestroschan.fr/prefs.js:31
 msgid "Modifications will be effective after reloading the extension."
-msgstr "Änderungen werden nach Neustart der Erweiterung übernommen."
+msgstr "改变将会在重启扩展后生效。"
 
 #: appfolders-manager@maestroschan.fr/prefs.js:38
 msgid "Main settings"
-msgstr "Einstellungen"
+msgstr "主要设置"
 
 #: appfolders-manager@maestroschan.fr/prefs.js:39
 msgid "Categories"
-msgstr "Kategorien"
+msgstr "目录"
 
 #: appfolders-manager@maestroschan.fr/prefs.js:46
 msgid "Delete all related settings when an appfolder is deleted"
-msgstr "Lösche alle Einstellungen, wenn ein Ordner gelöscht wird"
+msgstr "删除App文件夹时同时也删除相关设置"
 
 #: appfolders-manager@maestroschan.fr/prefs.js:48
 msgid "Use the right-click menus in addition to the drag-and-drop"
-msgstr "Rechtsklick-Menü zusätzlich zu Drag-und-Drop benutzen"
+msgstr "除了拖放之外，还可以使用右键单击菜单"
 
 #: appfolders-manager@maestroschan.fr/prefs.js:56
 msgid "Use categories"
-msgstr "Kategorien benutzen"
+msgstr "使用目录"
 
 #: appfolders-manager@maestroschan.fr/prefs.js:59
 msgid "More informations about \"additional categories\""
-msgstr "Mehr Informationen über \"Zusätzliche Kategorien\""
+msgstr "更多信息关于 \"附加目录\""
 
 #: appfolders-manager@maestroschan.fr/prefs.js:74
 msgid "Report bugs or ideas"
-msgstr "Bugs oder Ideen übermittlen"
+msgstr "报告Bug或建议"
 
 #: appfolders-manager@maestroschan.fr/prefs.js:85
 msgid ""
 "This extension can be deactivated once your applications are organized as "
 "wished."
-msgstr ""
-"Diese Erweiterung kann deaktiviert werden, sobald die Anwendungen wie "
-"gewünscht organisiert wurden."
+msgstr "一旦您组织好了您的App，这个扩展就可以被停用了。"
+
+#~ msgid "Standard specification"
+#~ msgstr "标准规范"
 
 #~ msgid "This appfolder already exists."
-#~ msgstr "Dieser Ordner existiert bereits."
+#~ msgstr "这个文件夹已经存在。"

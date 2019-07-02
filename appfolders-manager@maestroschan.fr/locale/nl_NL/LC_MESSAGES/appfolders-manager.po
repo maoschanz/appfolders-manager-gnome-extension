@@ -3,120 +3,115 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-27 21:15+0200\n"
-"PO-Revision-Date: 2019-05-15 11:21+0200\n"
-"Last-Translator: Markus Neumeister\n"
-"Language-Team: https://github.com/hobbypunk90/appfolders-manager-gnome-"
-"extension\n"
-"Language: de\n"
+"PO-Revision-Date: 2019-05-27 21:43+0200\n"
+"Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 2.1.1\n"
+"Last-Translator: Heimen Stoffels <vistausss@outlook.com>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: nl_NL\n"
 
 #: appfolders-manager@maestroschan.fr/extension.js:83
 msgid "Add to"
-msgstr "Hinzufügen zu"
+msgstr "Toevoegen aan"
 
 #: appfolders-manager@maestroschan.fr/extension.js:85
 msgid "New AppFolder"
-msgstr "Neuer Ordner"
+msgstr "Nieuwe map"
 
 #: appfolders-manager@maestroschan.fr/extension.js:139
 msgid "Remove from"
-msgstr "Löschen aus"
+msgstr "Verwijderen uit"
 
 #: appfolders-manager@maestroschan.fr/dragAndDrop.js:312
 msgid "Create a new folder"
-msgstr "Neuen Ordner erstellen"
+msgstr "Nieuwe map creëren"
 
 #: appfolders-manager@maestroschan.fr/dragAndDrop.js:350
 #, javascript-format
 msgid "Remove from %s"
-msgstr "Löschen aus %s"
+msgstr "Verwijderen uit %s"
 
 #: appfolders-manager@maestroschan.fr/appfolderDialog.js:62
 #: appfolders-manager@maestroschan.fr/appfolderDialog.js:72
 msgid "Cancel"
-msgstr "Abbrechen"
+msgstr "Annuleren"
 
 #: appfolders-manager@maestroschan.fr/appfolderDialog.js:66
 msgid "Create"
-msgstr "Erstellen"
+msgstr "Creëren"
 
 #: appfolders-manager@maestroschan.fr/appfolderDialog.js:76
 msgid "Delete"
-msgstr "Löschen"
+msgstr "Verwijderen"
 
 #: appfolders-manager@maestroschan.fr/appfolderDialog.js:80
 msgid "Apply"
-msgstr "Anwenden"
+msgstr "Toepassen"
 
 #: appfolders-manager@maestroschan.fr/appfolderDialog.js:106
 msgid "Folder's name:"
-msgstr "Ordner Name:"
+msgstr "Naam van de map:"
 
 #: appfolders-manager@maestroschan.fr/appfolderDialog.js:139
 msgid "Categories:"
-msgstr "Kategorien:"
+msgstr "Categorieën:"
 
 #: appfolders-manager@maestroschan.fr/appfolderDialog.js:164
 msgid "Other category?"
-msgstr "Neue Kategorie?"
+msgstr "Andere categorie?"
 
 #: appfolders-manager@maestroschan.fr/appfolderDialog.js:192
 msgid "No category"
-msgstr "Keine Kategorie"
+msgstr "Geen categorie"
 
 #: appfolders-manager@maestroschan.fr/appfolderDialog.js:375
 msgid "Select a category…"
-msgstr "Kategorie auswählen..."
+msgstr "Kies een categorie…"
 
 #: appfolders-manager@maestroschan.fr/prefs.js:31
 msgid "Modifications will be effective after reloading the extension."
-msgstr "Änderungen werden nach Neustart der Erweiterung übernommen."
+msgstr "De wijzigingen worden toegepast na het herladen van de uitbreiding."
 
 #: appfolders-manager@maestroschan.fr/prefs.js:38
 msgid "Main settings"
-msgstr "Einstellungen"
+msgstr "Algemene instellingen"
 
 #: appfolders-manager@maestroschan.fr/prefs.js:39
 msgid "Categories"
-msgstr "Kategorien"
+msgstr "Categorieën"
 
 #: appfolders-manager@maestroschan.fr/prefs.js:46
 msgid "Delete all related settings when an appfolder is deleted"
-msgstr "Lösche alle Einstellungen, wenn ein Ordner gelöscht wird"
+msgstr "Mapinstellingen wissen na het verwijderen van een map"
 
 #: appfolders-manager@maestroschan.fr/prefs.js:48
 msgid "Use the right-click menus in addition to the drag-and-drop"
-msgstr "Rechtsklick-Menü zusätzlich zu Drag-und-Drop benutzen"
+msgstr "Rechtermuisknop gebruiken (naast slepen-en-neerzetten)"
 
 #: appfolders-manager@maestroschan.fr/prefs.js:56
 msgid "Use categories"
-msgstr "Kategorien benutzen"
+msgstr "Categorieën gebruiken"
 
 #: appfolders-manager@maestroschan.fr/prefs.js:59
 msgid "More informations about \"additional categories\""
-msgstr "Mehr Informationen über \"Zusätzliche Kategorien\""
+msgstr "Meer informatie over 'aanvullende categorieën'"
 
 #: appfolders-manager@maestroschan.fr/prefs.js:74
 msgid "Report bugs or ideas"
-msgstr "Bugs oder Ideen übermittlen"
+msgstr "Bugs melden of ideeën bespreken"
 
 #: appfolders-manager@maestroschan.fr/prefs.js:85
 msgid ""
 "This extension can be deactivated once your applications are organized as "
 "wished."
 msgstr ""
-"Diese Erweiterung kann deaktiviert werden, sobald die Anwendungen wie "
-"gewünscht organisiert wurden."
-
-#~ msgid "This appfolder already exists."
-#~ msgstr "Dieser Ordner existiert bereits."
+"Deze uitbreiding kan worden uitgeschakeld zodra je toepassingen naar wens "
+"zijn ingedeeld."
