@@ -18,7 +18,7 @@ const CHANGE_PAGE_TIMEOUT = 400;
 const Gettext = imports.gettext.domain('appfolders-manager');
 const _ = Gettext.gettext;
 
-//-------------------------------------------------
+//------------------------------------------------------------------------------
 
 var OVERLAY_MANAGER;
 
@@ -29,7 +29,7 @@ function initDND () {
 	OVERLAY_MANAGER = new OverlayManager();
 }
 
-//--------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 /* Amazing! A singleton! It allows easy (and safer?) access to general methods,
  * managing other objects: it creates/updates/deletes all overlays (for folders,
@@ -111,12 +111,13 @@ class OverlayManager {
 
 	updateActorsPositions () {
 		let monitor = Main.layoutManager.primaryMonitor;
-		this.topOfTheGrid = Main.overview.viewSelector.actor.get_parent().get_parent().get_allocation_box().y1;
-		let temp = Main.overview.viewSelector.appDisplay._views[1].view.actor.get_parent();
+		let viewSelector = Main.overview.viewSelector;
+		this.topOfTheGrid = viewSelector.actor.get_parent().get_parent().get_allocation_box().y1;
+		let temp = viewSelector.appDisplay._views[1].view.actor.get_parent();
 		let bottomOfTheGrid = this.topOfTheGrid + temp.get_allocation_box().y2;
 		
 		let _availHeight = bottomOfTheGrid - this.topOfTheGrid;
-		let _availWidth = Main.overview.viewSelector.appDisplay._views[1].view._grid.actor.width;
+		let _availWidth = viewSelector.appDisplay._views[1].view._grid.actor.width;
 		let sideMargin = (monitor.width - _availWidth) / 2;
 
 		let xMiddle = ( monitor.x + monitor.width ) / 2;
@@ -245,7 +246,7 @@ class OverlayManager {
 	}
 };
 
-//-------------------------------------------------------
+//------------------------------------------------------------------------------
 
 // Abstract overlay with very generic methods
 class DroppableArea {
@@ -547,4 +548,6 @@ class FolderArea extends DroppableArea {
 		return false;
 	}
 };
+
+//------------------------------------------------------------------------------
 

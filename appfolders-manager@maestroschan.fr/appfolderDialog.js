@@ -22,19 +22,21 @@ const _ = Gettext.gettext;
 let FOLDER_SCHEMA;
 let FOLDER_LIST;
 
-//--------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 // This is a modal dialog for creating a new folder, or renaming or modifying
 // categories of existing folders.
 var AppfolderDialog = class AppfolderDialog {
 
-	// build a new dialog. If folder is null, the dialog will be for creating a new
-	// folder, else app is null, and the dialog will be for editing an existing folder
+	// build a new dialog. If folder is null, the dialog will be for creating a
+	// new folder, else app is null, and the dialog will be for editing an
+	// existing folder
 	constructor (folder, app, id) {
 		this._folder = folder;
 		this._app = app;
 		this._id = id;
 		this.super_dialog = new ModalDialog.ModalDialog({ destroyOnClose: true });
+		this._extSettings = Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager')
 
 		FOLDER_SCHEMA = new Gio.Settings({ schema_id: 'org.gnome.desktop.app-folders' });
 		FOLDER_LIST = FOLDER_SCHEMA.get_strv('folder-children');
@@ -48,7 +50,7 @@ var AppfolderDialog = class AppfolderDialog {
 			x_align: St.Align.START,
 			y_align: St.Align.START
 		});
-		if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('categories') ) {
+		if (this._extSettings.get_boolean('categories')) {
 			this.super_dialog.contentLayout.add(categoriesSection, {
 				x_fill: false,
 				x_align: St.Align.START,
@@ -203,8 +205,8 @@ var AppfolderDialog = class AppfolderDialog {
 			y_align: St.Align.START,
 		});
 
-		// Load categories is necessary even if no this._folder,
-		// because it initializes the value of this._categories
+		// Load categories is necessary even if no this._folder, because it
+		// initializes the value of this._categories
 		this._loadCategories();
 
 		return categoriesSection;
@@ -226,7 +228,7 @@ var AppfolderDialog = class AppfolderDialog {
 	}
 
 	destroy () {
-		if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('debug') ) {
+		if (this._extSettings.get_boolean('debug')) {
 			log('[AppfolderDialog v2] destroying dialog');
 		}
 		this._catSelectButton.destroy(); // TODO ?
@@ -335,15 +337,16 @@ var AppfolderDialog = class AppfolderDialog {
 		this._applyCategories();
 		this._applyName();
 		this.destroy();
-		//-----------------------
+		
 		Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
-		if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('debug') ) {
+		if (this._extSettings.get_boolean('debug') ) {
 			log('[AppfolderDialog v2] reload the view');
 		}
 	}
 
-	// initializes the folder with its first app. This is not optional since empty
-	// folders are not displayed. TODO use the equivalent method from extension.js
+	// initializes the folder with its first app. This is not optional since
+	// empty folders are not displayed. TODO use the equivalent method from
+	// extension.js
 	_addToFolder () {
 		let content = this._folder.get_strv('apps');
 		content.push(this._app);
@@ -359,7 +362,7 @@ var AppfolderDialog = class AppfolderDialog {
 	}
 };
 
-//------------------------------------------------
+//------------------------------------------------------------------------------
 
 // Very complex way to have a menubutton for displaying a menu with standard
 // categories. Button part.
@@ -437,7 +440,7 @@ class SelectCategoryButton {
 };
 Signals.addSignalMethods(SelectCategoryButton.prototype);
 
-//------------------------------------------------
+//------------------------------------------------------------------------------
 
 // Very complex way to have a menubutton for displaying a menu with standard
 // categories. Menu part.
@@ -487,7 +490,7 @@ class SelectCategoryMenu {
 };
 Signals.addSignalMethods(SelectCategoryMenu.prototype);
 
-//----------------------------------------
+//------------------------------------------------------------------------------
 
 // This custom widget is a deletable row, displaying a category name.
 class AppCategoryBox {
@@ -539,4 +542,5 @@ class AppCategoryBox {
 	}
 };
 
+//------------------------------------------------------------------------------
 

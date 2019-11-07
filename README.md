@@ -1,5 +1,7 @@
 # Appfolders Management
 
+for GNOME Shell 3.28 to 3.32
+
 [<img alt="" height="100" src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/master/get-it-on-ego.svg?sanitize=true">](https://extensions.gnome.org/extension/1217/appfolders-manager/)
 
 A GNOME Shell extension allowing easy management of "appfolders" directly from the applications view.

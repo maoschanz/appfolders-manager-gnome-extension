@@ -9,7 +9,7 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const Convenience = Me.imports.convenience;
 
-//-----------------------------------------------
+//------------------------------------------------------------------------------
 
 const appfoldersManagerSettingsWidget = new GObject.Class({
 	Name: 'appfoldersManager.Prefs.Widget',
@@ -25,7 +25,7 @@ const appfoldersManagerSettingsWidget = new GObject.Class({
 		this._settings = Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager');
 		this._settings.set_boolean('debug', this._settings.get_boolean('debug'));
 
-		//----------------------------
+		//----------------------------------------------------------------------
 
 		let labelMain = new Gtk.Label({
 			label: _("Modifications will be effective after reloading the extension."),
@@ -38,7 +38,7 @@ const appfoldersManagerSettingsWidget = new GObject.Class({
 		let generalSection = this.add_section(_("Main settings"));
 		let categoriesSection = this.add_section(_("Categories"));
 
-		//----------------------------
+		//----------------------------------------------------------------------
 
 //		let autoDeleteBox = this.build_switch('auto-deletion',
 //		                               _("Delete automatically empty folders"));
@@ -51,7 +51,7 @@ const appfoldersManagerSettingsWidget = new GObject.Class({
 		this.add_row(deleteAllBox, generalSection);
 		this.add_row(menusBox, generalSection);
 
-		//-------------------------
+		//----------------------------------------------------------------------
 
 		let categoriesBox = this.build_switch('categories', _("Use categories"));
 
@@ -63,9 +63,12 @@ const appfoldersManagerSettingsWidget = new GObject.Class({
 		this.add_row(categoriesBox, categoriesSection);
 		this.add_row(categoriesLinkButton, categoriesSection);
 
-		//-------------------------
+		//----------------------------------------------------------------------
 
-		let aboutBox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 10 });
+		let aboutBox = new Gtk.Box({
+			orientation: Gtk.Orientation.HORIZONTAL,
+			spacing: 10
+		});
 		let about_label = new Gtk.Label({
 			label: '(v' + Me.metadata.version.toString() + ')',
 			halign: Gtk.Align.START
@@ -79,7 +82,7 @@ const appfoldersManagerSettingsWidget = new GObject.Class({
 
 		this.pack_end(aboutBox, false, false, 0);
 
-		//-------------------------
+		//----------------------------------------------------------------------
 
 		let desacLabel = new Gtk.Label({
 			label: _("This extension can be deactivated once your applications are organized as wished."),
@@ -136,7 +139,7 @@ const appfoldersManagerSettingsWidget = new GObject.Class({
 	},
 });
 
-//-----------------------------------------------
+//------------------------------------------------------------------------------
 
 function init() {
 	Convenience.initTranslations();
@@ -150,4 +153,6 @@ function buildPrefsWidget () {
 
 	return widget;
 }
+
+//------------------------------------------------------------------------------
 

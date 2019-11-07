@@ -66,19 +66,20 @@ var injections=[];
 /* this function injects items (1 or 2 submenus) in AppIconMenu's _redisplay method. */
 function injectionInAppsMenus() {
 	injections['_redisplay'] = injectToFunction(AppDisplay.AppIconMenu.prototype, '_redisplay', function() {
-		if (Main.overview.viewSelector.getActivePage() == 2
-		                   || Main.overview.viewSelector.getActivePage() == 3) {
+		let activePage = Main.overview.viewSelector.getActivePage();
+		if (activePage == 2 || activePage == 3) {
 			//ok
 		} else {
 			return;
 		}
 
+		let debug = Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('debug');
 		this._appendSeparator(); //TODO injecter ailleurs dans le menu?
 		
 		let mainAppView = Main.overview.viewSelector.appDisplay._views[1].view;
 		FOLDER_LIST = FOLDER_SCHEMA.get_strv('folder-children');
 		
-		//------------------------------------------------------------------
+		//----------------------------------------------------------------------
 		
 		let addto = new PopupMenu.PopupSubMenuMenuItem(_("Add to"));
 		
@@ -107,7 +108,7 @@ function injectionInAppsMenus() {
 			let shouldShow = !isInFolder( this._source.app.get_id(), _folder );
 			let iFolderSchema = folderSchema(_folder);
 			let item = new PopupMenu.PopupMenuItem( AppDisplay._getFolderName(iFolderSchema) );
-			if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('debug') ) {
+			if (debug) {
 				shouldShow = true; //TODO ??? et l'exclusion ?
 			}
 			if(shouldShow) {
@@ -145,7 +146,7 @@ function injectionInAppsMenus() {
 			let iFolderSchema = folderSchema(_folder);
 			let item = new PopupMenu.PopupMenuItem( AppDisplay._getFolderName(iFolderSchema) );
 			
-			if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('debug') ) {
+			if (debug) {
 				shouldShow = true; //FIXME ??? et l'exclusion ?
 			}
 			
@@ -178,7 +179,7 @@ function injectionInAppsMenus() {
 	});
 }
 
-//------------------------------------------------
+//------------------------------------------------------------------------------
 
 function injectionInIcons() {
 	// Right-click on a FolderIcon launches a new AppfolderDialog
@@ -443,3 +444,4 @@ function disable() {
 }
 
 //------------------------------------------------------------------------------
+
