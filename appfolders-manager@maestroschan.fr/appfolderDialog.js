@@ -235,26 +235,27 @@ var AppfolderDialog = class AppfolderDialog {
 		this.super_dialog.destroy(); //XXX crée des erreurs reloues ???
 	}
 
-	// Generates a valid folder id, which as no space, no dot, no slash, and which
-	// doesn't already exist.
+	// Generates a valid folder id, which has no space, no dot, no slash, is not
+	// empty, and doesn't already exist.
 	_folderId (newName) {
-		let tmp0 = newName.split(" ");
-		let folderId = "";
-		for(var i = 0; i < tmp0.length; i++) {
-			folderId += tmp0[i];
-		}
-		tmp0 = folderId.split(".");
-		folderId = "";
-		for(var i = 0; i < tmp0.length; i++) {
-			folderId += tmp0[i];
-		}
-		tmp0 = folderId.split("/");
-		folderId = "";
-		for(var i = 0; i < tmp0.length; i++) {
-			folderId += tmp0[i];
+		let folderId = this._removeChar(newName, " ");
+		folderId = this._removeChar(folderId, ".");
+		folderId = this._removeChar(folderId, "/");
+		if(folderId == "") {
+			folderId = "unnamedFolder";
 		}
 		if(this._alreadyExists(folderId)) {
-			folderId = this._folderId(folderId+'_');
+			// probably unnecessary
+			folderId = this._folderId(folderId + '_');
+		}
+		return folderId;
+	}
+
+	_removeChar(folderId, char) {
+		tmp0 = folderId.split(char);
+		folderId = "";
+		for(var i = 0; i < tmp0.length; i++) {
+			folderId += tmp0[i];
 		}
 		return folderId;
 	}
@@ -305,7 +306,8 @@ var AppfolderDialog = class AppfolderDialog {
 		this.listContainer.add_actor(aCategory.super_box);
 	}
 
-	// adds a category to the UI (will be added to gsettings when pressing "apply" only)
+	// adds a category to the UI (will be added to gsettings when pressing
+	// "apply" only)
 	_addCategory (entry, new_cat_name) {
 		if (new_cat_name == null) {
 			new_cat_name = this._categoryEntryText.get_text();

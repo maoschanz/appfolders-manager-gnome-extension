@@ -74,7 +74,7 @@ msgstr "Nessuna Categoria"
 
 #: appfolders-manager@maestroschan.fr/appfolderDialog.js:375
 msgid "Select a category…"
-msgstr "Seleziona una categoria..."
+msgstr "Seleziona una categoria…"
 
 #: appfolders-manager@maestroschan.fr/prefs.js:31
 msgid "Modifications will be effective after reloading the extension."
@@ -113,7 +113,7 @@ msgid ""
 "This extension can be deactivated once your applications are organized as "
 "wished."
 msgstr ""
-"Questa estensione può essere disattivata dopo aver organizzato le applicazioni come"
+"Questa estensione può essere disattivata dopo aver organizzato le applicazioni come "
 "desiderato."
 
 #~ msgid "Standard specification"
