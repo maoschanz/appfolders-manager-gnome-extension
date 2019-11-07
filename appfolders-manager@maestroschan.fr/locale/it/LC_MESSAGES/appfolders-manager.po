@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-07-02 22:54+0200\n"
-"PO-Revision-Date: 2018-03-08 17:21+0100\n"
-"Last-Translator: Jimmy Scionti <jimmy.scionti@gmail.com>\n"
+"PO-Revision-Date: 2019-08-19 17:21+0100\n"
+"Last-Translator: Albano Battistella<albano_battistella@hotmail.com>\n"
 "Language-Team: \n"
 "Language: it_IT\n"
 "MIME-Version: 1.0\n"
@@ -32,7 +32,7 @@ msgstr "Rimuovi da"
 
 #: appfolders-manager@maestroschan.fr/dragAndDrop.js:312
 msgid "Create a new folder"
-msgstr ""
+msgstr "Crea nuova Cartella"
 
 #: appfolders-manager@maestroschan.fr/dragAndDrop.js:350
 #, fuzzy, javascript-format
@@ -54,30 +54,27 @@ msgstr "Elimina"
 
 #: appfolders-manager@maestroschan.fr/appfolderDialog.js:80
 msgid "Apply"
-msgstr ""
+msgstr "Applica"
 
 #: appfolders-manager@maestroschan.fr/appfolderDialog.js:106
 msgid "Folder's name:"
-msgstr ""
+msgstr "Nome Cartella:"
 
 #: appfolders-manager@maestroschan.fr/appfolderDialog.js:139
 msgid "Categories:"
-msgstr ""
+msgstr "Categorie:"
 
 #: appfolders-manager@maestroschan.fr/appfolderDialog.js:164
-#, fuzzy
 msgid "Other category?"
-msgstr "Rimuovi una categoria"
+msgstr "Altra Categoria?"
 
 #: appfolders-manager@maestroschan.fr/appfolderDialog.js:192
-#, fuzzy
 msgid "No category"
-msgstr "Aggiungi una categoria"
+msgstr "Nessuna Categoria"
 
 #: appfolders-manager@maestroschan.fr/appfolderDialog.js:375
-#, fuzzy
 msgid "Select a category…"
-msgstr "Rimuovi una categoria"
+msgstr "Seleziona una categoria..."
 
 #: appfolders-manager@maestroschan.fr/prefs.js:31
 msgid "Modifications will be effective after reloading the extension."
@@ -85,11 +82,11 @@ msgstr "Le modifiche avranno effetto dopo aver ricaricato l'estensione."
 
 #: appfolders-manager@maestroschan.fr/prefs.js:38
 msgid "Main settings"
-msgstr ""
+msgstr "Impostazioni Principali"
 
 #: appfolders-manager@maestroschan.fr/prefs.js:39
 msgid "Categories"
-msgstr ""
+msgstr "Categorie"
 
 #: appfolders-manager@maestroschan.fr/prefs.js:46
 msgid "Delete all related settings when an appfolder is deleted"
@@ -97,12 +94,11 @@ msgstr "Elimina tutte le impostazioni dell'AppFolder quando viene rimossa"
 
 #: appfolders-manager@maestroschan.fr/prefs.js:48
 msgid "Use the right-click menus in addition to the drag-and-drop"
-msgstr ""
+msgstr "Utilizzare il menu di scelta rapida oltre al trascinamento della selezione"
 
 #: appfolders-manager@maestroschan.fr/prefs.js:56
-#, fuzzy
 msgid "Use categories"
-msgstr "Categorie aggiuntive"
+msgstr "Usa aggiuntive"
 
 #: appfolders-manager@maestroschan.fr/prefs.js:59
 msgid "More informations about \"additional categories\""
@@ -117,11 +113,11 @@ msgid ""
 "This extension can be deactivated once your applications are organized as "
 "wished."
 msgstr ""
-"Questa estensione può essere disattivata dopo aver organizzato le "
-"applicazione come desiderato."
+"Questa estensione può essere disattivata dopo aver organizzato le applicazioni come"
+"desiderato."
 
 #~ msgid "Standard specification"
-#~ msgstr "Specifiche standards"
+#~ msgstr "Specifiche standard"
 
 #~ msgid "This appfolder already exists."
-#~ msgstr "Questa AppFolder esiste già."
+#~ msgstr "Questa appfolder esiste già."
