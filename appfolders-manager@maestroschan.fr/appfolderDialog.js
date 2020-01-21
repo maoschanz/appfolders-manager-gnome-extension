@@ -252,7 +252,7 @@ var AppfolderDialog = class AppfolderDialog {
 	}
 
 	_removeChar(folderId, char) {
-		tmp0 = folderId.split(char);
+		let tmp0 = folderId.split(char);
 		folderId = "";
 		for(var i = 0; i < tmp0.length; i++) {
 			folderId += tmp0[i];
