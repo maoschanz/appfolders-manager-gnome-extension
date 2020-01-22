@@ -229,7 +229,7 @@ var AppfolderDialog = class AppfolderDialog {
 	}
 
 	destroy () {
-		if (Extension.DEBUG)) {
+		if (Extension.DEBUG) {
 			log('[AppfolderDialog v2] destroying dialog');
 		}
 		this._catSelectButton.destroy(); // XXX crée des erreurs osef
@@ -444,7 +444,8 @@ class SelectCategoryButton {
 		if (this._menu) {
 			this._menu.destroy();
 		}
-		this.actor.destroy();
+		// if uncommented with 3.28 XXX TypeError: this.parent is not a function
+		// this.actor.destroy();
 	}
 };
 Signals.addSignalMethods(SelectCategoryButton.prototype);

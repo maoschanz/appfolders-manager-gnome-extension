@@ -69,12 +69,14 @@ function injectionInAppsMenus() {
 	injections['_redisplay'] = injectToFunction(AppDisplay.AppIconMenu.prototype, '_redisplay', function() {
 		let activePage = Main.overview.viewSelector.getActivePage();
 		if (activePage == 2 || activePage == 3) {
-			//ok
+			// ok
 		} else {
+			// page 1 is the windows overview, so appicons here are in the dash,
+			// where menu items are not welcome
 			return;
 		}
 
-		//this._appendSeparator(); //TODO injecter ailleurs dans le menu?
+		this._appendSeparator(); // TODO injecter ailleurs dans le menu?
 		
 		let mainAppView = Main.overview.viewSelector.appDisplay._views[1].view;
 		FOLDER_LIST = FOLDER_SCHEMA.get_strv('folder-children');
@@ -297,13 +299,14 @@ function deleteFolder (folder_id) {
 
 //------------------------------------------------------------------------------
 
-function mergeFolders (folder_staying_id, folder_dying_id) { //unused XXX
+function mergeFolders (folder_staying_id, folder_dying_id) {
+	// this method is not used XXX
 	
 	let folder_dying_schema = folderSchema (folder_dying_id);
 	let folder_staying_schema = folderSchema (folder_staying_id);
 	let newerContent = folder_dying_schema.get_strv('categories');
 	let presentContent = folder_staying_schema.get_strv('categories');
-	for(var i=0;i<newerContent.length;i++){
+	for (var i=0; i<newerContent.length; i++) {
 		if(presentContent.indexOf(newerContent[i]) == -1) {
 			presentContent.push(newerContent[i]);
 		}
@@ -321,7 +324,7 @@ function mergeFolders (folder_staying_id, folder_dying_id) { //unused XXX
 	
 	newerContent = folder_dying_schema.get_strv('apps');
 	presentContent = folder_staying_schema.get_strv('apps');
-	for(var i=0;i<newerContent.length;i++){
+	for (var i=0; i<newerContent.length; i++) {
 		if(presentContent.indexOf(newerContent[i]) == -1) {
 //		if(!isInFolder(newerContent[i], folder_staying_id)) {
 			presentContent.push(newerContent[i]);
@@ -349,24 +352,27 @@ function addToFolder (app_source, folder_id) {
 	let id = app_source.app.get_id();
 	let folder_schema = folderSchema (folder_id);
 	
-	//un-exclude the application if it was excluded TODO else don't do it at all
+	// un-exclude the application if it was excluded
 	let pastExcluded = folder_schema.get_strv('excluded-apps');
-	let presentExcluded = [];
-	for(let i=0; i<pastExcluded.length; i++){
-		if(pastExcluded[i] != id) {
-			presentExcluded.push(pastExcluded[i]);
+	let futureExcluded = [];
+	let wasExcluded = false;
+	for (let i=0; i<pastExcluded.length; i++) {
+		if (pastExcluded[i] == id) {
+			wasExcluded = true;
+		} else {
+			futureExcluded.push(pastExcluded[i]);
 		}
 	}
-	if (presentExcluded.length > 0) {
-		folder_schema.set_strv('excluded-apps', presentExcluded);
+	if (wasExcluded) {
+		folder_schema.set_strv('excluded-apps', futureExcluded);
 	}
 	
-	//actually add the app
+	// actually add the app
 	let content = folder_schema.get_strv('apps');
 	content.push(id);
-	folder_schema.set_strv('apps', content); //XXX verbose errors
+	folder_schema.set_strv('apps', content); // XXX verbose errors
 	
-	//update icons in the ugliest possible way
+	// update icons
 	repaintFolder();
 	return true;
 }

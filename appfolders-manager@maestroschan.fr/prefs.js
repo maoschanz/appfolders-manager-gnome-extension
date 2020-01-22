@@ -148,7 +148,7 @@ function init() {
 }
 
 // I guess this is like the "enable" in extension.js : something called each
-// time he user try to access the settings' window
+// time the user tries to access the settings' window
 function buildPrefsWidget () {
 	let widget = new appfoldersManagerSettingsWidget();
 	widget.show_all();
