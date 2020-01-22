@@ -10,7 +10,6 @@ const Mainloop = imports.mainloop;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
-const Convenience = Me.imports.convenience;
 const Extension = Me.imports.extension;
 
 const CHANGE_PAGE_TIMEOUT = 400;
@@ -263,7 +262,7 @@ class DroppableArea {
 		this.actor._delegate = this;
 
 		this.lock = true;
-		this.use_frame = Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('debug');
+		this.use_frame = Extension.DEBUG;
 	}
 
 	setPosition  (x, y) {

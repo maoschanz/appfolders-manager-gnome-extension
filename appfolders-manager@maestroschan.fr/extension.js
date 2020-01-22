@@ -22,8 +22,9 @@ const _ = Gettext.gettext;
 
 let FOLDER_SCHEMA;
 let FOLDER_LIST;
-
 let INIT_TIME;
+var SETTINGS = null;
+var DEBUG = false;
 
 function init () {
 	Convenience.initTranslations();
@@ -73,8 +74,7 @@ function injectionInAppsMenus() {
 			return;
 		}
 
-		let debug = Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('debug');
-		this._appendSeparator(); //TODO injecter ailleurs dans le menu?
+		//this._appendSeparator(); //TODO injecter ailleurs dans le menu?
 		
 		let mainAppView = Main.overview.viewSelector.appDisplay._views[1].view;
 		FOLDER_LIST = FOLDER_SCHEMA.get_strv('folder-children');
@@ -91,7 +91,7 @@ function injectionInAppsMenus() {
 			// AppDisplay.AppFolderPopup.popdown() method tries to ungrab
 			// the global focus from the folder's popup actor, which isn't
 			// having the focus since the menu is still open. Menus' animation
-			// last ~0.25s so we will wait 0.30s before doing anything.
+			// lasts ~0.25s so we will wait 0.30s before doing anything.
 			let a = Mainloop.timeout_add(300, () => {
 				if (mainAppView._currentPopup) {
 					mainAppView._currentPopup.popdown();
@@ -108,7 +108,7 @@ function injectionInAppsMenus() {
 			let shouldShow = !isInFolder( this._source.app.get_id(), _folder );
 			let iFolderSchema = folderSchema(_folder);
 			let item = new PopupMenu.PopupMenuItem( AppDisplay._getFolderName(iFolderSchema) );
-			if (debug) {
+			if (DEBUG) {
 				shouldShow = true; //TODO ??? et l'exclusion ?
 			}
 			if(shouldShow) {
@@ -119,7 +119,7 @@ function injectionInAppsMenus() {
 					// AppDisplay.AppFolderPopup.popdown() method tries to
 					// ungrab the global focus from the folder's popup actor,
 					// which isn't having the focus since the menu is still
-					// open. Menus' animation last ~0.25s so we will wait 0.30s
+					// open. Menus' animation lasts ~0.25s so we will wait 0.30s
 					// before doing anything.
 					let a = Mainloop.timeout_add(300, () => {
 						if (mainAppView._currentPopup) {
@@ -146,7 +146,7 @@ function injectionInAppsMenus() {
 			let iFolderSchema = folderSchema(_folder);
 			let item = new PopupMenu.PopupMenuItem( AppDisplay._getFolderName(iFolderSchema) );
 			
-			if (debug) {
+			if (DEBUG) {
 				shouldShow = true; //FIXME ??? et l'exclusion ?
 			}
 			
@@ -186,10 +186,10 @@ function injectionInIcons() {
 	AppDisplay.FolderIcon = class extends AppDisplay.FolderIcon {
 		constructor (id, path, parentView) {
 			super(id, path, parentView);
-			if (!this.isCustom) {
+			if (!this._isCustom) {
 				this.actor.connect('button-press-event', this._onButtonPress.bind(this));
 			}
-			this.isCustom = true;
+			this._isCustom = true;
 		}
 
 		_onButtonPress (actor, event) {
@@ -210,12 +210,12 @@ function injectionInIcons() {
 	AppDisplay.AppIcon = class extends AppDisplay.AppIcon {
 		constructor (app, params) {
 			super(app, params);
-			if (!this.isCustom) {
+			if (!this._isCustom) {
 				this._draggable.connect('drag-begin', this.onDragBeginExt.bind(this));
 				this._draggable.connect('drag-cancelled', this.onDragCancelledExt.bind(this));
 				this._draggable.connect('drag-end', this.onDragEndExt.bind(this));
 			}
-			this.isCustom = true;
+			this._isCustom = true;
 		}
 
 		onDragBeginExt () {
@@ -243,9 +243,9 @@ function injectionInIcons() {
 //---------------------------------- Generic -----------------------------------
 //--------------------------------- functions ----------------------------------
 //------------------------------------------------------------------------------
-/* These functions perform the requested actions but do not care about popdowning
- * open menu/open folder, nor about hiding/showing/activating dropping areas, nor
- * about redisplaying the view.
+/* These functions perform the requested actions but do not care about poping
+ * down opened menu or opened folder, nor about hiding/showing/activating
+ * dropping areas, nor about redisplaying the view.
  */
 function removeFromFolder (app_id, folder_id) {
 	let folder_schema = folderSchema(folder_id);
@@ -282,7 +282,7 @@ function deleteFolder (folder_id) {
 		FOLDER_SCHEMA.set_strv('folder-children', FOLDER_LIST);
 		
 		// ?? XXX (ne fonctionne pas mieux hors du meta.later_add)
-		if ( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('total-deletion') ) {
+		if (SETTINGS.get_boolean('total-deletion')) {
 			let folder_schema = folderSchema (folder_id);
 			folder_schema.reset('apps'); // génère un bug volumineux ?
 			folder_schema.reset('categories'); // génère un bug volumineux ?
@@ -402,38 +402,42 @@ function folderSchema (folder_id) {
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 
-function enable() {
+function enable () {
 	FOLDER_SCHEMA = new Gio.Settings({ schema_id: 'org.gnome.desktop.app-folders' });
 	FOLDER_LIST = FOLDER_SCHEMA.get_strv('folder-children');
+	SETTINGS = Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager');
+	DEBUG = SETTINGS.get_boolean('debug');
 
 	injectionInIcons();
-	if( Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager').get_boolean('extend-menus') ) {
+	if (SETTINGS.get_boolean('extend-menus')) {
 		injectionInAppsMenus();
 	}
 	DragAndDrop.initDND();
 	
-	// Reload the view if the user load the extension at least a minute after
-	// opening the session. XXX works like shit
+	// Reload the view if the user loads the extension at least a minute after
+	// opening the session, which means if they just installed/enabled it.
+	// Otherwise the extension would work only after a restart.
 	let delta = getTimeStamp() - INIT_TIME;
 	if (delta < 0 || delta > 105) {
 		Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
 	}
+	// FIXME FIXME FIXME it works like shit, when it works
 }
 
-function disable() {
+function disable () {
 	AppDisplay.FolderIcon.prototype._onButtonPress = null;
 	AppDisplay.FolderIcon.prototype.popupMenu = null;
 
 	removeInjection(AppDisplay.AppIconMenu.prototype, injections, '_redisplay');
 
-	// Overwrite my shit for FolderIcon
+	// Overwrite the shit i did in FolderIcon
 	AppDisplay.FolderIcon = class extends AppDisplay.FolderIcon {
 		_onButtonPress (actor, event) {
 			return Clutter.EVENT_PROPAGATE;
 		}
 	};
 
-	// Overwrite my shit for AppIcon
+	// Overwrite the shit i did in AppIcon
 	AppDisplay.AppIcon = class extends AppDisplay.AppIcon {
 		onDragBeginExt () {}
 		onDragEndExt () {}

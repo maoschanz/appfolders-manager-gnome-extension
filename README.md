@@ -2,6 +2,8 @@
 
 for GNOME Shell 3.28 to 3.32
 
+**After 3.33, GNOME Shell handles this feature natively.**
+
 [<img alt="" height="100" src="https://raw.githubusercontent.com/andyholmes/gnome-shell-extensions-badge/master/get-it-on-ego.svg?sanitize=true">](https://extensions.gnome.org/extension/1217/appfolders-manager/)
 
 A GNOME Shell extension allowing easy management of "appfolders" directly from the applications view.
@@ -56,10 +58,10 @@ Install it from [extensions.gnome.org](https://extensions.gnome.org/extension/12
 
 - Download the .zip archive and extract files in `~/.local/share/gnome-shell/extensions/appfolders-manager@maestroschan.fr`
 - Restart GNOME Shell.
-- Activate the extension.
+- Enable the extension.
 
 ### See also
 
 - [a GTK+ application which manages appfolders](https://github.com/muflone/gnome-appfolders-manager)
-- [the "official" way to do it](https://wiki.gnome.org/Apps/Software)
+- [the "official" way to do it for GNOME 3.14 to 3.32](https://wiki.gnome.org/Apps/Software)
 

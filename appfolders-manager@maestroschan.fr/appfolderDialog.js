@@ -1,19 +1,21 @@
 // appfolderDialog.js
 // GPLv3
 
+const Signals = imports.signals;
+const Config = imports.misc.config;
+
 const Clutter = imports.gi.Clutter;
 const Gio = imports.gi.Gio;
 const St = imports.gi.St;
+const Gtk = imports.gi.Gtk;
+
 const Main = imports.ui.main;
 const ModalDialog = imports.ui.modalDialog;
 const PopupMenu = imports.ui.popupMenu;
 const ShellEntry = imports.ui.shellEntry;
-const Signals = imports.signals;
-const Gtk = imports.gi.Gtk;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
-const Convenience = Me.imports.convenience;
 const Extension = Me.imports.extension;
 
 const Gettext = imports.gettext.domain('appfolders-manager');
@@ -36,7 +38,6 @@ var AppfolderDialog = class AppfolderDialog {
 		this._app = app;
 		this._id = id;
 		this.super_dialog = new ModalDialog.ModalDialog({ destroyOnClose: true });
-		this._extSettings = Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager')
 
 		FOLDER_SCHEMA = new Gio.Settings({ schema_id: 'org.gnome.desktop.app-folders' });
 		FOLDER_LIST = FOLDER_SCHEMA.get_strv('folder-children');
@@ -50,7 +51,7 @@ var AppfolderDialog = class AppfolderDialog {
 			x_align: St.Align.START,
 			y_align: St.Align.START
 		});
-		if (this._extSettings.get_boolean('categories')) {
+		if (Extension.SETTINGS.get_boolean('categories')) {
 			this.super_dialog.contentLayout.add(categoriesSection, {
 				x_fill: false,
 				x_align: St.Align.START,
@@ -228,11 +229,11 @@ var AppfolderDialog = class AppfolderDialog {
 	}
 
 	destroy () {
-		if (this._extSettings.get_boolean('debug')) {
+		if (Extension.DEBUG)) {
 			log('[AppfolderDialog v2] destroying dialog');
 		}
-		this._catSelectButton.destroy(); // TODO ?
-		this.super_dialog.destroy(); //XXX crée des erreurs reloues ???
+		this._catSelectButton.destroy(); // XXX crée des erreurs osef
+		this.super_dialog.destroy(); // XXX crée des erreurs reloues ???
 	}
 
 	// Generates a valid folder id, which has no space, no dot, no slash, is not
@@ -252,7 +253,7 @@ var AppfolderDialog = class AppfolderDialog {
 	}
 
 	_removeChar(folderId, char) {
-		tmp0 = folderId.split(char);
+		let tmp0 = folderId.split(char);
 		folderId = "";
 		for(var i = 0; i < tmp0.length; i++) {
 			folderId += tmp0[i];
@@ -341,7 +342,7 @@ var AppfolderDialog = class AppfolderDialog {
 		this.destroy();
 		
 		Main.overview.viewSelector.appDisplay._views[1].view._redisplay();
-		if (this._extSettings.get_boolean('debug') ) {
+		if (Extension.DEBUG) {
 			log('[AppfolderDialog v2] reload the view');
 		}
 	}
@@ -406,7 +407,13 @@ class SelectCategoryButton {
 		this.actor.connect('button-press-event', this._onButtonPress.bind(this));
 
 		this._menu = null;
-		this._menuManager = new PopupMenu.PopupMenuManager(this);
+		if (Config.PACKAGE_VERSION < '3.33') {
+			// desesperate effort to get useless 3.34 compatibility
+			this._menuManager = new PopupMenu.PopupMenuManager(this);
+		} else {
+			// main case
+			this._menuManager = new PopupMenu.PopupMenuManager(this.actor);
+		}
 	}
 
 	popupMenu () {
@@ -470,9 +477,10 @@ class SelectCategoryMenu {
 		let mainCategories = ['AudioVideo', 'Audio', 'Video', 'Development',
 		        'Education', 'Game', 'Graphics', 'Network', 'Office', 'Science',
 		                                       'Settings', 'System', 'Utility'];
+		// XXX not translatable because they're ids not really labels
 		for (var i=0; i<mainCategories.length; i++) {
 			let labelItem = mainCategories[i] ;
-			let item = new PopupMenu.PopupMenuItem( labelItem );
+			let item = new PopupMenu.PopupMenuItem(labelItem);
 			item.connect('activate', () => {
 				this._dialog._addCategory(null, labelItem);
 			});
@@ -486,7 +494,7 @@ class SelectCategoryMenu {
 	}
 
 	destroy () {
-		this.super_menu.close(); //FIXME error in the logs but i don't care
+		this.super_menu.close(); // FIXME error in the logs but i don't care
 		this.super_menu.destroy();
 	}
 };

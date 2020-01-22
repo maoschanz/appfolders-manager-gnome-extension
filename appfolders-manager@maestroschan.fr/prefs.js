@@ -23,6 +23,8 @@ const appfoldersManagerSettingsWidget = new GObject.Class({
 		this.set_orientation(Gtk.Orientation.VERTICAL);
 
 		this._settings = Convenience.getSettings('org.gnome.shell.extensions.appfolders-manager');
+
+		// The goal of this bullshit is to force the boolean to appear in dconf
 		this._settings.set_boolean('debug', this._settings.get_boolean('debug'));
 
 		//----------------------------------------------------------------------
@@ -145,8 +147,8 @@ function init() {
 	Convenience.initTranslations();
 }
 
-//I guess this is like the "enable" in extension.js : something called each
-//time he user try to access the settings' window
+// I guess this is like the "enable" in extension.js : something called each
+// time he user try to access the settings' window
 function buildPrefsWidget () {
 	let widget = new appfoldersManagerSettingsWidget();
 	widget.show_all();
