@@ -263,6 +263,7 @@ function removeFromFolder (app_id, folder_id) {
 		content.push(app_id);
 		folder_schema.set_strv('excluded-apps', content);
 	}
+	repaintFolder();
 	return true;
 }
 
@@ -366,13 +367,17 @@ function addToFolder (app_source, folder_id) {
 	folder_schema.set_strv('apps', content); //XXX verbose errors
 	
 	//update icons in the ugliest possible way
-	let icons = Main.overview.viewSelector.appDisplay._views[1].view.folderIcons;
-	for (let i=0; i<icons.length; i++) {
-		let size = icons[i].icon._iconBin.width;
-		icons[i].icon.icon = icons[i]._createIcon(size);
-		icons[i].icon._iconBin.child = icons[i].icon.icon;
-	}
+	repaintFolder();
 	return true;
+}
+
+//------------------------------------------------------------------------------
+
+function repaintFolder(){
+	let icons = Main.overview.viewSelector.appDisplay._views[1].view.folderIcons; 
+	for (let i=0; i<icons.length; i++) {
+		icons[i].icon._createIconTexture(icons[i].icon.iconSize);
+	}
 }
 
 //------------------------------------------------------------------------------
